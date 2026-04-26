@@ -1,0 +1,19 @@
+{
+  "team_name": "Titanes",
+  "players": [
+    {
+      "name": "Pedro Ramírez",
+      "email": "pedro.ramirez@liga.com",
+      "number": 9,
+      "dni": "44556677C",
+      "phone": "+34612345678"
+    },
+    {
+      "name": "Ana Ruiz",
+      "email": "ana.ruiz@liga.com",
+      "number": 10,
+      "dni": "99887766B",
+      "phone": "+34698765432"
+    }
+  ]
+}

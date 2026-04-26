@@ -1,0 +1,19 @@
+{
+  "team_name": "Newpi",
+  "players": [
+    {
+      "name": "Benji Price",
+      "email": "guille142094@gmail.com",
+      "number": 1,
+      "dni": "82988129N",
+      "phone": "+81 90-5144-9519"
+    },
+    {
+      "name": "Oliver Atom",
+      "email": "oliver.atom@nankatsu.school",
+      "number": 10,
+      "dni": "18135169Z",
+      "phone": "+81 80-3390-5871"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "team_name": "Dragones",
+  "players": [
+    {
+      "name": "Luis Torres",
+      "email": "luis.torres@liga.com",
+      "number": 1,
+      "dni": "12345678A",
+      "phone": "+34611111111"
+    },
+    {
+      "name": "María López",
+      "email": "maria.lopez@liga.com",
+      "number": 2,
+      "dni": "23456789B",
+      "phone": "+34622222222"
+    },
+    {
+      "name": "Jorge Vidal",
+      "email": "jorge.vidal@liga.com",
+      "number": 3,
+      "dni": "34567890C",
+      "phone": "+34633333333"
+    },
+    {
+      "name": "Clara Gómez",
+      "email": "clara.gomez@liga.com",
+      "number": 4,
+      "dni": "45678901D",
+      "phone": "+34644444444"
+    },
+    {
+      "name": "Iván Méndez",
+      "email": "ivan.mendez@liga.com",
+      "number": 5,
+      "dni": "56789012E",
+      "phone": "+34655555555"
+    },
+    {
+      "name": "Lucía Ramos",
+      "email": "lucia.ramos@liga.com",
+      "number": 6,
+      "dni": "67890123F",
+      "phone": "+34666666666"
+    },
+    {
+      "name": "Carlos Peña",
+      "email": "carlos.pena@liga.com",
+      "number": 7,
+      "dni": "78901234G",
+      "phone": "+34677777777"
+    },
+    {
+      "name": "Sofía Díaz",
+      "email": "sofia.diaz@liga.com",
+      "number": 8,
+      "dni": "89012345H",
+      "phone": "+34688888888"
+    },
+    {
+      "name": "Paula Martín",
+      "email": "paula.martin@liga.com",
+      "number": 10,
+      "dni": "01234567J",
+      "phone": "+34700000000"
+    }
+  ]
+}

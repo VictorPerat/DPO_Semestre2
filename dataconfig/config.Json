@@ -1,0 +1,10 @@
+{
+  "databasePort": "3306",
+  "databaseIP": "localhost",
+  "databaseName": "leaguemanager",
+  "databaseUser": "root",
+  "databasePassword": "",
+  "admin": "12345678A",
+  "adminPassword": "admin1",
+  "matchTime": "1"
+}

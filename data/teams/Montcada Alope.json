@@ -1,0 +1,68 @@
+{
+  "team_name": "Montcada Alope",
+  "players": [
+    {
+      "name": "Carlos Méndez",
+      "email": "carlos.mendez@liga.com",
+      "number": 1,
+      "dni": "40404040E",
+      "phone": "+34640404040"
+    },
+    {
+      "name": "Sara Molina",
+      "email": "sara.molina@liga.com",
+      "number": 2,
+      "dni": "41414141F",
+      "phone": "+34641414141"
+    },
+    {
+      "name": "Javier Ortiz",
+      "email": "javier.ortiz@liga.com",
+      "number": 3,
+      "dni": "42424242G",
+      "phone": "+34642424242"
+    },
+    {
+      "name": "Marta López",
+      "email": "marta.lopez@liga.com",
+      "number": 4,
+      "dni": "43434343H",
+      "phone": "+34643434343"
+    },
+    {
+      "name": "Patricia Sánchez",
+      "email": "patricia.sanchez@liga.com",
+      "number": 6,
+      "dni": "45454545J",
+      "phone": "+34645454545"
+    },
+    {
+      "name": "David Ruiz",
+      "email": "david.ruiz@liga.com",
+      "number": 7,
+      "dni": "46464646K",
+      "phone": "+34646464646"
+    },
+    {
+      "name": "Inés Moreno",
+      "email": "ines.moreno@liga.com",
+      "number": 8,
+      "dni": "47474747L",
+      "phone": "+34647474747"
+    },
+    {
+      "name": "Raúl Fernández",
+      "email": "raul.fernandez@liga.com",
+      "number": 9,
+      "dni": "48484848M",
+      "phone": "+34648484848"
+    },
+    {
+      "name": "Clara Vega",
+      "email": "clara.vega@liga.com",
+      "number": 10,
+      "dni": "49494949N",
+      "phone": "+34649494949"
+    }
+  ]
+}
