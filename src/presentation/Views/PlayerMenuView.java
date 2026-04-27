@@ -1,5 +1,7 @@
 package presentation.Views;
 
+import shared.ProjectPathResolver;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -42,7 +44,9 @@ public class PlayerMenuView extends JFrame {
         headerPanelLocalVariableValue.setPreferredSize(new Dimension(600, 60));
 
         // Imagen de pelota
-        ImageIcon ballIconLocalVariableValue = new ImageIcon("Project/photos/football.png");        Image ballImageLocalVariableValue = ballIconLocalVariableValue.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        ImageIcon ballIconLocalVariableValue =
+                new ImageIcon(ProjectPathResolver.resolveProjectPath("photos/football.png"));
+        Image ballImageLocalVariableValue = ballIconLocalVariableValue.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon scaledBallIconLocalVariableValue = new ImageIcon(ballImageLocalVariableValue);
         JLabel leftBallLocalVariableValue = new JLabel(scaledBallIconLocalVariableValue);
 

@@ -9,133 +9,118 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Gestiona la base de datos del proyecto
+ * Esta clase se encarga de gestionar la conexión con la base de datos.
  */
-
 public class DatabaseConnector {
+
+    // Instancia única de la clase
     private static DatabaseConnector instanceFieldReference = null;
+
+    // Conexión compartida con la base de datos
     private Connection connFieldReference;
+
+    // Manager que lee la configuración del proyecto
     private final ConfigManager configManagerServiceFieldReference;
 
-    // Constructor
+    // Constructor privado para aplicar el patrón singleton
     private DatabaseConnector() {
         this.configManagerServiceFieldReference = new ConfigManager();
     }
 
+    // Devuelve la única instancia de la clase
     public static synchronized DatabaseConnector getInstance() {
-        // Si no existe la creamos
-        if (instanceFieldReference == null) {
 
-            // Creamos la instancia
+        // Si no existe, se crea
+        if (instanceFieldReference == null) {
             instanceFieldReference = new DatabaseConnector();
 
-            // Nos intentamos conectar
+            // Después intenta conectarse a la base de datos
             instanceFieldReference.connect();
         }
 
-        // Devolvemos la referencia de la instancia
         return instanceFieldReference;
     }
 
-    // Función para construir la URL de conexión a la base de datos
+    // Construye la URL de conexión con los datos del config
     private String buildUrl() {
 
-        // Obtenemos la IP
         String ipLocalVariableValue = configManagerServiceFieldReference.getDatabaseIP();
-
-        // Obtenemos el puerto
         String portLocalVariableValue = configManagerServiceFieldReference.getDatabasePort();
-
-        // Obtenemos el nombre de la base de datos
         String databaseLocalVariableValue = configManagerServiceFieldReference.getDatabaseName();
 
-        // Aquí devolvemos l'URL final
-        return "jdbc:mysql://" + ipLocalVariableValue + ":" + portLocalVariableValue + "/" + databaseLocalVariableValue + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+        return "jdbc:mysql://" + ipLocalVariableValue + ":" + portLocalVariableValue + "/" +
+                databaseLocalVariableValue +
+                "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     }
 
-    // Función para intentar la conexión a la base de datos
+    // Intenta abrir la conexión con la base de datos
     private void connect() {
-
-        // ¿Tengo una conexión guardada, está abierta?
         try {
 
-            // Si es asi salimos, ya que se ha conectado exitosamente
+            // Si ya hay una conexión abierta, no hace nada
             if (connFieldReference != null && !connFieldReference.isClosed()) {
                 return;
             }
 
-            // Si no es asi nos intentamos conectar
-
-            // Obtiene el usuario de la base de datos
             String userIdentifierLocalVariableValue = configManagerServiceFieldReference.getDatabaseUser();
-
-            // Obtiene la contraseña de la base de datos
             String userPasswordLocalVariableValue = configManagerServiceFieldReference.getDatabasePassword();
 
-            // Utilizamos getConnection para abrir la conexión real
-            connFieldReference = DriverManager.getConnection(buildUrl(), userIdentifierLocalVariableValue, userPasswordLocalVariableValue);
+            connFieldReference = DriverManager.getConnection(
+                    buildUrl(),
+                    userIdentifierLocalVariableValue,
+                    userPasswordLocalVariableValue
+            );
 
-            // Y si va bien imprimimos el mensaje de conexión exitosa.
             System.out.println("Conexión exitosa a la base de datos.");
 
-            // Si falla
         } catch (SQLException eventArgumentExceptionParameter) {
-
-            // Ponemos la conexión a NULL ya que no tenemos nada conectado
             connFieldReference = null;
-
-            // Imprimimos el mensaje de error (Lo he hecho de esta forma para evitar abrir ninguna view, con
-            // un mensaje de error por consola ya te acuerda que tienes que encender la base de datos y ya
-            // una vez tengas la base de datos ya podemos seguir con el programa, también porque lo dice
-            // el enunciado de la práctica).
             System.err.println("La base de datos no esta conectada. Inicia MySQL en XAMPP antes de abrir la aplicacion.");
         }
     }
 
     /**
-     * Devuelve la conexión de la base de datos
+     * Devuelve la conexión actual.
      */
     public Connection getConnection() {
         try {
-            // Si no hay ninguna conexión creada o ha habido una conexión y se ha cerrado
+            // Si no hay conexión o se cerró, vuelve a conectar
             if (connFieldReference == null || connFieldReference.isClosed()) {
-
-                // Entonces reconectamos
                 connect();
             }
-
-            // Si al probar isClosed se produce una excepción, entonces la imprimimos por consola
         } catch (SQLException eventArgumentExceptionParameter2) {
             eventArgumentExceptionParameter2.printStackTrace();
         }
 
-        // Al final devuelve la conexión compartida que guarda la clase
         return connFieldReference;
     }
 
     /**
-     * Comprobamos si la conexión a la base de datos está conectada
+     * Comprueba si la conexión está disponible.
      */
     public boolean isConnectionAvailable() {
         try {
-            //True si la conexión sigue y esta abierta
             return connFieldReference != null && !connFieldReference.isClosed();
-
-            // False si no esta  abierta, la conexión esta cerrada o habido algun error al comprovarlo.
         } catch (SQLException eventArgumentExceptionParameter3) {
             return false;
         }
     }
 
     /**
-     * Crea una conexion nueva pensada para usar con try-with-resources.
+     * Crea una conexión nueva pensada para usar con try-with-resources.
      */
     public Connection createConnection() throws SQLException {
         String userIdentifierLocalVariableValue = configManagerServiceFieldReference.getDatabaseUser();
         String userPasswordLocalVariableValue = configManagerServiceFieldReference.getDatabasePassword();
-        return DriverManager.getConnection(buildUrl(), userIdentifierLocalVariableValue, userPasswordLocalVariableValue);
+
+        return DriverManager.getConnection(
+                buildUrl(),
+                userIdentifierLocalVariableValue,
+                userPasswordLocalVariableValue
+        );
     }
 
+    // Ejecuta una consulta de inserción
     public void insertQuery(String queryParameterValue) {
         try (Statement statementLocalVariableValue = getConnection().createStatement()) {
             statementLocalVariableValue.executeUpdate(queryParameterValue);
@@ -145,6 +130,7 @@ public class DatabaseConnector {
         }
     }
 
+    // Ejecuta una consulta de borrado
     public void deleteQuery(String queryParameterValue2) {
         try (Statement statementLocalVariableValue = getConnection().createStatement()) {
             statementLocalVariableValue.executeUpdate(queryParameterValue2);
@@ -154,15 +140,19 @@ public class DatabaseConnector {
         }
     }
 
+    // Ejecuta una consulta de actualización
     public void updateQuery(String queryParameterValue3) {
         try (Statement statementLocalVariableValue = getConnection().createStatement()) {
             statementLocalVariableValue.executeUpdate(queryParameterValue3);
         } catch (SQLException eventArgumentExceptionParameter6) {
             System.err.println(queryParameterValue3);
-            System.err.println("Problema when updating --> " + eventArgumentExceptionParameter6.getSQLState() + " (" + eventArgumentExceptionParameter6.getMessage() + ")");
+            System.err.println("Problema when updating --> " +
+                    eventArgumentExceptionParameter6.getSQLState() +
+                    " (" + eventArgumentExceptionParameter6.getMessage() + ")");
         }
     }
 
+    // Ejecuta una consulta select y devuelve el resultado
     public ResultSet selectQuery(String queryParameterValue4) {
         try {
             Statement statementLocalVariableValue = getConnection().createStatement();
@@ -174,6 +164,7 @@ public class DatabaseConnector {
         }
     }
 
+    // Cierra la conexión con la base de datos
     public void disconnect() {
         try {
             if (connFieldReference != null && !connFieldReference.isClosed()) {

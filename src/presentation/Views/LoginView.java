@@ -1,5 +1,7 @@
 package presentation.Views;
 
+import shared.ProjectPathResolver;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -7,8 +9,12 @@ import java.awt.event.ActionListener;
 
 /**
  * Vista gráfica de la pantalla de inicio de sesión.
+ *
+ * Refactorizada: ahora es un JPanel que se registra como tarjeta dentro
+ * de {@link MainView}. Ya no gestiona ventana propia (sin setTitle, setSize,
+ * setVisible, EXIT_ON_CLOSE, ...).
  */
-public class LoginView extends JFrame {
+public class LoginView extends JPanel {
 
     private JTextField emailAddressFieldFieldReference;
     private JPasswordField userPasswordFieldFieldReference;
@@ -25,18 +31,25 @@ public class LoginView extends JFrame {
     private static final Color FIELD_BACKGROUND = new Color(245, 247, 252, 230);
     private static final Color LABEL_COLOR = new Color(108, 127, 154);
 
-    private static final String BACKGROUND_IMAGE_PATH = "photos/login_background.jpg";
+    private static final String BACKGROUND_IMAGE_PATH =
+            ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
     public LoginView() {
-        setTitle("LOGIN");
-        setMinimumSize(new Dimension(1280, 800));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setResizable(true);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        add(buildBackgroundPanel(), BorderLayout.CENTER);
+    }
 
-        setContentPane(buildBackgroundPanel());
-        setVisible(true);
+    /**
+     * Limpia los campos del formulario. Útil al volver a la pantalla
+     * de login (logout, registro completado, etc.).
+     */
+    public void clearForm() {
+        if (emailAddressFieldFieldReference != null) {
+            emailAddressFieldFieldReference.setText("");
+        }
+        if (userPasswordFieldFieldReference != null) {
+            userPasswordFieldFieldReference.setText("");
+        }
     }
 
     private JPanel buildBackgroundPanel() {
@@ -346,6 +359,11 @@ public class LoginView extends JFrame {
     }
 
     public void showMessageDialog(String messageParameterValue) {
-        JOptionPane.showMessageDialog(this, messageParameterValue, "Login", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                messageParameterValue,
+                "Login",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 }

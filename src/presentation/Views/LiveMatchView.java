@@ -22,6 +22,7 @@ public class LiveMatchView extends JFrame {
     private static final Color RED = new Color(200, 0, 0);
 
     public static final String CONFIG = "CONFIG";
+    // Listener externo para configuracion y controlador del cierre del partido
     private ActionListener configControllerHandlerFieldReference;
     private LiveMatchController liveMatchViewInterfaceControllerHandlerFieldReference;
 

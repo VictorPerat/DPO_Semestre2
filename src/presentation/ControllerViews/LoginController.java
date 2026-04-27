@@ -1,23 +1,33 @@
 package presentation.ControllerViews;
 
 import bussines.managers.PlayerManager;
+import presentation.AppNavigator;
 import presentation.Views.LoginView;
-import presentation.Views.SignUpView;
-import presentation.Views.UserProfileView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Controlador simplificado para login.
+ * Controlador del login.
+ *
+ * Refactorizado: ya no destruye ni crea ventanas. Cuando el login es
+ * correcto, simplemente le pide al {@link AppNavigator} que muestre la
+ * pantalla de PROFILE. Cuando el usuario quiere registrarse, navega
+ * a SIGNUP.
  */
 public class LoginController implements ActionListener {
+
     private final LoginView loginViewInterfaceFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
+    private final AppNavigator navigatorFieldReference;
 
-    public LoginController(LoginView loginViewInterfaceParameterValue, PlayerManager playerProfileManagerServiceParameterValue) {
+    public LoginController(
+            LoginView loginViewInterfaceParameterValue,
+            PlayerManager playerProfileManagerServiceParameterValue,
+            AppNavigator navigatorParameterValue) {
         this.loginViewInterfaceFieldReference = loginViewInterfaceParameterValue;
         this.playerProfileManagerServiceFieldReference = playerProfileManagerServiceParameterValue;
+        this.navigatorFieldReference = navigatorParameterValue;
         this.loginViewInterfaceFieldReference.registerController(this);
     }
 
@@ -31,9 +41,7 @@ public class LoginController implements ActionListener {
         }
 
         if (LoginView.SIGN_UP_BUTTON.equals(commandLocalVariableValue)) {
-            loginViewInterfaceFieldReference.dispose();
-            SignUpView signUpViewInterfaceLocalVariableValue = new SignUpView();
-            new SignUpController(signUpViewInterfaceLocalVariableValue, playerProfileManagerServiceFieldReference);
+            navigatorFieldReference.show(AppNavigator.SIGNUP);
         }
     }
 
@@ -45,7 +53,10 @@ public class LoginController implements ActionListener {
             return;
         }
 
-        boolean loginCorrectLocalVariableValue = playerProfileManagerServiceFieldReference.searchPlayer(userIdentifierLocalVariableValue, userPasswordLocalVariableValue);
+        boolean loginCorrectLocalVariableValue = playerProfileManagerServiceFieldReference.searchPlayer(
+                userIdentifierLocalVariableValue,
+                userPasswordLocalVariableValue
+        );
 
         if (!loginCorrectLocalVariableValue) {
             loginViewInterfaceFieldReference.showMessageDialog("Les credencials introduïdes són incorrectes");
@@ -53,10 +64,8 @@ public class LoginController implements ActionListener {
         }
 
         playerProfileManagerServiceFieldReference.setCurrentIdentifier(userIdentifierLocalVariableValue);
-        loginViewInterfaceFieldReference.dispose();
-
-        UserProfileView userProfileViewInterfaceLocalVariableValue = new UserProfileView();
-        new UserProfileController(userProfileViewInterfaceLocalVariableValue, playerProfileManagerServiceFieldReference);
+        loginViewInterfaceFieldReference.clearForm();
+        navigatorFieldReference.show(AppNavigator.PROFILE);
     }
 
     private boolean isValidAccessInput(String userIdentifierParameterValue, String userPasswordParameterValue) {

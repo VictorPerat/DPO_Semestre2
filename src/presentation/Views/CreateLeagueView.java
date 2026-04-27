@@ -1,5 +1,7 @@
 package presentation.Views;
 
+import shared.ProjectPathResolver;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -64,7 +66,8 @@ public class CreateLeagueView extends JFrame {
         headerPanelLocalVariableValue2.add(configButtonLocalVariableValue, BorderLayout.EAST);
 
         // Añadir iconos de pelota de fútbol y el título
-        ImageIcon ballIconLocalVariableValue = new ImageIcon("S2-Project-E-LeagueManager-2/Project/photos/football.png");
+        ImageIcon ballIconLocalVariableValue =
+                new ImageIcon(ProjectPathResolver.resolveProjectPath("photos/football.png"));
         Image scaledLocalVariableValue = ballIconLocalVariableValue.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon scaledBallIconLocalVariableValue = new ImageIcon(scaledLocalVariableValue);
 

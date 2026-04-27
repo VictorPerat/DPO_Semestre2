@@ -6,10 +6,11 @@ import java.sql.*;
 import java.util.ArrayList;
 
 /**
- * DAO de estadísticas de equipo por liga adaptado a league_teams.
+ * Esta clase se encarga de acceder a la información de los equipos dentro de cada liga.
  */
 public class TeamInfoDao {
 
+    // Inserta la información de un equipo en una liga
     public void createInfoTeam(TeamInfo logicTeamParameterValue) {
         String queryLocalVariableValue =
                 "INSERT INTO league_teams (league_id, team_id, wins, defeats, ties, points) VALUES (?, ?, ?, ?, ?, ?)";
@@ -26,11 +27,13 @@ public class TeamInfoDao {
             preparedStatementLocalVariableValue.setInt(5, logicTeamParameterValue.getTies());
             preparedStatementLocalVariableValue.setInt(6, logicTeamParameterValue.getPoints());
             preparedStatementLocalVariableValue.executeUpdate();
+
         } catch (SQLException eventArgumentExceptionParameter) {
             eventArgumentExceptionParameter.printStackTrace();
         }
     }
 
+    // Borra la información de un equipo usando su id
     public void deleteInfoTeam(int teamReferenceIdentifierParameterValue) {
         String queryLocalVariableValue = "DELETE FROM league_teams WHERE team_id = ?";
 
@@ -41,17 +44,21 @@ public class TeamInfoDao {
 
             preparedStatementLocalVariableValue.setInt(1, teamReferenceIdentifierParameterValue);
             preparedStatementLocalVariableValue.executeUpdate();
+
         } catch (SQLException eventArgumentExceptionParameter) {
             eventArgumentExceptionParameter.printStackTrace();
         }
     }
 
+    // Devuelve toda la información de todos los equipos
     public ArrayList<TeamInfo> getAlInfoTeam() {
         return getTeamsInLeague(-1);
     }
 
+    // Devuelve la información de los equipos de una liga concreta
     public ArrayList<TeamInfo> getTeamsInLeague(int leagueReferenceIdentifierParameterValue) {
         ArrayList<TeamInfo> informationTeamsLocalVariableValue = new ArrayList<>();
+
         String queryLocalVariableValue = leagueReferenceIdentifierParameterValue == -1
                 ? "SELECT league_id, team_id, wins, defeats, ties, points FROM league_teams"
                 : "SELECT league_id, team_id, wins, defeats, ties, points FROM league_teams WHERE league_id = ?";
@@ -77,6 +84,7 @@ public class TeamInfoDao {
                     ));
                 }
             }
+
         } catch (SQLException eventArgumentExceptionParameter) {
             eventArgumentExceptionParameter.printStackTrace();
         }
@@ -84,16 +92,26 @@ public class TeamInfoDao {
         return informationTeamsLocalVariableValue;
     }
 
-    public void afegirPunts(String nomEquipGuanyadorParameterValue, int lligaIdParameterValue, int puntsParameterValue) {
+    // Añade puntos a un equipo dentro de una liga
+    public void afegirPunts(String nomEquipGuanyadorParameterValue,
+                            int lligaIdParameterValue,
+                            int puntsParameterValue) {
+
         String teamQueryLocalVariableValue = "SELECT id FROM teams WHERE name = ?";
-        String updateQueryLocalVariableValue = "UPDATE league_teams SET points = points + ? WHERE league_id = ? AND team_id = ?";
+        String updateQueryLocalVariableValue =
+                "UPDATE league_teams SET points = points + ? WHERE league_id = ? AND team_id = ?";
 
         try (Connection connectionLocalVariableValue =
                      DatabaseConnector.getInstance().createConnection()) {
 
             int teamReferenceIdentifierLocalVariableValue = -1;
-            try (PreparedStatement preparedStatementLocalVariableValue = connectionLocalVariableValue.prepareStatement(teamQueryLocalVariableValue)) {
+
+            // Busca el id del equipo usando su nombre
+            try (PreparedStatement preparedStatementLocalVariableValue =
+                         connectionLocalVariableValue.prepareStatement(teamQueryLocalVariableValue)) {
+
                 preparedStatementLocalVariableValue.setString(1, nomEquipGuanyadorParameterValue);
+
                 try (ResultSet resultLocalVariableValue = preparedStatementLocalVariableValue.executeQuery()) {
                     if (resultLocalVariableValue.next()) {
                         teamReferenceIdentifierLocalVariableValue = resultLocalVariableValue.getInt("id");
@@ -101,16 +119,21 @@ public class TeamInfoDao {
                 }
             }
 
+            // Si no encuentra el equipo, no hace nada
             if (teamReferenceIdentifierLocalVariableValue == -1) {
                 return;
             }
 
-            try (PreparedStatement preparedStatementLocalVariableValue = connectionLocalVariableValue.prepareStatement(updateQueryLocalVariableValue)) {
+            // Suma los puntos al equipo en la liga correspondiente
+            try (PreparedStatement preparedStatementLocalVariableValue =
+                         connectionLocalVariableValue.prepareStatement(updateQueryLocalVariableValue)) {
+
                 preparedStatementLocalVariableValue.setInt(1, puntsParameterValue);
                 preparedStatementLocalVariableValue.setInt(2, lligaIdParameterValue);
                 preparedStatementLocalVariableValue.setInt(3, teamReferenceIdentifierLocalVariableValue);
                 preparedStatementLocalVariableValue.executeUpdate();
             }
+
         } catch (SQLException eventArgumentExceptionParameter) {
             eventArgumentExceptionParameter.printStackTrace();
         }

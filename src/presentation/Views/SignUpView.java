@@ -1,5 +1,7 @@
 package presentation.Views;
 
+import shared.ProjectPathResolver;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -7,8 +9,11 @@ import java.awt.event.ActionListener;
 
 /**
  * Vista de registro para nuevos usuarios.
+ *
+ * Refactorizada: extiende JPanel y se muestra como tarjeta dentro de
+ * {@link MainView}. La navegación al login se delega en AppNavigator.
  */
-public class SignUpView extends JFrame {
+public class SignUpView extends JPanel {
 
     private JTextField nationalIdentityDocumentFieldFieldReference;
     private JTextField displayNameFieldFieldReference;
@@ -30,18 +35,24 @@ public class SignUpView extends JFrame {
     private static final Color FIELD_BACKGROUND = new Color(245, 247, 252, 230);
     private static final Color LABEL_COLOR = new Color(108, 127, 154);
 
-    private static final String BACKGROUND_IMAGE_PATH = "photos/login_background.jpg";
+    private static final String BACKGROUND_IMAGE_PATH =
+            ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
     public SignUpView() {
-        setTitle("SIGN UP");
-        setMinimumSize(new Dimension(1280, 820));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setResizable(true);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        add(buildBackgroundPanel(), BorderLayout.CENTER);
+    }
 
-        setContentPane(buildBackgroundPanel());
-        setVisible(true);
+    /**
+     * Limpia todos los campos del formulario de registro.
+     */
+    public void clearForm() {
+        if (nationalIdentityDocumentFieldFieldReference != null) nationalIdentityDocumentFieldFieldReference.setText("");
+        if (displayNameFieldFieldReference != null) displayNameFieldFieldReference.setText("");
+        if (emailAddressFieldFieldReference != null) emailAddressFieldFieldReference.setText("");
+        if (jerseyNumberFieldFieldReference != null) jerseyNumberFieldFieldReference.setText("");
+        if (teamReferenceFieldFieldReference != null) teamReferenceFieldFieldReference.setText("");
+        if (phoneNumberFieldFieldReference != null) phoneNumberFieldFieldReference.setText("");
     }
 
     private JPanel buildBackgroundPanel() {
@@ -321,6 +332,11 @@ public class SignUpView extends JFrame {
     }
 
     public void showMessageDialog(String messageParameterValue) {
-        JOptionPane.showMessageDialog(this, messageParameterValue, "Registro", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                messageParameterValue,
+                "Registro",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 }

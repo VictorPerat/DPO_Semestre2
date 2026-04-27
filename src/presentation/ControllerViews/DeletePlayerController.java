@@ -2,6 +2,7 @@ package presentation.ControllerViews;
 
 import bussines.objects.Player;
 import bussines.managers.PlayerManager;
+import presentation.AppNavigator;
 import presentation.Views.*;
 
 import javax.swing.*;
@@ -151,20 +152,19 @@ public class DeletePlayerController implements ActionListener {
     }
 
     /**
-     * Abre la vista para cambiar la contraseña.
+     * Abre la vista para cambiar la contraseña a través del navegador,
+     * registrando el retorno a la vista actual al finalizar.
      */
     private void openChangePasswordView() {
-        ChangePasswordView changeUserPasswordViewInterfaceLocalVariableValue =
-                new ChangePasswordView();
+        final DeletePlayerView previousScreenLocalVariableValue =
+                viewInterfaceFieldReference;
+        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
 
-        viewInterfaceFieldReference.setVisible(false);
-
-        new ChangePasswordController(
-                changeUserPasswordViewInterfaceLocalVariableValue,
-                playerProfileManagerServiceFieldReference,
-                viewInterfaceFieldReference
-        );
-
-        changeUserPasswordViewInterfaceLocalVariableValue.setVisible(true);
+        previousScreenLocalVariableValue.setVisible(false);
+        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
+            navigatorLocalVariableValue.hideMainWindow();
+            previousScreenLocalVariableValue.setVisible(true);
+        });
+        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
     }
 }

@@ -1,6 +1,7 @@
 package presentation.Views;
 
 import bussines.objects.Player;
+import shared.ProjectPathResolver;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -10,8 +11,12 @@ import java.awt.event.ActionListener;
 /**
  * Vista que muestra la información del usuario autenticado
  * con el mismo estilo visual que login y register.
+ *
+ * Refactorizada: extiende JPanel y se muestra como tarjeta dentro de
+ * {@link MainView}. La navegación a logout / cambio de contraseña la
+ * delega el controlador al AppNavigator.
  */
-public class UserProfileView extends JFrame {
+public class UserProfileView extends JPanel {
 
     public static final String LOGOUT_BUTTON = "LOGOUT_BUTTON";
     public static final String CHANGE_PASSWORD_BUTTON = "CHANGE_PASSWORD_BUTTON";
@@ -34,21 +39,15 @@ public class UserProfileView extends JFrame {
     private static final Color FIELD_BACKGROUND = new Color(245, 247, 252, 235);
     private static final Color VALUE_TEXT_COLOR = new Color(54, 66, 87);
 
-    private static final String BACKGROUND_IMAGE_PATH = "photos/login_background.jpg";
+    private static final String BACKGROUND_IMAGE_PATH =
+            ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
     public UserProfileView() {
-        setTitle("User Profile");
-        setMinimumSize(new Dimension(1280, 820));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setResizable(true);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
         logoutButtonFieldReference = new Rounded.RoundedButton("LOGOUT", 16);
         changePasswordButtonFieldReference = new Rounded.RoundedButton("CHANGE PASSWORD", 16);
 
-        setContentPane(buildBackgroundPanel());
-        setVisible(true);
+        setLayout(new BorderLayout());
+        add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
     private JPanel buildBackgroundPanel() {
@@ -321,6 +320,11 @@ public class UserProfileView extends JFrame {
     }
 
     public void showMessageDialog(String messageParameterValue) {
-        JOptionPane.showMessageDialog(this, messageParameterValue, "User Profile", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                messageParameterValue,
+                "User Profile",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 }

@@ -19,8 +19,10 @@ import java.util.ArrayList;
  * Muestra información como el nombre, ID, fecha de inicio y estadísticas de los equipos participantes.
  */
 public class LeagueDetailView extends JFrame {
+    // Tabla que muestra la clasificacion y datos de los equipos
     private JTable tableFieldReference;
 
+    // Botones de navegacion y accesos auxiliares de la vista
     private final JButton backButtonFieldReference;
     private final JButton configButtonFieldReference;
     private final JButton statsButtonFieldReference;

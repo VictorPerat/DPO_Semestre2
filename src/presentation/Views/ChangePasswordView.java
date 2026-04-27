@@ -1,5 +1,7 @@
 package presentation.Views;
 
+import shared.ProjectPathResolver;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -8,8 +10,12 @@ import java.awt.event.ActionListener;
 /**
  * Vista Swing para permitir al usuario cambiar su contraseña
  * con el mismo estilo visual que login, register y user profile.
+ *
+ * Refactorizada: extiende JPanel y se muestra como tarjeta dentro de
+ * {@link MainView}. El controlador navega con AppNavigator en lugar
+ * de gestionar dispose() y JFrame anteriores.
  */
-public class ChangePasswordView extends JFrame {
+public class ChangePasswordView extends JPanel {
 
     public static final String CHANGE_BUTTON = "CHANGE_BUTTON";
     public static final String BACK_BUTTON = "BACK_BUTTON";
@@ -27,18 +33,21 @@ public class ChangePasswordView extends JFrame {
     private static final Color FIELD_BACKGROUND = new Color(245, 247, 252, 230);
     private static final Color LABEL_COLOR = new Color(108, 127, 154);
 
-    private static final String BACKGROUND_IMAGE_PATH = "photos/login_background.jpg";
+    private static final String BACKGROUND_IMAGE_PATH =
+            ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
     public ChangePasswordView() {
-        setTitle("Change Password");
-        setMinimumSize(new Dimension(1280, 820));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setResizable(true);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        add(buildBackgroundPanel(), BorderLayout.CENTER);
+    }
 
-        setContentPane(buildBackgroundPanel());
-        setVisible(true);
+    /**
+     * Limpia los campos de contraseña al entrar en la pantalla.
+     */
+    public void clearForm() {
+        if (actualUserPasswordFieldFieldReference != null) actualUserPasswordFieldFieldReference.setText("");
+        if (newUserPasswordFieldFieldReference != null) newUserPasswordFieldFieldReference.setText("");
+        if (confirmUserPasswordFieldFieldReference != null) confirmUserPasswordFieldFieldReference.setText("");
     }
 
     private JPanel buildBackgroundPanel() {
@@ -295,6 +304,11 @@ public class ChangePasswordView extends JFrame {
     }
 
     public void showMessageDialog(String messageParameterValue) {
-        JOptionPane.showMessageDialog(this, messageParameterValue, "Change Password", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                messageParameterValue,
+                "Change Password",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 }

@@ -4,6 +4,7 @@ import bussines.managers.GameManager;
 import bussines.objects.League;
 import bussines.managers.LeagueManager;
 import bussines.managers.PlayerManager;
+import presentation.AppNavigator;
 import presentation.Views.*;
 
 import javax.swing.*;
@@ -14,12 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controlador principal para el menú de administrador.
- * Gestiona todas las acciones disponibles para un administrador del sistema.
+ * Esta clase se encarga de controlar el menú del administrador.
  */
 public class AdminMenuController implements ActionListener, DeletePlayerListener, MenuController, LeagueViewActions {
 
+    // Vista principal del menú de administrador
     private AdminMenuView adminMenuViewInterfaceFieldReference;
+
+    // Vistas secundarias que se abren desde el menú
     private CreateLeagueView createLeagueReferenceViewInterfaceFieldReference;
     private AvailableLeaguesView availableLeaguesViewInterfaceFieldReference;
     private DeleteLeagueView deleteLeagueReferenceViewInterfaceFieldReference;
@@ -27,41 +30,38 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
     private DeleteTeamView deleteTeamReferenceScreenInterfaceFieldReference;
     private StatisticsGraphView statisticsGraphViewInterfaceFieldReference;
     private LiveMatchView matchViewInterfaceFieldReference;
+
+    // Managers que se usan para manejar la lógica de negocio
     private PlayerManager playerProfileManagerServiceFieldReference;
     private GameManager gameEntityManagerServiceFieldReference = new GameManager();
     private LeagueManager leagueReferenceManagerServiceFieldReference = new LeagueManager();
 
-
+    // Constructor que conecta la vista con este controlador
     public AdminMenuController(AdminMenuView adminMenuViewInterfaceParameterValue, PlayerManager playerProfileManagerServiceParameterValue) {
         this.adminMenuViewInterfaceFieldReference = adminMenuViewInterfaceParameterValue;
         this.playerProfileManagerServiceFieldReference = playerProfileManagerServiceParameterValue;
         this.adminMenuViewInterfaceFieldReference.registerController(this);
     }
 
-    /**
-     * Muestra el menú del administrador.
-     */
+    // Muestra el menú del administrador
     @Override
     public void showMenu() {
         showAdminMenu();
     }
 
-    /**
-     * Retorna al menú del administrador desde otra vista.
-     */
+    // Vuelve al menú del administrador
     @Override
     public void returnToMenu() {
         showAdminMenu();
     }
 
-    /**
-     * Acción tras eliminar jugadores, vuelve a mostrar el menú.
-     */
+    // Cuando se borran jugadores, vuelve al menú
     @Override
     public void onPlayersDeleted() {
-        showAdminMenu(); // opcional
+        showAdminMenu();
     }
 
+    // Gestiona las acciones que llegan desde la vista
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -94,20 +94,20 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
         }
     }
 
-    /**
-     * Abre la vista de estadísticas gráficas.
-     */
+    // Abre la pantalla de estadísticas
     public void handleStats() {
         adminMenuViewInterfaceFieldReference.dispose();
         statisticsGraphViewInterfaceFieldReference = new StatisticsGraphView();
         statisticsGraphViewInterfaceFieldReference.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        new StatisticsGraphController(statisticsGraphViewInterfaceFieldReference, this, playerProfileManagerServiceFieldReference);
+        new StatisticsGraphController(
+                statisticsGraphViewInterfaceFieldReference,
+                this,
+                playerProfileManagerServiceFieldReference
+        );
         statisticsGraphViewInterfaceFieldReference.setVisible(true);
     }
 
-    /**
-     * Muestra la vista para crear una nueva liga.
-     */
+    // Abre la pantalla para crear una liga
     public void handleCreateLeague() {
         adminMenuViewInterfaceFieldReference.dispose();
         createLeagueReferenceViewInterfaceFieldReference = new CreateLeagueView();
@@ -115,11 +115,10 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
         new CreateLeagueController(createLeagueReferenceViewInterfaceFieldReference, this);
     }
 
-    /**
-     * Muestra la vista para eliminar ligas existentes.
-     */
+    // Abre la pantalla para borrar ligas
     public void handleDeleteLeague() {
         ArrayList<League> leaguesLocalVariableValue = leagueReferenceManagerServiceFieldReference.getAllLeagues();
+
         adminMenuViewInterfaceFieldReference.dispose();
         deleteLeagueReferenceViewInterfaceFieldReference = new DeleteLeagueView(leaguesLocalVariableValue);
         deleteLeagueReferenceViewInterfaceFieldReference.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -127,22 +126,23 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
         deleteLeagueReferenceViewInterfaceFieldReference.setVisible(true);
     }
 
-    /**
-     * Muestra todas las ligas disponibles.
-     */
+    // Abre la pantalla para ver ligas
     public void handleViewLeagues() {
         adminMenuViewInterfaceFieldReference.dispose();
         AvailableLeaguesView viewInterfaceLocalVariableValue = new AvailableLeaguesView();
-        new AvailableLeaguesController(viewInterfaceLocalVariableValue, this, playerProfileManagerServiceFieldReference);
+        new AvailableLeaguesController(
+                viewInterfaceLocalVariableValue,
+                this,
+                playerProfileManagerServiceFieldReference
+        );
         viewInterfaceLocalVariableValue.setVisible(true);
     }
 
-    /**
-     * Cierra la sesión del usuario actual y vuelve a la pantalla de login.
-     * Además, cierra las ventanas relacionadas con partidos en vivo y creación de equipos.
-     */
+    // Cierra sesión y vuelve al login
     public void handleLogout() {
         adminMenuViewInterfaceFieldReference.dispose();
+
+        // Cierra posibles ventanas abiertas relacionadas con partidos o equipos
         for (Window windowLocalVariableValue : Window.getWindows()) {
             if (windowLocalVariableValue instanceof LiveMatchesView) {
                 windowLocalVariableValue.dispose();
@@ -151,34 +151,37 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
                 windowLocalVariableValue.dispose();
             }
         }
+
+        // Limpia el usuario actual
         playerProfileManagerServiceFieldReference.setCurrentIdentifier(null);
+
+        // Vuelve a la pantalla de login
         SwingUtilities.invokeLater(() -> {
-            LoginView loginViewInterfaceLocalVariableValue = new LoginView();
-            new LoginController(loginViewInterfaceLocalVariableValue, new PlayerManager());
+            AppNavigator.getInstance().show(AppNavigator.LOGIN);
         });
     }
 
-    /**
-     * Vuelve a mostrar el menú principal del administrador,
-     * cerrando las vistas secundarias si están visibles.
-     */
+    // Muestra de nuevo el menú del administrador
     public void showAdminMenu() {
-        if (createLeagueReferenceViewInterfaceFieldReference != null && createLeagueReferenceViewInterfaceFieldReference.isVisible()) {
+        if (createLeagueReferenceViewInterfaceFieldReference != null
+                && createLeagueReferenceViewInterfaceFieldReference.isVisible()) {
             createLeagueReferenceViewInterfaceFieldReference.dispose();
         }
-        if (availableLeaguesViewInterfaceFieldReference != null && availableLeaguesViewInterfaceFieldReference.isVisible()) {
+
+        if (availableLeaguesViewInterfaceFieldReference != null
+                && availableLeaguesViewInterfaceFieldReference.isVisible()) {
             availableLeaguesViewInterfaceFieldReference.dispose();
         }
-        if (deleteLeagueReferenceViewInterfaceFieldReference != null && deleteLeagueReferenceViewInterfaceFieldReference.isVisible()) {
+
+        if (deleteLeagueReferenceViewInterfaceFieldReference != null
+                && deleteLeagueReferenceViewInterfaceFieldReference.isVisible()) {
             deleteLeagueReferenceViewInterfaceFieldReference.dispose();
         }
 
         adminMenuViewInterfaceFieldReference.setVisible(true);
     }
 
-    /**
-     * Muestra la pantalla para eliminar jugadores.
-     */
+    // Abre la pantalla para borrar jugadores
     private void handleDeletePlayer() {
         adminMenuViewInterfaceFieldReference.dispose();
         deletePlayerProfileViewInterfaceFieldReference = new DeletePlayerView();
@@ -187,55 +190,64 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
         deletePlayerProfileViewInterfaceFieldReference.setVisible(true);
     }
 
-    /**
-     * Muestra la pantalla para eliminar equipos.
-     */
+    // Abre la pantalla para borrar equipos
     private void handleDeleteTeam() {
         adminMenuViewInterfaceFieldReference.dispose();
         deleteTeamReferenceScreenInterfaceFieldReference = new DeleteTeamView();
         deleteTeamReferenceScreenInterfaceFieldReference.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        DeleteTeamController controllerHandlerLocalVariableValue = new DeleteTeamController(deleteTeamReferenceScreenInterfaceFieldReference, this);
+
+        DeleteTeamController controllerHandlerLocalVariableValue =
+                new DeleteTeamController(deleteTeamReferenceScreenInterfaceFieldReference, this);
+
         deleteTeamReferenceScreenInterfaceFieldReference.setConfigController(controllerHandlerLocalVariableValue);
         deleteTeamReferenceScreenInterfaceFieldReference.setVisible(true);
     }
 
+    // Devuelve el manager de jugadores
     public PlayerManager getPlayerManager() {
         return playerProfileManagerServiceFieldReference;
     }
 
-    /**
-     * Muestra los partidos en vivo disponibles.
-     * Si no hay partidos, muestra un mensaje informativo.
-     */
+    // Abre la pantalla de partidos en directo
     private void handleGames() {
         List<String[]> liveGamesLocalVariableValue = gameEntityManagerServiceFieldReference.getLiveGames();
+
         if (liveGamesLocalVariableValue.isEmpty()) {
             adminMenuViewInterfaceFieldReference.showMessageDialog("No live game currently.");
         } else {
             adminMenuViewInterfaceFieldReference.setVisible(false);
-            //adminMenuView.dispose();
-            LiveMatchesView screenInterfaceLocalVariableValue = new LiveMatchesView(liveGamesLocalVariableValue);
-            LiveMatchesController matchesControllerHandlerLocalVariableValue = new LiveMatchesController(screenInterfaceLocalVariableValue, null, playerProfileManagerServiceFieldReference, this);
+
+            LiveMatchesView screenInterfaceLocalVariableValue =
+                    new LiveMatchesView(liveGamesLocalVariableValue);
+
+            LiveMatchesController matchesControllerHandlerLocalVariableValue =
+                    new LiveMatchesController(
+                            screenInterfaceLocalVariableValue,
+                            null,
+                            playerProfileManagerServiceFieldReference,
+                            this
+                    );
+
             screenInterfaceLocalVariableValue.startAutoRefresh(matchesControllerHandlerLocalVariableValue);
         }
     }
 
-    /**
-     * Muestra la pantalla para crear un nuevo equipo y configura los listeners necesarios.
-     */
+    // Abre la pantalla para crear un equipo nuevo
     private void handleCreateTeam() {
         SwingUtilities.invokeLater(() -> {
             adminMenuViewInterfaceFieldReference.setVisible(false);
-            //adminMenuView.dispose();
+
             CreateTeamView createNewTeamReferenceScreenInterfaceLocalVariableValue = new CreateTeamView();
             createNewTeamReferenceScreenInterfaceLocalVariableValue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             new CreateTeamController(createNewTeamReferenceScreenInterfaceLocalVariableValue, this);
 
+            // Botón para volver atrás
             createNewTeamReferenceScreenInterfaceLocalVariableValue.setBackButtonListener(eventArgumentParameterValue2 -> {
                 createNewTeamReferenceScreenInterfaceLocalVariableValue.dispose();
                 adminMenuViewInterfaceFieldReference.setVisible(true);
             });
 
+            // Botón de configuración
             createNewTeamReferenceScreenInterfaceLocalVariableValue.setConfigController(eventArgumentParameterValue3 -> {
                 if ("CONFIG".equals(eventArgumentParameterValue3.getActionCommand())) {
                     showConfigDialog();
@@ -246,19 +258,18 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
         });
     }
 
-    /**
-     * Muestra el diálogo de configuración con opciones para cerrar sesión,
-     * eliminar cuenta o cambiar la contraseña.
-     */
+    // Muestra el panel de configuración del administrador
     public void showConfigDialog() {
-        adminMenuViewInterfaceFieldReference.setVisible(false); // Oculta el menú admin
-        Rounded.ConfigDialog configDialogLocalVariableValue = new Rounded.ConfigDialog(adminMenuViewInterfaceFieldReference);
+        adminMenuViewInterfaceFieldReference.setVisible(false);
+        Rounded.ConfigDialog configDialogLocalVariableValue =
+                new Rounded.ConfigDialog(adminMenuViewInterfaceFieldReference);
 
-        // Listener para el botón de configuración principal
+        // Opciones principales del diálogo
         configDialogLocalVariableValue.registerController(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent eventArgumentParameterValue4) {
                 configDialogLocalVariableValue.dispose();
+
                 switch (eventArgumentParameterValue4.getActionCommand()) {
                     case Rounded.ConfigDialog.LOGOUT:
                         handleLogout();
@@ -273,7 +284,7 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
             }
         });
 
-        // Listener para el botón "Back" para volver al menú admin
+        // Botón para volver atrás
         configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue5 -> {
             configDialogLocalVariableValue.dispose();
             adminMenuViewInterfaceFieldReference.setVisible(true);
@@ -282,43 +293,42 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
         configDialogLocalVariableValue.setVisible(true);
     }
 
-    /**
-     * Abre la vista para cambiar la contraseña.
-     * Configura el listener del botón "Back" para cerrar la vista
-     * y volver a mostrar el menú principal del administrador.
-     */
+    // Abre la pantalla para cambiar la contraseña
     private void openChangePasswordView() {
-        ChangePasswordView changeUserPasswordViewInterfaceLocalVariableValue =
-                new ChangePasswordView();
+        final AdminMenuView previousScreenLocalVariableValue =
+                adminMenuViewInterfaceFieldReference;
 
-        adminMenuViewInterfaceFieldReference.setVisible(false);
+        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
 
-        new ChangePasswordController(
-                changeUserPasswordViewInterfaceLocalVariableValue,
-                playerProfileManagerServiceFieldReference,
-                adminMenuViewInterfaceFieldReference
-        );
+        previousScreenLocalVariableValue.setVisible(false);
 
-        changeUserPasswordViewInterfaceLocalVariableValue.setVisible(true);
+        // Guarda la acción que se hará al volver desde change password
+        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
+            navigatorLocalVariableValue.hideMainWindow();
+            previousScreenLocalVariableValue.setVisible(true);
+        });
+
+        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
     }
 
-
-    /**
-     * Pregunta al usuario si desea eliminar su cuenta y lo desconecta si acepta.
-     */
+    // Gestiona el intento de borrar la cuenta del administrador
     private void handleDeleteAccount() {
         int confirmLocalVariableValue = JOptionPane.showConfirmDialog(
                 adminMenuViewInterfaceFieldReference,
                 "Are you sure you want to delete your account? This action cannot be undone.",
                 "Confirm Deletion",
                 JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
+                JOptionPane.WARNING_MESSAGE
+        );
 
         if (confirmLocalVariableValue == JOptionPane.YES_OPTION) {
-            JOptionPane.showMessageDialog(adminMenuViewInterfaceFieldReference, "Admin accounts cannot be deleted. Returning to login.");
+            JOptionPane.showMessageDialog(
+                    adminMenuViewInterfaceFieldReference,
+                    "Admin accounts cannot be deleted. Returning to login."
+            );
             handleLogout();
-
         } else {
-showConfigDialog();        }
+            showConfigDialog();
+        }
     }
 }

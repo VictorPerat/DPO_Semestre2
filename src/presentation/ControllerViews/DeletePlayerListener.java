@@ -1,26 +1,14 @@
-/**
- * Interfaz para manejar eventos relacionados con la eliminación de jugadores.
- * Define métodos para responder a la eliminación de jugadores,
- * para regresar al menú principal y para gestionar el cierre de sesión.
- */
 package presentation.ControllerViews;
 
+// Interfaz con las acciones que necesita la pantalla de borrar jugadores
 public interface DeletePlayerListener {
 
-    /**
-     * Se llama cuando los jugadores han sido eliminados exitosamente.
-     */
+    // Se ejecuta cuando ya se han eliminado los jugadores seleccionados
     void onPlayersDeleted();
 
-    /**
-     * Gestiona el proceso de cierre de sesión del usuario.
-     */
+    // Cierra la sesion del usuario actual
     void handleLogout();
 
-    /**
-     * Indica que se debe retornar al menú principal.
-     */
+    // Devuelve al usuario al menu correspondiente
     void returnToMenu();
-
-
 }

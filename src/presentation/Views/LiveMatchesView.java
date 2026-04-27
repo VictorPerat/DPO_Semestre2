@@ -21,6 +21,7 @@ public class LiveMatchesView extends JFrame {
     private static final Color LIGHT_BLUE = new Color(195, 216, 236); // #C3D8EC
     private static final Color BACKGROUND = new Color(240, 240, 240);
     private static final Color LIVE_RED = new Color(200, 0, 0);      // Rojo para indicar en directo
+    // Boton de refresco, panel de partidos y listeners asociados
     private JButton refreshButtonFieldReference;
     private JPanel matchesPanelFieldReference;
     private JButton configButtonFieldReference;

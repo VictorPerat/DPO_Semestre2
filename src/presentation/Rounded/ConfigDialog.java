@@ -15,9 +15,12 @@ import presentation.ControllerViews.MenuController;
  * Se implementa como un singleton.
  */
 public class ConfigDialog extends JDialog {
+    // Botones principales del dialogo de cuenta
     private JButton logoutButtonFieldReference;
     private JButton deleteAccountButtonFieldReference;
     private JButton changeUserPasswordButtonFieldReference;
+
+    // Listener del boton de volver y controlador del menu propietario
     private ActionListener backControllerHandlerFieldReference;
     private MenuController menuControllerHandlerFieldReference;
 

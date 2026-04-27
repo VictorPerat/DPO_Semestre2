@@ -2,6 +2,7 @@ package presentation.Views;
 
 import bussines.objects.Team;
 import bussines.managers.TeamManager;
+import shared.ProjectPathResolver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,7 +77,8 @@ public class DeleteTeamView extends JFrame {
         panelLocalVariableValue.add(backButtonLocalVariableValue, BorderLayout.WEST);
 
         // Cargar la imagen de la pelota
-        ImageIcon ballIconLocalVariableValue = new ImageIcon("S2-Project-E-LeagueManager-2/Project/photos/football.png");
+        ImageIcon ballIconLocalVariableValue =
+                new ImageIcon(ProjectPathResolver.resolveProjectPath("photos/football.png"));
         Image ballImageLocalVariableValue = ballIconLocalVariableValue.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon scaledBallIconLocalVariableValue = new ImageIcon(ballImageLocalVariableValue);
 

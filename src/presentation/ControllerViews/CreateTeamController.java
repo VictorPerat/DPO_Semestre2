@@ -8,6 +8,7 @@
     import org.json.JSONObject;
     import org.json.JSONArray;
     import presentation.Views.CreateTeamView;
+    import shared.ProjectPathResolver;
 
     import javax.swing.*;
     import java.io.File;
@@ -23,6 +24,8 @@
      * También maneja la navegación de vuelta al menú administrador y el acceso a configuraciones.
      */
     public class CreateTeamController {
+
+        private static final String TEAMS_DIRECTORY_PATH = "data/teams";
 
         /**
          * Vista para la creación de nuevos equipos.
@@ -79,7 +82,7 @@
 
             // Listener para validar y procesar los archivos JSON de equipos.
             viewInterfaceFieldReference.setValidateListener(eventArgumentParameterValue3 -> {
-                File folderLocalVariableValue = new File("data/teams");
+                File folderLocalVariableValue = getTeamsDirectory();
                 File[] filesLocalVariableValue = folderLocalVariableValue.listFiles((dirParameterValue, displayNameParameterValue) -> displayNameParameterValue.toLowerCase().endsWith(".json"));
 
                 if (filesLocalVariableValue == null || filesLocalVariableValue.length == 0) {
@@ -196,7 +199,7 @@
             // Listener para cargar archivos JSON al directorio de equipos.
             viewInterfaceFieldReference.setFileUploadListener(fileParameterValue -> {
                 try {
-                    File destDirLocalVariableValue = new File("data/teams");
+                    File destDirLocalVariableValue = getTeamsDirectory();
                     if (!destDirLocalVariableValue.exists()) destDirLocalVariableValue.mkdirs();
                     File destinationLocalVariableValue = new File(destDirLocalVariableValue, fileParameterValue.getName());
                     Files.copy(fileParameterValue.toPath(), destinationLocalVariableValue.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -207,6 +210,11 @@
                 }
             });
         }
+
+        private File getTeamsDirectory() {
+            return ProjectPathResolver.resolveProjectFile(TEAMS_DIRECTORY_PATH);
+        }
+
         private String generateRandomPassword(int lengthParameterValue) {
             String charsLocalVariableValue = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             Random rndLocalVariableValue = new Random();

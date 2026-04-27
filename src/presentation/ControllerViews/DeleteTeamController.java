@@ -2,6 +2,7 @@ package presentation.ControllerViews;
 
 import bussines.managers.GameManager;
 import bussines.managers.TeamManager;
+import presentation.AppNavigator;
 import presentation.Views.*;
 
 import javax.swing.*;
@@ -139,21 +140,20 @@ public class DeleteTeamController implements ActionListener {
     }
 
     /**
-     * Abre la vista para cambiar la contraseña y registra su controlador.
+     * Abre la vista para cambiar la contraseña a través del navegador,
+     * registrando un retorno a la vista de eliminar equipo al finalizar.
      */
     private void openChangePasswordView() {
-        ChangePasswordView changeUserPasswordViewInterfaceLocalVariableValue =
-                new ChangePasswordView();
+        final DeleteTeamView previousScreenLocalVariableValue =
+                viewInterfaceFieldReference;
+        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
 
-        viewInterfaceFieldReference.setVisible(false);
-
-        new ChangePasswordController(
-                changeUserPasswordViewInterfaceLocalVariableValue,
-                adminMenuControllerHandlerFieldReference.getPlayerManager(),
-                viewInterfaceFieldReference
-        );
-
-        changeUserPasswordViewInterfaceLocalVariableValue.setVisible(true);
+        previousScreenLocalVariableValue.setVisible(false);
+        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
+            navigatorLocalVariableValue.hideMainWindow();
+            previousScreenLocalVariableValue.setVisible(true);
+        });
+        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
     }
 
     /**

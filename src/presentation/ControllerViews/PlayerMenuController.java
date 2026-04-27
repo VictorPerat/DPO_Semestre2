@@ -1,6 +1,7 @@
 package presentation.ControllerViews;
 
 import bussines.managers.PlayerManager;
+import presentation.AppNavigator;
 import presentation.Views.*;
 import javax.swing.*;
 import java.awt.*;
@@ -70,8 +71,8 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
             }
         }
         SwingUtilities.invokeLater(() -> {
-            LoginView loginViewInterfaceLocalVariableValue = new LoginView();
-            new LoginController(loginViewInterfaceLocalVariableValue, new PlayerManager());
+            // Navegación centralizada al login (carta dentro de MainView).
+            AppNavigator.getInstance().show(AppNavigator.LOGIN);
         });
     }
 
@@ -182,18 +183,18 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
      * Abre la vista para cambiar la contraseña del jugador actual.
      */
     private void openChangePasswordView() {
-        ChangePasswordView changeUserPasswordViewInterfaceLocalVariableValue =
-                new ChangePasswordView();
+        // Navegamos al CHANGE_PASSWORD (carta dentro de MainView)
+        // y registramos a dónde queremos volver al terminar.
+        final PlayerMenuView previousScreenLocalVariableValue =
+                playerProfileMenuScreenInterfaceFieldReference;
+        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
 
-        playerProfileMenuScreenInterfaceFieldReference.setVisible(false);
-
-        new ChangePasswordController(
-                changeUserPasswordViewInterfaceLocalVariableValue,
-                playerProfileManagerServiceFieldReference,
-                playerProfileMenuScreenInterfaceFieldReference
-        );
-
-        changeUserPasswordViewInterfaceLocalVariableValue.setVisible(true);
+        previousScreenLocalVariableValue.setVisible(false);
+        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
+            navigatorLocalVariableValue.hideMainWindow();
+            previousScreenLocalVariableValue.setVisible(true);
+        });
+        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
     }
 
     /**

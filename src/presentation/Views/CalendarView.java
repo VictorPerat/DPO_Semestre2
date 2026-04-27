@@ -17,6 +17,7 @@ import java.util.List;
  * Permite navegar por rondas y visualizar los partidos correspondientes a cada ronda.
  */
 public class CalendarView extends JFrame {
+    // Equipos de la liga y lista completa de partidos
     private ArrayList<String> teamsFieldReference;
     private ArrayList<Game> gamesFieldReference;
 
@@ -25,6 +26,7 @@ public class CalendarView extends JFrame {
     private static final Color BACKGROUND = new Color(240, 240, 240);
     private static final Color DIVIDER_COLOR = new Color(150, 150, 150);
 
+    // Botones de cabecera compartidos por la vista
     private static JButton backButtonFieldReference;
     private static JButton configButtonFieldReference;
 
@@ -33,6 +35,7 @@ public class CalendarView extends JFrame {
     /** Constante para identificar la acción de configuración. */
     public static final String CONFIG = "CONFIG";
 
+    // Panel donde se renderizan los partidos de la ronda activa
     private JPanel matchesPanelFieldReference;
     private JLabel roundTitleLabelFieldReference;
     private CalendarController controllerHandlerFieldReference;

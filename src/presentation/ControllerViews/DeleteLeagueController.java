@@ -1,6 +1,7 @@
 package presentation.ControllerViews;
 
 import bussines.managers.LeagueManager;
+import presentation.AppNavigator;
 import presentation.Views.*;
 
 import javax.swing.*;
@@ -142,21 +143,20 @@ public class DeleteLeagueController implements ActionListener {
     }
 
     /**
-     * Abre la vista para cambiar la contraseña y la configura con su controlador.
+     * Abre la vista para cambiar la contraseña a través del navegador,
+     * registrando un retorno a la vista de eliminación de liga al terminar.
      */
     private void openChangePasswordView() {
-        ChangePasswordView changeUserPasswordViewInterfaceLocalVariableValue =
-                new ChangePasswordView();
+        final DeleteLeagueView previousScreenLocalVariableValue =
+                viewInterfaceFieldReference;
+        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
 
-        viewInterfaceFieldReference.setVisible(false);
-
-        new ChangePasswordController(
-                changeUserPasswordViewInterfaceLocalVariableValue,
-                adminMenuControllerHandlerFieldReference.getPlayerManager(),
-                viewInterfaceFieldReference
-        );
-
-        changeUserPasswordViewInterfaceLocalVariableValue.setVisible(true);
+        previousScreenLocalVariableValue.setVisible(false);
+        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
+            navigatorLocalVariableValue.hideMainWindow();
+            previousScreenLocalVariableValue.setVisible(true);
+        });
+        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
     }
 
 }

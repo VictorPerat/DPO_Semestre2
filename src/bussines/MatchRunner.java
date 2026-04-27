@@ -10,38 +10,48 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
- * Clase que implementa un hilo encargado de comprobar periódicamente si hay partidos
- * que deben comenzar, basándose en la hora actual y la configuración del sistema.
+ * Esta clase se encarga de revisar si hay partidos que ya tienen que empezar.
  */
 public class MatchRunner implements Runnable {
+
+    // Manager de partidos
     private GameManager gameEntityManagerServiceFieldReference;
+
+    // Id de la liga que se está controlando
     private int leagueReferenceIdentifierFieldReference;
+
+    // Tiempo entre revisiones
     private long intervalFieldReference;
+
+    // Indica si hay partidos en juego
     private boolean isPlayingFieldReference;
+
+    // Configuración general del sistema
     private ConfigManager configFieldReference;
+
+    // Manager de equipos
     private TeamManager teamReferenceManagerServiceFieldReference = new TeamManager();
-    /**
-     * Constructor de la clase RunnerPartits.
-     *
-     * @param gameManager Referencia al gestor de partidos.
-     * @param leagueId    Identificador de la liga que se está supervisando.
-     * @param interval    Intervalo de tiempo (en milisegundos) entre comprobaciones.
-     * @param config      Configuración general del sistema.
-     */
-    public MatchRunner(GameManager gameEntityManagerServiceParameterValue, int leagueReferenceIdentifierParameterValue, long intervalParameterValue, ConfigManager configParameterValue) {
+
+    // Constructor que guarda la información necesaria
+    public MatchRunner(GameManager gameEntityManagerServiceParameterValue,
+                       int leagueReferenceIdentifierParameterValue,
+                       long intervalParameterValue,
+                       ConfigManager configParameterValue) {
+
         this.gameEntityManagerServiceFieldReference = gameEntityManagerServiceParameterValue;
         this.leagueReferenceIdentifierFieldReference = leagueReferenceIdentifierParameterValue;
         this.intervalFieldReference = intervalParameterValue;
         this.isPlayingFieldReference = false;
         this.configFieldReference = configParameterValue;
     }
-    /**
-     * Método que ejecuta el hilo. Revisa continuamente los partidos en función del intervalo definido.
-     */
+
+    // Método que se ejecuta cuando se lanza el hilo
     public void run() {
         while (true) {
             revisarPartits();
+
             try {
                 Thread.sleep(intervalFieldReference);
             } catch (InterruptedException eventArgumentExceptionParameter) {
@@ -52,31 +62,66 @@ public class MatchRunner implements Runnable {
         }
     }
 
-    /**
-     * Revisa los partidos de la liga y actualiza su estado si ha llegado la hora de inicio
-     * y el partido aún no ha comenzado ni terminado.
-     */
-private void revisarPartits() {
-    LocalDateTime ahoraLocalVariableValue = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-    ArrayList<Game> listaPartidosLocalVariableValue = gameEntityManagerServiceFieldReference.getGamesByLeague(leagueReferenceIdentifierFieldReference);
+    // Revisa los partidos de la liga y comprueba si alguno debe empezar
+    private void revisarPartits() {
+        LocalDateTime ahoraLocalVariableValue =
+                LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 
-    for (Game partidoLocalVariableValue : listaPartidosLocalVariableValue) {
-        LocalDateTime inicioPartidoLocalVariableValue = partidoLocalVariableValue.getData();
-        LocalDateTime finPartidoLocalVariableValue = inicioPartidoLocalVariableValue.plusMinutes(configFieldReference.getDurationMatch());
+        ArrayList<Game> listaPartidosLocalVariableValue =
+                gameEntityManagerServiceFieldReference.getGamesByLeague(
+                        leagueReferenceIdentifierFieldReference
+                );
 
-        boolean noHaEmpezadoLocalVariableValue = !partidoLocalVariableValue.isComençat();
-        boolean haLlegadoHoraInicioLocalVariableValue = !ahoraLocalVariableValue.isBefore(inicioPartidoLocalVariableValue);
-        boolean aunNoHaTerminadoLocalVariableValue = ahoraLocalVariableValue.isBefore(finPartidoLocalVariableValue);
+        for (Game partidoLocalVariableValue : listaPartidosLocalVariableValue) {
+            LocalDateTime inicioPartidoLocalVariableValue = partidoLocalVariableValue.getData();
+            LocalDateTime finPartidoLocalVariableValue =
+                    inicioPartidoLocalVariableValue.plusMinutes(
+                            configFieldReference.getDurationMatch()
+                    );
 
-        if (noHaEmpezadoLocalVariableValue && haLlegadoHoraInicioLocalVariableValue && aunNoHaTerminadoLocalVariableValue) {
-            int identifierPartidoLocalVariableValue = gameEntityManagerServiceFieldReference.getGameIdByLeague(partidoLocalVariableValue.getNomLocal(), partidoLocalVariableValue.getNomVisitant(), leagueReferenceIdentifierFieldReference);
-            gameEntityManagerServiceFieldReference.actualitzaComençat(identifierPartidoLocalVariableValue, true);
+            boolean noHaEmpezadoLocalVariableValue = !partidoLocalVariableValue.isComençat();
+            boolean haLlegadoHoraInicioLocalVariableValue =
+                    !ahoraLocalVariableValue.isBefore(inicioPartidoLocalVariableValue);
+            boolean aunNoHaTerminadoLocalVariableValue =
+                    ahoraLocalVariableValue.isBefore(finPartidoLocalVariableValue);
 
-            System.out.println("¡Partido iniciado! " + partidoLocalVariableValue.getNomLocal() + " vs " + partidoLocalVariableValue.getNomVisitant());
-            List<String[]> liveMatchesLocalVariableValue = gameEntityManagerServiceFieldReference.getLiveGames();
-            LiveMatchController liveMatchViewInterfaceLocalVariableValue = new LiveMatchController(partidoLocalVariableValue, configFieldReference, gameEntityManagerServiceFieldReference, identifierPartidoLocalVariableValue, leagueReferenceIdentifierFieldReference);
+            // Si el partido todavía no ha empezado pero ya toca jugarlo, se marca como iniciado
+            if (noHaEmpezadoLocalVariableValue
+                    && haLlegadoHoraInicioLocalVariableValue
+                    && aunNoHaTerminadoLocalVariableValue) {
+
+                int identifierPartidoLocalVariableValue =
+                        gameEntityManagerServiceFieldReference.getGameIdByLeague(
+                                partidoLocalVariableValue.getNomLocal(),
+                                partidoLocalVariableValue.getNomVisitant(),
+                                leagueReferenceIdentifierFieldReference
+                        );
+
+                gameEntityManagerServiceFieldReference.actualitzaComençat(
+                        identifierPartidoLocalVariableValue,
+                        true
+                );
+
+                System.out.println(
+                        "¡Partido iniciado! "
+                                + partidoLocalVariableValue.getNomLocal()
+                                + " vs "
+                                + partidoLocalVariableValue.getNomVisitant()
+                );
+
+                List<String[]> liveMatchesLocalVariableValue =
+                        gameEntityManagerServiceFieldReference.getLiveGames();
+
+                // Se crea el controlador que se encargará de simular o gestionar el partido en directo
+                LiveMatchController liveMatchViewInterfaceLocalVariableValue =
+                        new LiveMatchController(
+                                partidoLocalVariableValue,
+                                configFieldReference,
+                                gameEntityManagerServiceFieldReference,
+                                identifierPartidoLocalVariableValue,
+                                leagueReferenceIdentifierFieldReference
+                        );
+            }
         }
     }
-}
-
 }

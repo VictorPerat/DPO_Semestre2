@@ -15,6 +15,7 @@ import java.util.List;
  * La tabla muestra columnas con datos del jugador como DNI, nombre, email, equipo, dorsal y teléfono.
  */
 public class TeamDetailView extends JFrame {
+    // Botones de cabecera para volver o abrir configuracion
     private final JButton backButtonFieldReference;
     private final JButton configButtonFieldReference;
 

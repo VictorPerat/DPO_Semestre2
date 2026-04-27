@@ -6,21 +6,21 @@ import java.sql.*;
 import java.util.ArrayList;
 
 /**
- * DAO de jugadores adaptado a la base de datos nueva:
- * players, teams y player_teams.
+ * Esta clase se encarga de acceder a los datos de los jugadores en la base de datos.
  */
 public class PlayerDao {
 
+    // Devuelve todos los jugadores guardados
     public ArrayList<Player> getAllPlayers() {
         ArrayList<Player> playersLocalVariableValue = new ArrayList<>();
 
         String queryLocalVariableValue =
                 "SELECT p.id, p.name, p.email, p.dni, p.password, p.dorsal, p.phone, " +
-                "COALESCE(MIN(t.name), '') AS team_name " +
-                "FROM players p " +
-                "LEFT JOIN player_teams pt ON pt.player_id = p.id " +
-                "LEFT JOIN teams t ON t.id = pt.team_id " +
-                "GROUP BY p.id, p.name, p.email, p.dni, p.password, p.dorsal, p.phone";
+                        "COALESCE(MIN(t.name), '') AS team_name " +
+                        "FROM players p " +
+                        "LEFT JOIN player_teams pt ON pt.player_id = p.id " +
+                        "LEFT JOIN teams t ON t.id = pt.team_id " +
+                        "GROUP BY p.id, p.name, p.email, p.dni, p.password, p.dorsal, p.phone";
 
         try (Connection connectionLocalVariableValue =
                      DatabaseConnector.getInstance().getConnection();
@@ -39,15 +39,16 @@ public class PlayerDao {
         return playersLocalVariableValue;
     }
 
+    // Busca un jugador usando su DNI o su email
     public Player findPlayerByIdentifier(String identifierParameterValue) {
         String queryLocalVariableValue =
                 "SELECT p.id, p.name, p.email, p.dni, p.password, p.dorsal, p.phone, " +
-                "COALESCE(MIN(t.name), '') AS team_name " +
-                "FROM players p " +
-                "LEFT JOIN player_teams pt ON pt.player_id = p.id " +
-                "LEFT JOIN teams t ON t.id = pt.team_id " +
-                "WHERE p.dni = ? OR p.email = ? " +
-                "GROUP BY p.id, p.name, p.email, p.dni, p.password, p.dorsal, p.phone";
+                        "COALESCE(MIN(t.name), '') AS team_name " +
+                        "FROM players p " +
+                        "LEFT JOIN player_teams pt ON pt.player_id = p.id " +
+                        "LEFT JOIN teams t ON t.id = pt.team_id " +
+                        "WHERE p.dni = ? OR p.email = ? " +
+                        "GROUP BY p.id, p.name, p.email, p.dni, p.password, p.dorsal, p.phone";
 
         try (Connection connectionLocalVariableValue =
                      DatabaseConnector.getInstance().getConnection();
@@ -70,6 +71,7 @@ public class PlayerDao {
         return null;
     }
 
+    // Comprueba si ya existe un jugador con ese DNI o email
     public boolean existsByDniOrEmail(String nationalIdentityDocumentParameterValue, String emailAddressParameterValue) {
         String queryLocalVariableValue = "SELECT COUNT(*) FROM players WHERE dni = ? OR email = ?";
 
@@ -94,6 +96,7 @@ public class PlayerDao {
         return false;
     }
 
+    // Borra un jugador usando su DNI
     public boolean deletePlayer(String nationalIdentityDocumentParameterValue) {
         String queryLocalVariableValue = "DELETE FROM players WHERE dni = ?";
 
@@ -111,6 +114,7 @@ public class PlayerDao {
         }
     }
 
+    // Actualiza la contraseña de un jugador
     public boolean updatePassword(String identifierParameterValue, String newUserPasswordParameterValue) {
         String queryLocalVariableValue =
                 "UPDATE players SET password = ? WHERE dni = ? OR email = ?";
@@ -132,6 +136,7 @@ public class PlayerDao {
         }
     }
 
+    // Inserta un jugador nuevo en la base de datos
     public boolean insertPlayer(Player playerProfileParameterValue) {
         String searchTeamQueryLocalVariableValue = "SELECT id FROM teams WHERE name = ?";
         String insertTeamQueryLocalVariableValue = "INSERT INTO teams (name) VALUES (?)";
@@ -149,6 +154,7 @@ public class PlayerDao {
 
             int teamIdLocalVariableValue = -1;
 
+            // Busca si el equipo ya existe
             try (PreparedStatement searchTeamStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(searchTeamQueryLocalVariableValue)) {
 
@@ -161,10 +167,13 @@ public class PlayerDao {
                 }
             }
 
+            // Si el equipo no existe, lo crea
             if (teamIdLocalVariableValue == -1) {
                 try (PreparedStatement insertTeamStatementLocalVariableValue =
-                             connectionLocalVariableValue.prepareStatement(insertTeamQueryLocalVariableValue,
-                                     Statement.RETURN_GENERATED_KEYS)) {
+                             connectionLocalVariableValue.prepareStatement(
+                                     insertTeamQueryLocalVariableValue,
+                                     Statement.RETURN_GENERATED_KEYS
+                             )) {
 
                     insertTeamStatementLocalVariableValue.setString(1, playerProfileParameterValue.getTeamId());
                     insertTeamStatementLocalVariableValue.executeUpdate();
@@ -180,9 +189,12 @@ public class PlayerDao {
 
             int playerIdLocalVariableValue;
 
+            // Inserta el jugador
             try (PreparedStatement insertPlayerStatementLocalVariableValue =
-                         connectionLocalVariableValue.prepareStatement(insertPlayerQueryLocalVariableValue,
-                                 Statement.RETURN_GENERATED_KEYS)) {
+                         connectionLocalVariableValue.prepareStatement(
+                                 insertPlayerQueryLocalVariableValue,
+                                 Statement.RETURN_GENERATED_KEYS
+                         )) {
 
                 insertPlayerStatementLocalVariableValue.setString(1, playerProfileParameterValue.getDniPlayer());
                 insertPlayerStatementLocalVariableValue.setString(2, playerProfileParameterValue.getNamePlayer());
@@ -201,6 +213,7 @@ public class PlayerDao {
                 }
             }
 
+            // Crea la relación entre el jugador y el equipo
             try (PreparedStatement insertRelationStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(insertRelationQueryLocalVariableValue)) {
 
@@ -215,6 +228,7 @@ public class PlayerDao {
 
         } catch (SQLException eventArgumentExceptionParameter) {
             eventArgumentExceptionParameter.printStackTrace();
+
             try {
                 if (connectionLocalVariableValue != null) {
                     connectionLocalVariableValue.rollback();
@@ -222,10 +236,12 @@ public class PlayerDao {
                 }
             } catch (SQLException ignoredParameterValue) {
             }
+
             return false;
         }
     }
 
+    // Convierte una fila del ResultSet en un objeto Player
     private Player mapPlayer(ResultSet resultLocalVariableValue) throws SQLException {
         String displayNameLocalVariableValue = resultLocalVariableValue.getString("name");
         String emailAddressLocalVariableValue = resultLocalVariableValue.getString("email");
@@ -236,13 +252,17 @@ public class PlayerDao {
         String phoneRawLocalVariableValue = resultLocalVariableValue.getString("phone");
 
         int phoneNumberLocalVariableValue = 0;
+
+        // Limpia el teléfono para quedarse solo con números
         if (phoneRawLocalVariableValue != null) {
             String digitsLocalVariableValue = phoneRawLocalVariableValue.replaceAll("\\D", "");
+
             if (!digitsLocalVariableValue.isEmpty()) {
                 if (digitsLocalVariableValue.length() > 9) {
                     digitsLocalVariableValue =
                             digitsLocalVariableValue.substring(digitsLocalVariableValue.length() - 9);
                 }
+
                 phoneNumberLocalVariableValue = Integer.parseInt(digitsLocalVariableValue);
             }
         }

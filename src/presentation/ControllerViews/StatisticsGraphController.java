@@ -8,7 +8,7 @@ import bussines.objects.League;
 import bussines.objects.Player;
 import bussines.objects.Team;
 import bussines.objects.TeamInfo;
-import presentation.Views.ChangePasswordView;
+import presentation.AppNavigator;
 import presentation.Views.StatisticsGraphView;
 
 import javax.swing.*;
@@ -212,21 +212,20 @@ public class StatisticsGraphController implements ActionListener {
     }
 
     /**
-     * Abre la vista para cambiar la contraseña del usuario actual.
+     * Abre la vista para cambiar la contraseña a través del navegador,
+     * registrando el retorno a la vista de estadísticas al finalizar.
      */
     private void openChangePasswordView() {
-        ChangePasswordView changeUserPasswordViewInterfaceLocalVariableValue =
-                new ChangePasswordView();
+        final StatisticsGraphView previousScreenLocalVariableValue =
+                viewInterfaceFieldReference;
+        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
 
-        viewInterfaceFieldReference.setVisible(false);
-
-        new ChangePasswordController(
-                changeUserPasswordViewInterfaceLocalVariableValue,
-                menuControllerHandlerFieldReference.getPlayerManager(),
-                viewInterfaceFieldReference
-        );
-
-        changeUserPasswordViewInterfaceLocalVariableValue.setVisible(true);
+        previousScreenLocalVariableValue.setVisible(false);
+        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
+            navigatorLocalVariableValue.hideMainWindow();
+            previousScreenLocalVariableValue.setVisible(true);
+        });
+        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
     }
 
 }

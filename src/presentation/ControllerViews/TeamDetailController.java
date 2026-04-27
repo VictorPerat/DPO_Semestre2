@@ -8,43 +8,39 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- * Controlador para la vista de detalles de un equipo.
- * Gestiona la interacción de usuario, especialmente el botón de volver atrás.
- */
+// Controlador simple para cerrar el detalle de un equipo y volver atras
 public class TeamDetailController implements ActionListener {
+
+    // Vista actual con el detalle del equipo
     private final TeamDetailView viewInterfaceFieldReference;
+
+    // Vista anterior a la que se vuelve al cerrar esta pantalla
     private final LeagueDetailView previousViewInterfaceFieldReference;
 
-    /**
-     * Constructor que recibe la vista actual y la vista previa a la que se debe volver.
-     *
-     * @param view Vista de detalle del equipo.
-     * @param previousView Vista anterior (detalle de liga) para mostrar al cerrar esta vista.
-     */
-    public TeamDetailController(TeamDetailView viewInterfaceParameterValue, LeagueDetailView previousViewInterfaceParameterValue) {
+    // Guarda la vista actual y la pantalla que debe restaurarse despues
+    public TeamDetailController(TeamDetailView viewInterfaceParameterValue,
+                                LeagueDetailView previousViewInterfaceParameterValue) {
         this.viewInterfaceFieldReference = viewInterfaceParameterValue;
         this.previousViewInterfaceFieldReference = previousViewInterfaceParameterValue;
     }
 
-    /**
-     * Maneja eventos de acción, como el clic en el botón de volver.
-     *
-     * @param e Evento de acción generado.
-     */
+    // Atiende el boton de volver de la vista
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
 
         switch (commandLocalVariableValue) {
             case TeamDetailView.BACK:
-                Window windowLocalVariableValue = SwingUtilities.getWindowAncestor(viewInterfaceFieldReference);
-                if (windowLocalVariableValue != null) windowLocalVariableValue.dispose();
+                Window windowLocalVariableValue =
+                        SwingUtilities.getWindowAncestor(viewInterfaceFieldReference);
+
+                // Cerramos la ventana del detalle y recuperamos la vista anterior
+                if (windowLocalVariableValue != null) {
+                    windowLocalVariableValue.dispose();
+                }
                 this.viewInterfaceFieldReference.dispose();
                 previousViewInterfaceFieldReference.setVisible(true);
                 break;
-
         }
     }
 }
-

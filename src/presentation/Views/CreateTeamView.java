@@ -1,5 +1,7 @@
 package presentation.Views;
 
+import shared.ProjectPathResolver;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -107,7 +109,7 @@ public class CreateTeamView extends JFrame {
         JPanel containerLocalVariableValue = new JPanel(new BorderLayout());
         containerLocalVariableValue.setBackground(BACKGROUND);
 
-        File teamsDirLocalVariableValue = new File(TEAMS_DIR);
+        File teamsDirLocalVariableValue = getTeamsDirectory();
         if (!teamsDirLocalVariableValue.exists()) teamsDirLocalVariableValue.mkdirs();
 
         filesPanelFieldReference = new JPanel();
@@ -161,7 +163,7 @@ public class CreateTeamView extends JFrame {
         headerPanelLocalVariableValue.add(headerLabelLocalVariableValue, BorderLayout.CENTER);
         filesPanelFieldReference.add(headerPanelLocalVariableValue);
 
-        File[] filesLocalVariableValue = new File(TEAMS_DIR).listFiles();
+        File[] filesLocalVariableValue = getTeamsDirectory().listFiles();
         if (filesLocalVariableValue != null) {
             for (File fileLocalVariableValue : filesLocalVariableValue) {
                 if (fileLocalVariableValue.isFile() && fileLocalVariableValue.getName().toLowerCase().endsWith(".json")) {
@@ -206,4 +208,8 @@ public class CreateTeamView extends JFrame {
      * @param listener Consumer que acepta un archivo seleccionado.
      */
     public void setFileUploadListener(Consumer<File> listenerParameterValue4) { this.fileUploadListenerFieldReference = listenerParameterValue4; }
+
+    private File getTeamsDirectory() {
+        return ProjectPathResolver.resolveProjectFile(TEAMS_DIR);
+    }
 }

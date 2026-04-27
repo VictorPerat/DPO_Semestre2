@@ -1,7 +1,7 @@
 package presentation.ControllerViews;
 
+import presentation.AppNavigator;
 import presentation.Views.CalendarView;
-import presentation.Views.ChangePasswordView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -10,33 +10,31 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Controlador para la pantalla del calendario.
- * Maneja eventos de acción como volver al menú principal, abrir configuraciones, y gestión de cuenta.
+ * Esta clase se encarga de controlar la pantalla del calendario.
  */
 public class CalendarController implements ActionListener {
 
-    /**
-     * Vista del calendario gestionada por este controlador.
-     */
+    // Vista del calendario
     private CalendarView calendarScreenInterfaceFieldReference;
 
-    /**
-     * Controlador del menú de administración para navegación y acciones globales.
-     */
+    // Controlador del menú de admin para volver atrás o cerrar sesión
     private AdminMenuController adminMenuControllerHandlerFieldReference;
 
+    // Constructor que conecta la vista con este controlador
+    public CalendarController(CalendarView calendarScreenInterfaceParameterValue,
+                              AdminMenuController adminMenuControllerHandlerParameterValue) {
 
-    public CalendarController(CalendarView calendarScreenInterfaceParameterValue, AdminMenuController adminMenuControllerHandlerParameterValue) {
         this.calendarScreenInterfaceFieldReference = calendarScreenInterfaceParameterValue;
         this.adminMenuControllerHandlerFieldReference = adminMenuControllerHandlerParameterValue;
 
         this.calendarScreenInterfaceFieldReference.registerController(this);
     }
 
-
+    // Gestiona las acciones que llegan desde la vista
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
+
         switch (commandLocalVariableValue) {
             case CalendarView.BACK:
                 handleBack();
@@ -47,18 +45,16 @@ public class CalendarController implements ActionListener {
         }
     }
 
-    /**
-     * Maneja la acción de volver al menú principal, cerrando la vista actual.
-     */
+    // Cierra la pantalla del calendario
     private void handleBack() {
         calendarScreenInterfaceFieldReference.dispose();
     }
 
-    /**
-     * Muestra un diálogo de configuración con opciones de usuario.
-     */
+    // Muestra el diálogo de configuración
     private void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = new Rounded.ConfigDialog(calendarScreenInterfaceFieldReference);
+        Rounded.ConfigDialog configDialogLocalVariableValue =
+                new Rounded.ConfigDialog(calendarScreenInterfaceFieldReference);
+
         configDialogLocalVariableValue.registerController(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent eventArgumentParameterValue2) {
@@ -66,14 +62,16 @@ public class CalendarController implements ActionListener {
                 handleConfigAction(eventArgumentParameterValue2.getActionCommand());
             }
         });
+
+        // Botón para volver atrás
         configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue3 -> {
             configDialogLocalVariableValue.dispose();
-            //leagueDetail.setVisible(true);
         });
+
         configDialogLocalVariableValue.setVisible(true);
     }
 
-
+    // Gestiona la opción elegida dentro del panel de configuración
     private void handleConfigAction(String actionParameterValue) {
         switch (actionParameterValue) {
             case Rounded.ConfigDialog.LOGOUT:
@@ -88,52 +86,53 @@ public class CalendarController implements ActionListener {
         }
     }
 
-
+    // Convierte una fecha y hora a String con un formato concreto
     public static String formatDateTime(LocalDateTime dateTimeParameterValue) {
-        DateTimeFormatter formatterLocalVariableValue = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatterLocalVariableValue =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         return dateTimeParameterValue.format(formatterLocalVariableValue);
     }
 
-    /**
-     * Maneja el cierre de sesión, cerrando la vista actual y delegando al controlador padre.
-     */
+    // Cierra el calendario y delega el logout al controlador de admin
     private void handleLogout() {
         calendarScreenInterfaceFieldReference.dispose();
         adminMenuControllerHandlerFieldReference.handleLogout();
     }
 
-    /**
-     * Pregunta al usuario para confirmar eliminación de cuenta, y la elimina si confirma.
-     */
+    // Pregunta si el usuario quiere borrar la cuenta
     private void handleDeleteAccount() {
         int confirmLocalVariableValue = JOptionPane.showConfirmDialog(
                 calendarScreenInterfaceFieldReference,
                 "Are you sure you want to delete your account? This action cannot be undone.",
                 "Confirm Deletion",
                 JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
+                JOptionPane.WARNING_MESSAGE
+        );
 
         if (confirmLocalVariableValue == JOptionPane.YES_OPTION) {
-            JOptionPane.showMessageDialog(calendarScreenInterfaceFieldReference, "Account deleted successfully");
+            JOptionPane.showMessageDialog(
+                    calendarScreenInterfaceFieldReference,
+                    "Account deleted successfully"
+            );
             handleLogout();
         }
     }
 
-    /**
-     * Abre la vista para cambiar la contraseña, registrando su controlador.
-     */
+    // Abre la pantalla de cambiar contraseña y guarda la acción de vuelta
     private void openChangePasswordView() {
-        ChangePasswordView changeUserPasswordViewInterfaceLocalVariableValue =
-                new ChangePasswordView();
+        final CalendarView previousScreenLocalVariableValue =
+                calendarScreenInterfaceFieldReference;
 
-        calendarScreenInterfaceFieldReference.setVisible(false);
+        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
 
-        new ChangePasswordController(
-                changeUserPasswordViewInterfaceLocalVariableValue,
-                adminMenuControllerHandlerFieldReference.getPlayerManager(),
-                calendarScreenInterfaceFieldReference
-        );
+        previousScreenLocalVariableValue.setVisible(false);
 
-        changeUserPasswordViewInterfaceLocalVariableValue.setVisible(true);
+        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
+            navigatorLocalVariableValue.hideMainWindow();
+            previousScreenLocalVariableValue.setVisible(true);
+        });
+
+        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
     }
 }

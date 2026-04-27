@@ -8,7 +8,9 @@ import bussines.objects.Game;
 import presentation.Views.CalendarView;
 import presentation.Views.CreateLeagueView;
 import presentation.Views.TeamSelectionView;
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -17,138 +19,180 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.awt.*;
 
-/**
- * Controlador para la vista de selección de equipos al crear una liga.
- * Gestiona la lógica para seleccionar equipos, crear la liga y abrir el calendario de partidos.
- */
+// Controlador que valida los equipos elegidos y crea la liga definitiva
 public class TeamSelectionController implements ActionListener {
-    private TeamSelectionView teamReferenceSelectionViewInterfaceFieldReference;
-    private CreateLeagueController createLeagueReferenceControllerHandlerFieldReference;
-    public static final String CREATE_LEAGUE = "CREATE_LEAGUE";
-    private LeagueManager leagueReferenceManagerServiceFieldReference = new LeagueManager();
-    private ArrayList<String> selectedTeamsFieldReference = new ArrayList<>();
-    private TeamManager teamReferenceManagerServiceFieldReference = new TeamManager();
-    private CreateLeagueView createLeagueReferenceViewInterfaceFieldReference;
-    private GameManager gameEntityManagerServiceFieldReference;
-    private int leagueReferenceIdentifierFieldReference;
-    TeamInfoManager informationTeamReferenceManagerServiceFieldReference = new TeamInfoManager();
 
-    /**
-     * Constructor que inicializa el controlador, registra eventos y configura el botón de volver.
-     *
-     * @param teamSelectionView Vista para seleccionar equipos.
-     * @param createLeagueController Controlador de la vista de creación de liga.
-     * @param createLeagueView Vista de creación de liga.
-     */
-    public TeamSelectionController(TeamSelectionView teamReferenceSelectionViewInterfaceParameterValue, CreateLeagueController createLeagueReferenceControllerHandlerParameterValue, CreateLeagueView createLeagueReferenceViewInterfaceParameterValue) {
-        this.teamReferenceSelectionViewInterfaceFieldReference = teamReferenceSelectionViewInterfaceParameterValue;
-        this.createLeagueReferenceControllerHandlerFieldReference = createLeagueReferenceControllerHandlerParameterValue;
-        this.createLeagueReferenceViewInterfaceFieldReference = createLeagueReferenceViewInterfaceParameterValue;
+    // Vista donde se mueven los equipos disponibles y seleccionados
+    private TeamSelectionView teamReferenceSelectionViewInterfaceFieldReference;
+
+    // Controlador y vista anteriores para recuperar datos del formulario
+    private CreateLeagueController createLeagueReferenceControllerHandlerFieldReference;
+    private CreateLeagueView createLeagueReferenceViewInterfaceFieldReference;
+
+    // Comando asociado al boton de crear liga
+    public static final String CREATE_LEAGUE = "CREATE_LEAGUE";
+
+    // Servicios necesarios para crear liga, equipos asociados y calendario
+    private LeagueManager leagueReferenceManagerServiceFieldReference = new LeagueManager();
+    private TeamManager teamReferenceManagerServiceFieldReference = new TeamManager();
+    private GameManager gameEntityManagerServiceFieldReference;
+    TeamInfoManager informationTeamReferenceManagerServiceFieldReference =
+            new TeamInfoManager();
+
+    // Lista temporal de equipos seleccionados e identificador de la nueva liga
+    private ArrayList<String> selectedTeamsFieldReference = new ArrayList<>();
+    private int leagueReferenceIdentifierFieldReference;
+
+    // Registra la vista y deja preparado el boton de volver
+    public TeamSelectionController(
+            TeamSelectionView teamReferenceSelectionViewInterfaceParameterValue,
+            CreateLeagueController createLeagueReferenceControllerHandlerParameterValue,
+            CreateLeagueView createLeagueReferenceViewInterfaceParameterValue) {
+
+        this.teamReferenceSelectionViewInterfaceFieldReference =
+                teamReferenceSelectionViewInterfaceParameterValue;
+        this.createLeagueReferenceControllerHandlerFieldReference =
+                createLeagueReferenceControllerHandlerParameterValue;
+        this.createLeagueReferenceViewInterfaceFieldReference =
+                createLeagueReferenceViewInterfaceParameterValue;
         this.gameEntityManagerServiceFieldReference = new GameManager();
         this.teamReferenceSelectionViewInterfaceFieldReference.registerController(this);
 
-        this.teamReferenceSelectionViewInterfaceFieldReference.setBackButtonListener(eventArgumentParameterValue -> {
-            this.teamReferenceSelectionViewInterfaceFieldReference.dispose(); // Tanca la selecció d’equips
-            this.createLeagueReferenceViewInterfaceFieldReference.setVisible(true); // Torna a la vista anterior
-        });
+        this.teamReferenceSelectionViewInterfaceFieldReference.setBackButtonListener(
+                eventArgumentParameterValue -> {
+                    this.teamReferenceSelectionViewInterfaceFieldReference.dispose();
+                    this.createLeagueReferenceViewInterfaceFieldReference.setVisible(true);
+                }
+        );
     }
 
-    /**
-     * Maneja los eventos de acción generados en la vista.
-     * En particular, gestiona la creación de la liga tras validar equipos seleccionados.
-     *
-     * @param e Evento de acción generado.
-     */
+    // Atiende el boton de crear liga usando los datos del formulario anterior
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue2) {
         String commandLocalVariableValue = eventArgumentParameterValue2.getActionCommand();
-        String leagueReferenceDisplayNameLocalVariableValue = createLeagueReferenceControllerHandlerFieldReference.getLeagueName();
-        String startDateLocalVariableValue = createLeagueReferenceControllerHandlerFieldReference.getStartDate();
-        String startHourLocalVariableValue = createLeagueReferenceControllerHandlerFieldReference.getStartHour();
+        String leagueReferenceDisplayNameLocalVariableValue =
+                createLeagueReferenceControllerHandlerFieldReference.getLeagueName();
+        String startDateLocalVariableValue =
+                createLeagueReferenceControllerHandlerFieldReference.getStartDate();
+        String startHourLocalVariableValue =
+                createLeagueReferenceControllerHandlerFieldReference.getStartHour();
 
         switch (commandLocalVariableValue) {
             case CREATE_LEAGUE:
                 int correctTeamsLocalVariableValue = handleSelectTeams();
+
                 if (correctTeamsLocalVariableValue == 0) {
-                    teamReferenceSelectionViewInterfaceFieldReference.showMessageDialog("You must choose at least two teams");
-                }
-                else {
-                    leagueReferenceManagerServiceFieldReference.createLeague(leagueReferenceDisplayNameLocalVariableValue, startDateLocalVariableValue, selectedTeamsFieldReference);
-                    leagueReferenceIdentifierFieldReference = leagueReferenceManagerServiceFieldReference.getLeagueIdByName(leagueReferenceDisplayNameLocalVariableValue);
-                    for (String teamReferenceDisplayNameLocalVariableValue : selectedTeamsFieldReference) {
-                        int teamReferenceIdentifierLocalVariableValue = teamReferenceManagerServiceFieldReference.getTeamId(teamReferenceDisplayNameLocalVariableValue);
-                        informationTeamReferenceManagerServiceFieldReference.createInfoTeam(leagueReferenceIdentifierFieldReference, teamReferenceIdentifierLocalVariableValue, 0, 0, 0, 0);
+                    teamReferenceSelectionViewInterfaceFieldReference.showMessageDialog(
+                            "You must choose at least two teams"
+                    );
+                } else {
+                    leagueReferenceManagerServiceFieldReference.createLeague(
+                            leagueReferenceDisplayNameLocalVariableValue,
+                            startDateLocalVariableValue,
+                            selectedTeamsFieldReference
+                    );
+
+                    leagueReferenceIdentifierFieldReference =
+                            leagueReferenceManagerServiceFieldReference.getLeagueIdByName(
+                                    leagueReferenceDisplayNameLocalVariableValue
+                            );
+
+                    // Se crea el registro estadistico inicial de cada equipo en la liga
+                    for (String teamReferenceDisplayNameLocalVariableValue
+                            : selectedTeamsFieldReference) {
+                        int teamReferenceIdentifierLocalVariableValue =
+                                teamReferenceManagerServiceFieldReference.getTeamId(
+                                        teamReferenceDisplayNameLocalVariableValue
+                                );
+                        informationTeamReferenceManagerServiceFieldReference.createInfoTeam(
+                                leagueReferenceIdentifierFieldReference,
+                                teamReferenceIdentifierLocalVariableValue,
+                                0,
+                                0,
+                                0,
+                                0
+                        );
                     }
-                    handleCreateLeague(startDateLocalVariableValue, startHourLocalVariableValue);
+
+                    handleCreateLeague(
+                            startDateLocalVariableValue,
+                            startHourLocalVariableValue
+                    );
                 }
                 break;
         }
     }
 
-    /**
-     * Combina la fecha y hora dadas en cadenas para crear un objeto LocalDateTime.
-     *
-     * @param startDate Fecha en formato "yyyy-MM-dd".
-     * @param startHour Hora en formato "HH:mm".
-     * @return Objeto LocalDateTime que representa la combinación de fecha y hora.
-     */
-    public static LocalDateTime combineToDateTime(String startDateParameterValue, String startHourParameterValue) {
-        LocalDate dateLocalVariableValue = LocalDate.parse(startDateParameterValue);     // formato: "yyyy-MM-dd"
-        LocalTime timeLocalVariableValue = LocalTime.parse(startHourParameterValue);     // formato: "HH:mm"
+    // Combina la fecha y la hora escritas en el formulario
+    public static LocalDateTime combineToDateTime(String startDateParameterValue,
+                                                  String startHourParameterValue) {
+        LocalDate dateLocalVariableValue = LocalDate.parse(startDateParameterValue);
+        LocalTime timeLocalVariableValue = LocalTime.parse(startHourParameterValue);
         return LocalDateTime.of(dateLocalVariableValue, timeLocalVariableValue);
     }
 
-    /**
-     * Gestiona la creación de la liga, generando los partidos y mostrando el calendario.
-     *
-     * @param startDate Fecha de inicio de la liga.
-     * @param startHour Hora de inicio de la liga.
-     */
-    public void handleCreateLeague(String startDateParameterValue2, String startHourParameterValue2) {
-        LocalDateTime resultLocalVariableValue = combineToDateTime(startDateParameterValue2, startHourParameterValue2);
+    // Genera los partidos, abre el calendario y define que hacer al cerrarlo
+    public void handleCreateLeague(String startDateParameterValue2,
+                                   String startHourParameterValue2) {
+        LocalDateTime resultLocalVariableValue = combineToDateTime(
+                startDateParameterValue2,
+                startHourParameterValue2
+        );
 
-        //escribe en db
-        leagueReferenceManagerServiceFieldReference.generateAndInsertMatchesForLeague(selectedTeamsFieldReference, leagueReferenceIdentifierFieldReference, resultLocalVariableValue);
+        // Se escriben los partidos de la nueva liga en la base de datos
+        leagueReferenceManagerServiceFieldReference.generateAndInsertMatchesForLeague(
+                selectedTeamsFieldReference,
+                leagueReferenceIdentifierFieldReference,
+                resultLocalVariableValue
+        );
         System.out.println("This is the league ID" + leagueReferenceIdentifierFieldReference);
 
-        ArrayList<Game> gamesLocalVariableValue = gameEntityManagerServiceFieldReference.getGamesByLeague(leagueReferenceIdentifierFieldReference);
-        CalendarView calendarScreenInterfaceLocalVariableValue = new CalendarView(selectedTeamsFieldReference, gamesLocalVariableValue);
-        calendarScreenInterfaceLocalVariableValue.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        // Listener para cuando se cierre el calendario
-        calendarScreenInterfaceLocalVariableValue.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent eventArgumentParameterValue3) {
-                createLeagueReferenceControllerHandlerFieldReference.getAdminMenuController().showAdminMenu();
-            }
-        });
+        ArrayList<Game> gamesLocalVariableValue =
+                gameEntityManagerServiceFieldReference.getGamesByLeague(
+                        leagueReferenceIdentifierFieldReference
+                );
+
+        CalendarView calendarScreenInterfaceLocalVariableValue =
+                new CalendarView(selectedTeamsFieldReference, gamesLocalVariableValue);
+        calendarScreenInterfaceLocalVariableValue.setDefaultCloseOperation(
+                JFrame.DISPOSE_ON_CLOSE
+        );
+
+        // Cuando se cierre el calendario se vuelve al menu de admin
+        calendarScreenInterfaceLocalVariableValue.addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent eventArgumentParameterValue3) {
+                        createLeagueReferenceControllerHandlerFieldReference
+                                .getAdminMenuController()
+                                .showAdminMenu();
+                    }
+                }
+        );
 
         calendarScreenInterfaceLocalVariableValue.setVisible(true);
-
     }
 
-    /**
-     * Maneja la selección de equipos desde la vista.
-     * Valida que haya al menos dos equipos seleccionados.
-     *
-     * @return 0 si hay menos de dos equipos seleccionados, 1 si la selección es correcta.
-     */
+    // Lee los equipos movidos al panel derecho y valida que haya suficientes
     public int handleSelectTeams() {
-        for (Component compLocalVariableValue : teamReferenceSelectionViewInterfaceFieldReference.getAddedTeamsPanel().getComponents()) {
+        for (Component compLocalVariableValue
+                : teamReferenceSelectionViewInterfaceFieldReference
+                .getAddedTeamsPanel()
+                .getComponents()) {
+
             if (compLocalVariableValue instanceof JButton) {
-                selectedTeamsFieldReference.add(((JButton) compLocalVariableValue).getText());
+                selectedTeamsFieldReference.add(
+                        ((JButton) compLocalVariableValue).getText()
+                );
             }
         }
 
         if (selectedTeamsFieldReference.size() < 2) {
             return 0;
-        }
-        else {
+        } else {
             teamReferenceSelectionViewInterfaceFieldReference.dispose();
             return 1;
         }
-
-
     }
 }

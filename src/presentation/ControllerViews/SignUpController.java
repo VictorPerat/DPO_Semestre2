@@ -1,7 +1,7 @@
 package presentation.ControllerViews;
 
 import bussines.managers.PlayerManager;
-import presentation.Views.LoginView;
+import presentation.AppNavigator;
 import presentation.Views.SignUpView;
 
 import javax.swing.*;
@@ -12,15 +12,24 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 
 /**
- * Controlador simplificado para registro de usuarios.
+ * Controlador del registro.
+ *
+ * Refactorizado: usa {@link AppNavigator} para volver al login. Ya no
+ * crea ni destruye ventanas.
  */
 public class SignUpController implements ActionListener {
+
     private final SignUpView signUpViewInterfaceFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
+    private final AppNavigator navigatorFieldReference;
 
-    public SignUpController(SignUpView signUpViewInterfaceParameterValue, PlayerManager playerProfileManagerServiceParameterValue) {
+    public SignUpController(
+            SignUpView signUpViewInterfaceParameterValue,
+            PlayerManager playerProfileManagerServiceParameterValue,
+            AppNavigator navigatorParameterValue) {
         this.signUpViewInterfaceFieldReference = signUpViewInterfaceParameterValue;
         this.playerProfileManagerServiceFieldReference = playerProfileManagerServiceParameterValue;
+        this.navigatorFieldReference = navigatorParameterValue;
         this.signUpViewInterfaceFieldReference.registerController(this);
     }
 
@@ -29,7 +38,7 @@ public class SignUpController implements ActionListener {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
 
         if (SignUpView.BACK_TO_LOGIN.equals(commandLocalVariableValue)) {
-            openLoginView();
+            backToLogin();
             return;
         }
 
@@ -95,7 +104,7 @@ public class SignUpController implements ActionListener {
         }
 
         showCopyablePasswordDialog(generatedPasswordLocalVariableValue, nationalIdentityDocumentLocalVariableValue);
-        openLoginView();
+        backToLogin();
     }
 
     private void showCopyablePasswordDialog(String generatedPasswordParameterValue, String nationalIdentityDocumentParameterValue) {
@@ -124,17 +133,16 @@ public class SignUpController implements ActionListener {
         panelLocalVariableValue.add(copyButtonLocalVariableValue, BorderLayout.SOUTH);
 
         JOptionPane.showMessageDialog(
-                signUpViewInterfaceFieldReference,
+                SwingUtilities.getWindowAncestor(signUpViewInterfaceFieldReference),
                 panelLocalVariableValue,
                 "Registration",
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
 
-    private void openLoginView() {
-        signUpViewInterfaceFieldReference.dispose();
-        LoginView loginViewInterfaceLocalVariableValue = new LoginView();
-        new LoginController(loginViewInterfaceLocalVariableValue, playerProfileManagerServiceFieldReference);
+    private void backToLogin() {
+        signUpViewInterfaceFieldReference.clearForm();
+        navigatorFieldReference.show(AppNavigator.LOGIN);
     }
 
     private String generateRandomPassword(int lengthParameterValue) {

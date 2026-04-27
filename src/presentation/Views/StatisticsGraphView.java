@@ -21,6 +21,7 @@ public class StatisticsGraphView extends JFrame {
     private static final Color LIGHT_BLUE = new Color(195, 216, 236);
     private static final Color BACKGROUND = new Color(240, 240, 240);
 
+    // Paneles principales de la ventana
     private JPanel mainPanelFieldReference;
     private JPanel topPanelFieldReference;
     private JPanel chartContainerFieldReference;

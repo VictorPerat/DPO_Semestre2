@@ -8,6 +8,7 @@ import bussines.objects.League;
 import bussines.objects.Player;
 import bussines.objects.Team;
 import bussines.objects.TeamInfo;
+import presentation.AppNavigator;
 import presentation.Views.*;
 
 import javax.swing.*;
@@ -209,21 +210,20 @@ public class LeagueDetailController implements ActionListener {
     }
 
     /**
-     * Abre la vista para cambiar la contraseña.
+     * Abre la vista para cambiar la contraseña a través del navegador,
+     * registrando el retorno a la vista de detalle de liga al finalizar.
      */
     private void openChangePasswordView() {
-        ChangePasswordView changeUserPasswordViewInterfaceLocalVariableValue =
-                new ChangePasswordView();
+        final LeagueDetailView previousScreenLocalVariableValue =
+                viewInterfaceFieldReference;
+        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
 
-        viewInterfaceFieldReference.setVisible(false);
-
-        new ChangePasswordController(
-                changeUserPasswordViewInterfaceLocalVariableValue,
-                playerProfileManagerServiceFieldReference,
-                viewInterfaceFieldReference
-        );
-
-        changeUserPasswordViewInterfaceLocalVariableValue.setVisible(true);
+        previousScreenLocalVariableValue.setVisible(false);
+        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
+            navigatorLocalVariableValue.hideMainWindow();
+            previousScreenLocalVariableValue.setVisible(true);
+        });
+        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
     }
 
     /**

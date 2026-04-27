@@ -21,6 +21,7 @@ public class TeamSelectionView extends JFrame {
      */
     public static final String CREATE_LEAGUE = "CREATE_LEAGUE";
 
+    // Boton principal y paneles donde se mueven los equipos
     private JButton createLeagueReferenceButtonFieldReference;
     private JPanel availableTeamsPanelFieldReference;
     private JPanel addedTeamsPanelFieldReference;

@@ -1,6 +1,7 @@
 package presentation.Views;
 
 import presentation.ControllerViews.AdminMenuController;
+import shared.ProjectPathResolver;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +54,8 @@ public class AdminMenuView extends JFrame {
         headerPanelLocalVariableValue.setBackground(new Color(0, 30, 60));
         headerPanelLocalVariableValue.setPreferredSize(new Dimension(600, 60));
 
-        ImageIcon ballIconLocalVariableValue = new ImageIcon("S2-Project-E-LeagueManager-2/Project/photos/football.png");
+        ImageIcon ballIconLocalVariableValue =
+                new ImageIcon(ProjectPathResolver.resolveProjectPath("photos/football.png"));
         Image ballImageLocalVariableValue = ballIconLocalVariableValue.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon scaledBallIconLocalVariableValue = new ImageIcon(ballImageLocalVariableValue);
         JLabel leftBallLocalVariableValue = new JLabel(scaledBallIconLocalVariableValue);

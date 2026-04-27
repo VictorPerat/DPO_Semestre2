@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 import bussines.objects.League;
 import presentation.ControllerViews.MenuController;
+import shared.ProjectPathResolver;
 
 /**
  * Vista que muestra las ligas de fútbol disponibles.
@@ -94,7 +95,8 @@ public class AvailableLeaguesView extends JFrame {
         panelLocalVariableValue.add(backButtonLocalVariableValue, BorderLayout.WEST);
 
         // Íconos de pelota de fútbol
-        ImageIcon ballIconLocalVariableValue = new ImageIcon("S2-Project-E-LeagueManager-2/Project/photos/football.png");
+        ImageIcon ballIconLocalVariableValue =
+                new ImageIcon(ProjectPathResolver.resolveProjectPath("photos/football.png"));
         Image scaledLocalVariableValue = ballIconLocalVariableValue.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon scaledBallIconLocalVariableValue = new ImageIcon(scaledLocalVariableValue);
 
