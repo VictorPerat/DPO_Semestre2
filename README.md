@@ -49,34 +49,8 @@ Valores por defecto actuales:
 }
 ```
 
-Importante: este repositorio no incluye ahora mismo un archivo `.sql` con el esquema. Antes de ejecutar la aplicacion, asegurate de que la base de datos `leaguemanager` y sus tablas ya existen en tu instancia local de MySQL.
-
-## Ejecutar el proyecto
-
-1. Asegurate de que MySQL esta activo y que `dataconfig/config.Json` apunta a la base de datos correcta.
-2. Desde la raiz del proyecto, resuelve dependencias y compila:
-
-```bash
-mvn compile
-```
-
-3. Inicia la aplicacion de escritorio:
-
-```bash
-mvn exec:java
-```
-
-Si usas IntelliJ IDEA, abre la carpeta como proyecto Maven para que las dependencias se importen automaticamente.
-
-## Notas sobre dependencias
-
-- El proyecto antes dependia de archivos `.jar` locales configurados en IntelliJ.
-- Ahora esas librerias estan declaradas en `pom.xml`, asi que un clon limpio puede restaurarlas con Maven.
-- `.idea/`, `out/` y `target/` se ignoran porque son archivos locales o generados.
-
 ## Funcionalidades principales
 
 - Flujos de login, registro y perfil de usuario
 - Creacion de equipos a partir de archivos JSON en `data/teams`
 - Pantallas de gestion de ligas y partidos
-- Vistas de estadisticas y partidos en vivo
