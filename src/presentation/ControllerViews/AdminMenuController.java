@@ -273,17 +273,14 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
             @Override
             public void actionPerformed(ActionEvent eventArgumentParameterValue4) {
                 configDialogLocalVariableValue.dispose();
+                String cmd = eventArgumentParameterValue4.getActionCommand();
 
-                switch (eventArgumentParameterValue4.getActionCommand()) {
-                    case Rounded.ConfigDialog.LOGOUT:
-                        handleLogout();
-                        break;
-                    case Rounded.ConfigDialog.DELETE_ACCOUNT:
-                        handleDeleteAccount();
-                        break;
-                    case Rounded.ConfigDialog.CHANGE_PASSWORD:
-                        openChangePasswordView();
-                        break;
+                if (Rounded.ConfigDialog.LOGOUT.equals(cmd)) {
+                    handleLogout();
+                } else if (Rounded.ConfigDialog.DELETE_ACCOUNT.equals(cmd)) {
+                    handleDeleteAccount();
+                } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(cmd)) {
+                    openChangePasswordView();
                 }
             }
         });

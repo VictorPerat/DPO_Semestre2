@@ -24,11 +24,8 @@ public class ConfigDialog extends JDialog {
     private ActionListener backControllerHandlerFieldReference;
     private MenuController menuControllerHandlerFieldReference;
 
-    /** Acción para cerrar sesión */
-    public static final String LOGOUT = "LOGOUT_CONFIG";
-    /** Acción para eliminar cuenta */
+    public static final String LOGOUT = "LOGOUT";
     public static final String DELETE_ACCOUNT = "DELETE_ACCOUNT";
-    /** Acción para cambiar contraseña */
     public static final String CHANGE_PASSWORD = "CHANGE_PASSWORD";
 
     // Colores usados en la interfaz
