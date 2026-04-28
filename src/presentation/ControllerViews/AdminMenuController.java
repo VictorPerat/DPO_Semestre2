@@ -96,7 +96,7 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
 
     // Abre la pantalla de estadísticas
     public void handleStats() {
-        adminMenuViewInterfaceFieldReference.dispose();
+        adminMenuViewInterfaceFieldReference.setVisible(false);
         statisticsGraphViewInterfaceFieldReference = new StatisticsGraphView();
         statisticsGraphViewInterfaceFieldReference.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         new StatisticsGraphController(
@@ -109,7 +109,7 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
 
     // Abre la pantalla para crear una liga
     public void handleCreateLeague() {
-        adminMenuViewInterfaceFieldReference.dispose();
+        adminMenuViewInterfaceFieldReference.setVisible(false);
         createLeagueReferenceViewInterfaceFieldReference = new CreateLeagueView();
         createLeagueReferenceViewInterfaceFieldReference.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         new CreateLeagueController(createLeagueReferenceViewInterfaceFieldReference, this);
@@ -119,7 +119,7 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
     public void handleDeleteLeague() {
         ArrayList<League> leaguesLocalVariableValue = leagueReferenceManagerServiceFieldReference.getAllLeagues();
 
-        adminMenuViewInterfaceFieldReference.dispose();
+        adminMenuViewInterfaceFieldReference.setVisible(false);
         deleteLeagueReferenceViewInterfaceFieldReference = new DeleteLeagueView(leaguesLocalVariableValue);
         deleteLeagueReferenceViewInterfaceFieldReference.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         new DeleteLeagueController(deleteLeagueReferenceViewInterfaceFieldReference, this);
@@ -128,8 +128,8 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
 
     // Abre la pantalla para ver ligas
     public void handleViewLeagues() {
-        adminMenuViewInterfaceFieldReference.dispose();
-        AvailableLeaguesView viewInterfaceLocalVariableValue = new AvailableLeaguesView();
+        adminMenuViewInterfaceFieldReference.setVisible(false);
+        adminMenuViewInterfaceFieldReference.setVisible(false);        AvailableLeaguesView viewInterfaceLocalVariableValue = new AvailableLeaguesView();
         new AvailableLeaguesController(
                 viewInterfaceLocalVariableValue,
                 this,
@@ -140,8 +140,7 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
 
     // Cierra sesión y vuelve al login
     public void handleLogout() {
-        adminMenuViewInterfaceFieldReference.dispose();
-
+        adminMenuViewInterfaceFieldReference.setVisible(false);
         // Cierra posibles ventanas abiertas relacionadas con partidos o equipos
         for (Window windowLocalVariableValue : Window.getWindows()) {
             if (windowLocalVariableValue instanceof LiveMatchesView) {
@@ -186,7 +185,7 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
 
     // Abre la pantalla para borrar jugadores
     private void handleDeletePlayer() {
-        adminMenuViewInterfaceFieldReference.dispose();
+        adminMenuViewInterfaceFieldReference.setVisible(false);
         deletePlayerProfileViewInterfaceFieldReference = new DeletePlayerView();
         deletePlayerProfileViewInterfaceFieldReference.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         new DeletePlayerController(deletePlayerProfileViewInterfaceFieldReference, this);
@@ -195,7 +194,7 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
 
     // Abre la pantalla para borrar equipos
     private void handleDeleteTeam() {
-        adminMenuViewInterfaceFieldReference.dispose();
+        adminMenuViewInterfaceFieldReference.setVisible(false);
         deleteTeamReferenceScreenInterfaceFieldReference = new DeleteTeamView();
         deleteTeamReferenceScreenInterfaceFieldReference.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -264,8 +263,10 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
     // Muestra el panel de configuración del administrador
     public void showConfigDialog() {
         adminMenuViewInterfaceFieldReference.setVisible(false);
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(adminMenuViewInterfaceFieldReference);
+
         Rounded.ConfigDialog configDialogLocalVariableValue =
-                new Rounded.ConfigDialog(adminMenuViewInterfaceFieldReference);
+                new Rounded.ConfigDialog(parentFrame);
 
         // Opciones principales del diálogo
         configDialogLocalVariableValue.registerController(new ActionListener() {

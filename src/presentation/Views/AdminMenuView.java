@@ -16,7 +16,7 @@ import java.awt.event.ActionListener;
  * título grande con subrayado de acento, card central translúcida y
  * botones {@link Rounded.RoundedButton} grandes con gradiente.
  */
-public class AdminMenuView extends JFrame {
+public class AdminMenuView extends JPanel {
 
     // Botones de acción del menú
     private JButton createLeagueReferenceButtonFieldReference;
@@ -56,16 +56,9 @@ public class AdminMenuView extends JFrame {
             ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
     public AdminMenuView() {
-        setTitle("League Manager — Admin");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1280, 800));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setLocationRelativeTo(null);
-
+        setLayout(new BorderLayout());
         buildButtons();
-
-        setContentPane(buildBackgroundPanel());
-        setVisible(true);
+        add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
     /**

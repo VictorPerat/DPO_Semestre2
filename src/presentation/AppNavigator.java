@@ -22,7 +22,7 @@ public class AppNavigator {
     public static final String SIGNUP = "SIGNUP";
     public static final String PROFILE = "PROFILE";
     public static final String CHANGE_PASSWORD = "CHANGE_PASSWORD";
-
+    public static final String ADMIN_MENU = "ADMIN_MENU";
     private static AppNavigator instanceFieldReference;
 
     private final MainView mainViewInterfaceFieldReference;

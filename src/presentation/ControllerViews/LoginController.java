@@ -109,14 +109,7 @@ public class LoginController implements ActionListener {
      * (apartado 2.9), que el admin verá en todas las pantallas.
      */
     private void openAdminMenu() {
-        navigatorFieldReference.hideMainWindow();
-
-        AdminMenuView adminMenuViewInterfaceLocalVariableValue = new AdminMenuView();
-        new AdminMenuController(
-                adminMenuViewInterfaceLocalVariableValue,
-                playerProfileManagerServiceFieldReference
-        );
-        adminMenuViewInterfaceLocalVariableValue.setVisible(true);
+        navigatorFieldReference.show(AppNavigator.ADMIN_MENU);
 
         LiveMatchesWidgetService.show(
                 playerProfileManagerServiceFieldReference,
