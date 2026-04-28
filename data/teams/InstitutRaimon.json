@@ -1,0 +1,40 @@
+{
+  "team_name": "Institut Raimon",
+  "players": [
+    {
+      "name": "Mamoru Endou",
+      "email": "endou@raimon.jp",
+      "number": 1,
+      "dni": "11223344A",
+      "phone": "+34 600 400 001"
+    },
+    {
+      "name": "Shuuya Goenji",
+      "email": "goenji@raimon.jp",
+      "number": 10,
+      "dni": "22334455B",
+      "phone": "+34 600 400 002"
+    },
+    {
+      "name": "Yuuto Kidou",
+      "email": "kidou@raimon.jp",
+      "number": 14,
+      "dni": "33445566C",
+      "phone": "+34 600 400 003"
+    },
+    {
+      "name": "Mark Evans",
+      "email": "mark.evans@raimon.jp",
+      "number": 7,
+      "dni": "44556677D",
+      "phone": "+34 600 400 004"
+    },
+    {
+      "name": "Axel Blaze",
+      "email": "axel.blaze@raimon.jp",
+      "number": 8,
+      "dni": "55667788E",
+      "phone": "+34 600 400 005"
+    }
+  ]
+}

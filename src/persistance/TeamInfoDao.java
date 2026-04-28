@@ -10,10 +10,12 @@ import java.util.ArrayList;
  */
 public class TeamInfoDao {
 
-    // Inserta la información de un equipo en una liga
+    // Inserta la información de un equipo en una liga.
+    // Usamos INSERT IGNORE para que un duplicado (mismo league_id +
+    // team_id) no lance excepción y no rompa la creación de la liga.
     public void createInfoTeam(TeamInfo logicTeamParameterValue) {
         String queryLocalVariableValue =
-                "INSERT INTO league_teams (league_id, team_id, wins, defeats, ties, points) VALUES (?, ?, ?, ?, ?, ?)";
+                "INSERT IGNORE INTO league_teams (league_id, team_id, wins, defeats, ties, points) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connectionLocalVariableValue =
                      DatabaseConnector.getInstance().createConnection();
@@ -90,6 +92,61 @@ public class TeamInfoDao {
         }
 
         return informationTeamsLocalVariableValue;
+    }
+
+    /**
+     * Suma 1 a la columna indicada (wins, defeats, ties) del equipo
+     * dentro de la liga concreta. Solo se aceptan nombres de columna
+     * conocidos para evitar inyección SQL.
+     */
+    public void incrementCounter(String nomEquipParameterValue,
+                                 int lligaIdParameterValue,
+                                 String columnNameParameterValue) {
+
+        if (!"wins".equals(columnNameParameterValue)
+                && !"defeats".equals(columnNameParameterValue)
+                && !"ties".equals(columnNameParameterValue)) {
+            return;
+        }
+
+        String teamQueryLocalVariableValue = "SELECT id FROM teams WHERE name = ?";
+        String updateQueryLocalVariableValue =
+                "UPDATE league_teams SET " + columnNameParameterValue
+                        + " = " + columnNameParameterValue + " + 1"
+                        + " WHERE league_id = ? AND team_id = ?";
+
+        try (Connection connectionLocalVariableValue =
+                     DatabaseConnector.getInstance().createConnection()) {
+
+            int teamReferenceIdentifierLocalVariableValue = -1;
+
+            try (PreparedStatement preparedStatementLocalVariableValue =
+                         connectionLocalVariableValue.prepareStatement(teamQueryLocalVariableValue)) {
+
+                preparedStatementLocalVariableValue.setString(1, nomEquipParameterValue);
+
+                try (ResultSet resultLocalVariableValue = preparedStatementLocalVariableValue.executeQuery()) {
+                    if (resultLocalVariableValue.next()) {
+                        teamReferenceIdentifierLocalVariableValue = resultLocalVariableValue.getInt("id");
+                    }
+                }
+            }
+
+            if (teamReferenceIdentifierLocalVariableValue == -1) {
+                return;
+            }
+
+            try (PreparedStatement preparedStatementLocalVariableValue =
+                         connectionLocalVariableValue.prepareStatement(updateQueryLocalVariableValue)) {
+
+                preparedStatementLocalVariableValue.setInt(1, lligaIdParameterValue);
+                preparedStatementLocalVariableValue.setInt(2, teamReferenceIdentifierLocalVariableValue);
+                preparedStatementLocalVariableValue.executeUpdate();
+            }
+
+        } catch (SQLException eventArgumentExceptionParameter) {
+            eventArgumentExceptionParameter.printStackTrace();
+        }
     }
 
     // Añade puntos a un equipo dentro de una liga

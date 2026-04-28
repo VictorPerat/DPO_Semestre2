@@ -70,6 +70,9 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
                 windowLocalVariableValue.dispose();
             }
         }
+        // Cierra el widget de partidos en directo (apartado 2.9)
+        presentation.LiveMatchesWidgetService.hide();
+
         SwingUtilities.invokeLater(() -> {
             // Navegación centralizada al login (carta dentro de MainView).
             AppNavigator.getInstance().show(AppNavigator.LOGIN);

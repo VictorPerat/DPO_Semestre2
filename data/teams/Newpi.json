@@ -1,0 +1,40 @@
+{
+  "team_name": "Newpi",
+  "players": [
+    {
+      "name": "Benji Price",
+      "email": "b.price@newpi.edu",
+      "number": 1,
+      "dni": "82988129N",
+      "phone": "+34 600 100 001"
+    },
+    {
+      "name": "Oliver Atom",
+      "email": "oliver.atom@newpi.edu",
+      "number": 10,
+      "dni": "18135169Z",
+      "phone": "+34 600 100 002"
+    },
+    {
+      "name": "Bruce Harper",
+      "email": "bruce.harper@newpi.edu",
+      "number": 7,
+      "dni": "21458876J",
+      "phone": "+34 600 100 003"
+    },
+    {
+      "name": "Tom Misaki",
+      "email": "tom.misaki@newpi.edu",
+      "number": 14,
+      "dni": "33982245P",
+      "phone": "+34 600 100 004"
+    },
+    {
+      "name": "Ed Warner",
+      "email": "ed.warner@newpi.edu",
+      "number": 9,
+      "dni": "44217788V",
+      "phone": "+34 600 100 005"
+    }
+  ]
+}

@@ -44,6 +44,17 @@ public class GameManager {
         gameEntityDataAccessObjectFieldReference.finishGame(gameEntityIdentifierParameterValue2);
     }
 
+    /**
+     * Guarda el ganador del partido (o "DRAW" si fue empate). Esto
+     * permite reconstruir la evolución de puntos por jornada para el
+     * gráfico de estadísticas (apartado 2.7.1 del enunciado).
+     */
+    public void setGameWinner(int gameIdParameterValue, String winnerNameParameterValue) {
+        gameEntityDataAccessObjectFieldReference.setGameWinner(
+                gameIdParameterValue, winnerNameParameterValue
+        );
+    }
+
     // Comprueba si alguno de los equipos seleccionados está jugando ahora mismo
     public boolean teamIsPlaying(ArrayList<String> selectedTeamsParameterValue) {
         ArrayList<Game> gamesLocalVariableValue =

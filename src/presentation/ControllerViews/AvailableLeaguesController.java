@@ -2,6 +2,7 @@ package presentation.ControllerViews;
 
 import bussines.managers.*;
 import bussines.objects.League;
+import bussines.objects.LeagueListEntry;
 import bussines.objects.Team;
 import bussines.objects.TeamInfo;
 import presentation.AppNavigator;
@@ -39,6 +40,10 @@ public class AvailableLeaguesController implements ActionListener {
 
     // Lista de ligas cargadas actualmente
     private List<League> currentLeaguesFieldReference;
+
+    // Timer que refresca el listado en tiempo real (apartado 2.7)
+    private Timer autoRefreshTimerFieldReference;
+    private static final int AUTO_REFRESH_INTERVAL_MS = 5_000;
 
     // Managers usados para obtener la información necesaria
     private final LeagueManager leagueReferenceManagerServiceFieldReference;
@@ -117,6 +122,53 @@ public class AvailableLeaguesController implements ActionListener {
     // Configura algunos listeners básicos de la ventana
     private void setupListeners() {
         viewInterfaceFieldReference.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        // Cuando se cierra la vista, paramos el timer para no seguir
+        // consultando la BD en background. Al reactivarse (volver desde
+        // el detalle de una liga) lo volvemos a arrancar.
+        viewInterfaceFieldReference.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent eventArgumentParameterValue) {
+                stopAutoRefresh();
+            }
+
+            @Override
+            public void windowClosing(WindowEvent eventArgumentParameterValue) {
+                stopAutoRefresh();
+            }
+
+            @Override
+            public void windowActivated(WindowEvent eventArgumentParameterValue) {
+                startAutoRefresh();
+            }
+        });
+    }
+
+    /**
+     * Arranca el auto-refresh del listado de ligas. Se ejecuta en el
+     * EDT (javax.swing.Timer) para que se pueda actualizar la UI sin
+     * problemas de concurrencia.
+     */
+    private void startAutoRefresh() {
+        if (autoRefreshTimerFieldReference != null
+                && autoRefreshTimerFieldReference.isRunning()) {
+            return;
+        }
+        autoRefreshTimerFieldReference = new Timer(
+                AUTO_REFRESH_INTERVAL_MS,
+                eventArgumentParameterValueAuto -> loadAndDisplayLeagues()
+        );
+        autoRefreshTimerFieldReference.start();
+    }
+
+    /**
+     * Detiene el auto-refresh, normalmente al cerrar la vista.
+     */
+    private void stopAutoRefresh() {
+        if (autoRefreshTimerFieldReference != null) {
+            autoRefreshTimerFieldReference.stop();
+            autoRefreshTimerFieldReference = null;
+        }
     }
 
     // Cierra sesión y vuelve al login
@@ -223,38 +275,40 @@ public class AvailableLeaguesController implements ActionListener {
                 eventArgumentParameterValue2.getActionCommand();
     }
 
-    // Carga las ligas y las muestra en la vista
+    /**
+     * Carga las ligas (con su nº de equipos y estado actual) y las
+     * muestra en la vista. Asegura que el auto-refresh esté arrancado.
+     */
     private void loadAndDisplayLeagues() {
-        this.currentLeaguesFieldReference = buscaLigas(this.isAdminFieldReference);
+        String currentUserTeamLocalVariableValue = null;
+        if (!this.isAdminFieldReference
+                && playerProfileManagerServiceFieldReference != null
+                && playerProfileManagerServiceFieldReference.getCurrentPlayer() != null) {
+            currentUserTeamLocalVariableValue =
+                    playerProfileManagerServiceFieldReference.getCurrentPlayer().getTeam();
+        }
+
+        ArrayList<LeagueListEntry> entriesLocalVariableValue =
+                leagueReferenceManagerServiceFieldReference.getLeagueListEntries(
+                        this.isAdminFieldReference,
+                        currentUserTeamLocalVariableValue
+                );
+
+        // Cacheamos las League "puras" para mantener compatibilidad con
+        // openLeagueDetails y otros métodos que esperan List<League>.
+        ArrayList<League> rawLeaguesLocalVariableValue = new ArrayList<>();
+        for (LeagueListEntry entryLocalVariableValue : entriesLocalVariableValue) {
+            rawLeaguesLocalVariableValue.add(entryLocalVariableValue.getLeague());
+        }
+        this.currentLeaguesFieldReference = rawLeaguesLocalVariableValue;
 
         viewInterfaceFieldReference.displayLeagues(
-                this.currentLeaguesFieldReference,
+                entriesLocalVariableValue,
                 this.isAdminFieldReference,
                 this
         );
-    }
 
-    // Busca las ligas disponibles según el tipo de usuario
-    private List<League> buscaLigas(boolean isAdminParameterValue) {
-        List<League> leaguesLocalVariableValue = new ArrayList<>();
-
-        if (isAdminParameterValue) {
-            return leagueReferenceManagerServiceFieldReference.getAllLeagues();
-        } else {
-            if (playerProfileManagerServiceFieldReference != null
-                    && playerProfileManagerServiceFieldReference.getCurrentPlayer() != null) {
-
-                String teamReferenceDisplayNameLocalVariableValue =
-                        playerProfileManagerServiceFieldReference
-                                .getCurrentPlayer()
-                                .getTeam();
-
-                return leagueReferenceManagerServiceFieldReference.getLeaguesByUserTeam(
-                        teamReferenceDisplayNameLocalVariableValue
-                );
-            }
-        }
-
-        return leaguesLocalVariableValue;
+        // Asegura que el refresco automático está activo
+        startAutoRefresh();
     }
 }

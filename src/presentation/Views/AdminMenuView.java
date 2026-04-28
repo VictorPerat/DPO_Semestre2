@@ -4,13 +4,17 @@ import presentation.ControllerViews.AdminMenuController;
 import shared.ProjectPathResolver;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
 /**
- * Vista del menú principal para usuarios administradores.
- * Proporciona botones para gestionar ligas, equipos, jugadores, ver estadísticas y cerrar sesión.
- * Organiza los botones en una cuadrícula y tiene un encabezado estilizado.
+ * Vista del menú principal del administrador.
+ *
+ * Refactorizada visualmente (sin tocar API): mismo lenguaje gráfico
+ * que Login/SignUp — pantalla completa, fondo de imagen con overlay,
+ * título grande con subrayado de acento, card central translúcida y
+ * botones {@link Rounded.RoundedButton} grandes con gradiente.
  */
 public class AdminMenuView extends JFrame {
 
@@ -35,120 +39,256 @@ public class AdminMenuView extends JFrame {
     public static final String LOGOUT = "LOGOUT";
     public static final String DELETE_PLAYER = "DELETE_PLAYER";
     public static final String VIEW_GAMES = "VIEW_GAMES";
-//    public static final String SHOW_STATS = "SHOW_STATS";
 
-    /**
-     * Constructor que inicializa y construye la interfaz gráfica del menú de administrador.
-     */
+    // Paleta y dimensiones tomadas de Login/SignUp para mantener
+    // coherencia visual a lo largo de toda la aplicación.
+    private static final Color ACCENT_COLOR = new Color(55, 109, 230);
+    private static final Color TITLE_WHITE = new Color(245, 247, 250);
+    private static final Color SUBTITLE_WHITE = new Color(238, 241, 247);
+    private static final Color CARD_BORDER = new Color(44, 92, 214);
+    private static final Color LABEL_COLOR = new Color(108, 127, 154);
+    private static final Color PRIMARY_GRADIENT_TOP = new Color(64, 116, 226);
+    private static final Color PRIMARY_GRADIENT_BOTTOM = new Color(42, 85, 191);
+    private static final Color DANGER_GRADIENT_TOP = new Color(214, 73, 73);
+    private static final Color DANGER_GRADIENT_BOTTOM = new Color(170, 40, 40);
+
+    private static final String BACKGROUND_IMAGE_PATH =
+            ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
+
     public AdminMenuView() {
-        setTitle("MENU ADMIN");
-        //setSize(700, 500);
-        setSize(800, 500);
-        setResizable(true);
+        setTitle("League Manager — Admin");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(1280, 800));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
 
-        // Crear encabezado con título y bolas de fútbol
-        JPanel headerPanelLocalVariableValue = new JPanel(new BorderLayout());
-        headerPanelLocalVariableValue.setBackground(new Color(0, 30, 60));
-        headerPanelLocalVariableValue.setPreferredSize(new Dimension(600, 60));
+        buildButtons();
 
-        ImageIcon ballIconLocalVariableValue =
-                new ImageIcon(ProjectPathResolver.resolveProjectPath("photos/football.png"));
-        Image ballImageLocalVariableValue = ballIconLocalVariableValue.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-        ImageIcon scaledBallIconLocalVariableValue = new ImageIcon(ballImageLocalVariableValue);
-        JLabel leftBallLocalVariableValue = new JLabel(scaledBallIconLocalVariableValue);
-        JLabel rightBallLocalVariableValue = new JLabel(scaledBallIconLocalVariableValue);
-
-        JPanel centerPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        centerPanelLocalVariableValue.setOpaque(false);
-        JLabel titleLabelLocalVariableValue = new JLabel("MENU ADMIN");
-        titleLabelLocalVariableValue.setForeground(Color.WHITE);
-        titleLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 20));
-        centerPanelLocalVariableValue.add(leftBallLocalVariableValue);
-        centerPanelLocalVariableValue.add(titleLabelLocalVariableValue);
-        centerPanelLocalVariableValue.add(rightBallLocalVariableValue);
-
-        headerPanelLocalVariableValue.add(centerPanelLocalVariableValue, BorderLayout.CENTER);
-
-        // Botón de configuración
-        JButton configButtonLocalVariableValue = new JButton("⚙️");
-        configButtonLocalVariableValue.addActionListener(eventArgumentParameterValue -> {
-            if (controllerHandlerFieldReference != null) controllerHandlerFieldReference.showConfigDialog();
-        });
-        configButtonLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
-        configButtonLocalVariableValue.setContentAreaFilled(false);
-        configButtonLocalVariableValue.setForeground(Color.WHITE);
-        headerPanelLocalVariableValue.add(configButtonLocalVariableValue, BorderLayout.EAST);
-
-        // Crear y estilizar los botones
-        Dimension buttonSizeLocalVariableValue = new Dimension(200, 40);
-
-        createLeagueReferenceButtonFieldReference = createStyledButton("Create new league", buttonSizeLocalVariableValue);
-        deleteLeagueReferenceButtonFieldReference = createStyledButton("Delete league", buttonSizeLocalVariableValue);
-        viewInterfaceLeaguesButtonFieldReference = createStyledButton("View available leagues", buttonSizeLocalVariableValue);
-        createTeamReferenceButtonFieldReference = createStyledButton("Create new team", buttonSizeLocalVariableValue);
-        deleteTeamReferenceButtonFieldReference = createStyledButton("Delete team", buttonSizeLocalVariableValue);
-        deletePlayerProfileButtonFieldReference = createStyledButton("Delete player", buttonSizeLocalVariableValue);
-        viewInterfaceGamesButtonFieldReference = createStyledButton("View Games", buttonSizeLocalVariableValue);
-
-        logoutButtonFieldReference = new Rounded.RoundedButton("Logout", 15);
-        logoutButtonFieldReference.setBackground(new Color(180, 40, 40));
-        logoutButtonFieldReference.setForeground(Color.WHITE);
-        logoutButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 18));
-        logoutButtonFieldReference.setPreferredSize(buttonSizeLocalVariableValue);
-
-        // Panel de botones en una cuadrícula
-        JPanel buttonPanelLocalVariableValue = new JPanel(new GridLayout(4, 2, 20, 20));
-        buttonPanelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
-
-        buttonPanelLocalVariableValue.add(createLeagueReferenceButtonFieldReference);
-        buttonPanelLocalVariableValue.add(deleteLeagueReferenceButtonFieldReference);
-        buttonPanelLocalVariableValue.add(createTeamReferenceButtonFieldReference);
-        buttonPanelLocalVariableValue.add(deleteTeamReferenceButtonFieldReference);
-        buttonPanelLocalVariableValue.add(viewInterfaceLeaguesButtonFieldReference);
-        buttonPanelLocalVariableValue.add(viewInterfaceGamesButtonFieldReference);
-        buttonPanelLocalVariableValue.add(deletePlayerProfileButtonFieldReference);
-
-        // Panel para el botón de logout
-        JPanel logoutPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        logoutPanelLocalVariableValue.setOpaque(false);
-        logoutPanelLocalVariableValue.add(logoutButtonFieldReference);
-
-        // Panel principal
-        JPanel mainPanelLocalVariableValue = new JPanel(new BorderLayout());
-        mainPanelLocalVariableValue.add(buttonPanelLocalVariableValue, BorderLayout.CENTER);
-        mainPanelLocalVariableValue.add(logoutPanelLocalVariableValue, BorderLayout.SOUTH);
-
-        // Añadir paneles al frame principal
-        add(headerPanelLocalVariableValue, BorderLayout.NORTH);
-        add(mainPanelLocalVariableValue, BorderLayout.CENTER);
-
+        setContentPane(buildBackgroundPanel());
         setVisible(true);
     }
 
     /**
-     * Crea un botón estilizado con fondo azul y bordes redondeados.
-     *
-     * @param text Texto que mostrará el botón.
-     * @param size Tamaño preferido del botón.
-     * @return JButton estilizado.
+     * Crea las instancias de los botones (sin layout aún) para que
+     * puedan ser referenciadas tanto al construir el panel como al
+     * registrar el listener desde fuera.
      */
-    private JButton createStyledButton(String textParameterValue, Dimension sizeParameterValue) {
-        JButton buttonLocalVariableValue = new Rounded.RoundedButton(textParameterValue, 15);
-        buttonLocalVariableValue.setBackground(new Color(0, 30, 60));
+    private void buildButtons() {
+        createLeagueReferenceButtonFieldReference = buildPrimaryMenuButton("Create new league");
+        deleteLeagueReferenceButtonFieldReference = buildPrimaryMenuButton("Delete league");
+        viewInterfaceLeaguesButtonFieldReference = buildPrimaryMenuButton("View available leagues");
+        createTeamReferenceButtonFieldReference = buildPrimaryMenuButton("Create new team");
+        deleteTeamReferenceButtonFieldReference = buildPrimaryMenuButton("Delete team");
+        deletePlayerProfileButtonFieldReference = buildPrimaryMenuButton("Delete player");
+        viewInterfaceGamesButtonFieldReference = buildPrimaryMenuButton("View games");
+
+        logoutButtonFieldReference = new Rounded.RoundedButton("LOGOUT", 16);
+        Rounded.RoundedButton logoutLocalVariableValue =
+                (Rounded.RoundedButton) logoutButtonFieldReference;
+        logoutLocalVariableValue.setForeground(Color.WHITE);
+        logoutLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 22));
+        logoutLocalVariableValue.setPreferredSize(new Dimension(260, 56));
+        logoutLocalVariableValue.setGradientColors(DANGER_GRADIENT_TOP, DANGER_GRADIENT_BOTTOM);
+        logoutLocalVariableValue.setShadowEnabled(true);
+    }
+
+    private JButton buildPrimaryMenuButton(String labelTextParameterValue) {
+        Rounded.RoundedButton buttonLocalVariableValue =
+                new Rounded.RoundedButton(labelTextParameterValue, 16);
         buttonLocalVariableValue.setForeground(Color.WHITE);
-        buttonLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 18));
-        buttonLocalVariableValue.setPreferredSize(sizeParameterValue);
+        buttonLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 20));
+        buttonLocalVariableValue.setPreferredSize(new Dimension(0, 60));
+        buttonLocalVariableValue.setGradientColors(PRIMARY_GRADIENT_TOP, PRIMARY_GRADIENT_BOTTOM);
+        buttonLocalVariableValue.setShadowEnabled(true);
         return buttonLocalVariableValue;
     }
 
     /**
-     * Registra un ActionListener general para todos los botones.
-     *
-     * @param controller Listener que manejará los eventos de acción.
+     * Panel de fondo que pinta la imagen + overlay oscuro y centra
+     * (vía GridBagLayout) el bloque de título y la card de botones.
      */
+    private JPanel buildBackgroundPanel() {
+        Image backgroundImageLocalVariableValue = new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
+
+        JPanel backgroundPanelLocalVariableValue = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics graphicsParameterValue) {
+                super.paintComponent(graphicsParameterValue);
+                graphicsParameterValue.drawImage(
+                        backgroundImageLocalVariableValue,
+                        0, 0, getWidth(), getHeight(), this
+                );
+
+                Graphics2D g2LocalVariableValue = (Graphics2D) graphicsParameterValue.create();
+                g2LocalVariableValue.setColor(new Color(0, 0, 0, 35));
+                g2LocalVariableValue.fillRect(0, 0, getWidth(), getHeight());
+                g2LocalVariableValue.dispose();
+            }
+        };
+
+        backgroundPanelLocalVariableValue.setLayout(new GridBagLayout());
+
+        JPanel contentPanelLocalVariableValue = new JPanel();
+        contentPanelLocalVariableValue.setOpaque(false);
+        contentPanelLocalVariableValue.setLayout(
+                new BoxLayout(contentPanelLocalVariableValue, BoxLayout.Y_AXIS)
+        );
+        contentPanelLocalVariableValue.setBorder(new EmptyBorder(20, 0, 20, 0));
+
+        JPanel titleBlockLocalVariableValue = buildTitleBlock();
+        JPanel menuCardLocalVariableValue = buildMenuCard();
+
+        titleBlockLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        menuCardLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        contentPanelLocalVariableValue.add(titleBlockLocalVariableValue);
+        contentPanelLocalVariableValue.add(Box.createVerticalStrut(28));
+        contentPanelLocalVariableValue.add(menuCardLocalVariableValue);
+
+        GridBagConstraints constraintsLocalVariableValue = new GridBagConstraints();
+        constraintsLocalVariableValue.gridx = 0;
+        constraintsLocalVariableValue.gridy = 0;
+        constraintsLocalVariableValue.weightx = 1.0;
+        constraintsLocalVariableValue.weighty = 1.0;
+        constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
+
+        backgroundPanelLocalVariableValue.add(contentPanelLocalVariableValue, constraintsLocalVariableValue);
+
+        return backgroundPanelLocalVariableValue;
+    }
+
+    /**
+     * Bloque de título: "ADMIN MENU" en grande con la primera palabra
+     * en color de acento + barra subrayada + subtítulo.
+     */
+    private JPanel buildTitleBlock() {
+        Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
+
+        int mainTitleSizeLocalVariableValue = Math.max(58, (int) (screenHeightLocalVariableValue * 0.075));
+        int subtitleSizeLocalVariableValue = Math.max(23, (int) (screenHeightLocalVariableValue * 0.030));
+
+        JPanel titleContainerLocalVariableValue = new JPanel();
+        titleContainerLocalVariableValue.setOpaque(false);
+        titleContainerLocalVariableValue.setLayout(
+                new BoxLayout(titleContainerLocalVariableValue, BoxLayout.Y_AXIS)
+        );
+
+        JPanel titleLinePanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        titleLinePanelLocalVariableValue.setOpaque(false);
+
+        JLabel adminLabelLocalVariableValue = new JLabel("ADMIN ");
+        adminLabelLocalVariableValue.setForeground(ACCENT_COLOR);
+        adminLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, mainTitleSizeLocalVariableValue));
+
+        JLabel menuLabelLocalVariableValue = new JLabel("MENU");
+        menuLabelLocalVariableValue.setForeground(TITLE_WHITE);
+        menuLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, mainTitleSizeLocalVariableValue));
+
+        titleLinePanelLocalVariableValue.add(adminLabelLocalVariableValue);
+        titleLinePanelLocalVariableValue.add(menuLabelLocalVariableValue);
+
+        JPanel underlineWrapperLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        underlineWrapperLocalVariableValue.setOpaque(false);
+
+        JPanel underlinePanelLocalVariableValue = new JPanel();
+        underlinePanelLocalVariableValue.setBackground(ACCENT_COLOR);
+        underlinePanelLocalVariableValue.setPreferredSize(new Dimension(190, 6));
+        underlinePanelLocalVariableValue.setMinimumSize(new Dimension(190, 6));
+        underlinePanelLocalVariableValue.setMaximumSize(new Dimension(190, 6));
+
+        underlineWrapperLocalVariableValue.add(underlinePanelLocalVariableValue);
+
+        JLabel subtitleLabelLocalVariableValue = new JLabel(
+                "Manage leagues, teams, players and matches",
+                SwingConstants.CENTER
+        );
+        subtitleLabelLocalVariableValue.setForeground(SUBTITLE_WHITE);
+        subtitleLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, subtitleSizeLocalVariableValue));
+        subtitleLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        subtitleLabelLocalVariableValue.setBorder(new EmptyBorder(22, 0, 0, 0));
+
+        titleContainerLocalVariableValue.add(titleLinePanelLocalVariableValue);
+        titleContainerLocalVariableValue.add(Box.createVerticalStrut(14));
+        titleContainerLocalVariableValue.add(underlineWrapperLocalVariableValue);
+        titleContainerLocalVariableValue.add(subtitleLabelLocalVariableValue);
+
+        return titleContainerLocalVariableValue;
+    }
+
+    /**
+     * Card translúcida con todos los botones del menú + el botón de
+     * logout. Mismo estilo que la card del SignUp.
+     */
+    private JPanel buildMenuCard() {
+        Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidthLocalVariableValue = screenSizeLocalVariableValue.width;
+
+        int cardWidthLocalVariableValue = Math.max(820, Math.min(960, (int) (screenWidthLocalVariableValue * 0.58)));
+
+        JPanel cardPanelLocalVariableValue = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics graphicsParameterValue) {
+                Graphics2D g2LocalVariableValue = (Graphics2D) graphicsParameterValue.create();
+                g2LocalVariableValue.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2LocalVariableValue.setColor(new Color(8, 20, 46, 55));
+                g2LocalVariableValue.fillRoundRect(10, 14, getWidth() - 20, getHeight() - 18, 30, 30);
+
+                g2LocalVariableValue.setColor(new Color(255, 255, 255, 238));
+                g2LocalVariableValue.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 12, 28, 28);
+
+                g2LocalVariableValue.setColor(CARD_BORDER);
+                g2LocalVariableValue.setStroke(new BasicStroke(2f));
+                g2LocalVariableValue.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 12, 28, 28);
+
+                g2LocalVariableValue.dispose();
+                super.paintComponent(graphicsParameterValue);
+            }
+        };
+
+        cardPanelLocalVariableValue.setOpaque(false);
+        cardPanelLocalVariableValue.setPreferredSize(new Dimension(cardWidthLocalVariableValue, 520));
+        cardPanelLocalVariableValue.setMaximumSize(new Dimension(cardWidthLocalVariableValue, 520));
+        cardPanelLocalVariableValue.setBorder(new EmptyBorder(36, 38, 36, 38));
+
+        // Grid 4×2 con los botones del menú
+        JPanel buttonGridLocalVariableValue = new JPanel(new GridLayout(4, 2, 22, 22));
+        buttonGridLocalVariableValue.setOpaque(false);
+        buttonGridLocalVariableValue.add(createLeagueReferenceButtonFieldReference);
+        buttonGridLocalVariableValue.add(deleteLeagueReferenceButtonFieldReference);
+        buttonGridLocalVariableValue.add(createTeamReferenceButtonFieldReference);
+        buttonGridLocalVariableValue.add(deleteTeamReferenceButtonFieldReference);
+        buttonGridLocalVariableValue.add(viewInterfaceLeaguesButtonFieldReference);
+        buttonGridLocalVariableValue.add(viewInterfaceGamesButtonFieldReference);
+        buttonGridLocalVariableValue.add(deletePlayerProfileButtonFieldReference);
+        // Octava celda vacía para mantener simetría
+        JPanel emptyCellLocalVariableValue = new JPanel();
+        emptyCellLocalVariableValue.setOpaque(false);
+        buttonGridLocalVariableValue.add(emptyCellLocalVariableValue);
+
+        // Logout debajo, centrado
+        JPanel logoutPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        logoutPanelLocalVariableValue.setOpaque(false);
+        logoutPanelLocalVariableValue.add(logoutButtonFieldReference);
+
+        GridBagConstraints constraintsLocalVariableValue = new GridBagConstraints();
+        constraintsLocalVariableValue.gridx = 0;
+        constraintsLocalVariableValue.gridy = 0;
+        constraintsLocalVariableValue.weightx = 1.0;
+        constraintsLocalVariableValue.fill = GridBagConstraints.HORIZONTAL;
+        cardPanelLocalVariableValue.add(buttonGridLocalVariableValue, constraintsLocalVariableValue);
+
+        constraintsLocalVariableValue.gridy = 1;
+        constraintsLocalVariableValue.insets = new Insets(28, 0, 0, 0);
+        cardPanelLocalVariableValue.add(logoutPanelLocalVariableValue, constraintsLocalVariableValue);
+
+        return cardPanelLocalVariableValue;
+    }
+
     public void registerController(ActionListener controllerHandlerParameterValue) {
         createLeagueReferenceButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         createLeagueReferenceButtonFieldReference.setActionCommand(CREATE_LEAGUE);
@@ -173,24 +313,13 @@ public class AdminMenuView extends JFrame {
 
         viewInterfaceGamesButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         viewInterfaceGamesButtonFieldReference.setActionCommand(VIEW_GAMES);
-
     }
 
-    /**
-     * Registra un controlador específico del tipo AdminMenuController.
-     *
-     * @param controller Controlador que manejará las acciones del menú de administrador.
-     */
     public void registerController(AdminMenuController controllerHandlerParameterValue2) {
         this.controllerHandlerFieldReference = controllerHandlerParameterValue2;
         registerController((ActionListener) controllerHandlerParameterValue2);
     }
 
-    /**
-     * Muestra un cuadro de diálogo con un mensaje informativo.
-     *
-     * @param message Mensaje que se mostrará al usuario.
-     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(this, messageParameterValue, "Admin Menu", JOptionPane.INFORMATION_MESSAGE);
     }

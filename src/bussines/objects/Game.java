@@ -21,6 +21,10 @@ public class Game {
     private boolean començatFieldReference;
     private boolean acabatFieldReference;
 
+    // Nombre del equipo ganador (o "DRAW" si fue empate, null si el
+    // partido todavía no ha acabado).
+    private String winnerNameFieldReference;
+
     // Construye un partido con todos sus datos persistidos
     public Game(int gameEntityIdentifierParameterValue,
                 String nomLocalParameterValue,
@@ -102,5 +106,15 @@ public class Game {
     // Marca si el partido ha acabado o no
     public void setAcabat(boolean acabatParameterValue2) {
         this.acabatFieldReference = acabatParameterValue2;
+    }
+
+    // Devuelve el nombre del ganador (o "DRAW" / null)
+    public String getWinnerName() {
+        return winnerNameFieldReference;
+    }
+
+    // Asigna el nombre del ganador
+    public void setWinnerName(String winnerNameParameterValue) {
+        this.winnerNameFieldReference = winnerNameParameterValue;
     }
 }

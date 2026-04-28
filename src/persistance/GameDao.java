@@ -16,7 +16,7 @@ public class GameDao {
         ArrayList<Game> gamesLocalVariableValue = new ArrayList<>();
 
         String queryLocalVariableValue =
-                "SELECT g.id, g.league_id, g.round_number, g.scheduled_at, g.started, g.finished, " +
+                "SELECT g.id, g.league_id, g.round_number, g.scheduled_at, g.started, g.finished, g.winner_name, " +
                         "th.name AS home_name, ta.name AS away_name " +
                         "FROM games g " +
                         "JOIN teams th ON th.id = g.home_team_id " +
@@ -177,7 +177,7 @@ public class GameDao {
         }
 
         String queryLocalVariableValue =
-                "SELECT g.id, g.league_id, g.round_number, g.scheduled_at, g.started, g.finished, " +
+                "SELECT g.id, g.league_id, g.round_number, g.scheduled_at, g.started, g.finished, g.winner_name, " +
                         "th.name AS home_name, ta.name AS away_name " +
                         "FROM games g " +
                         "JOIN teams th ON th.id = g.home_team_id " +
@@ -219,9 +219,30 @@ public class GameDao {
         return gamesLocalVariableValue;
     }
 
+    /**
+     * Guarda el ganador de un partido (o "DRAW" si fue empate).
+     * La columna winner_name se añade vía DatabaseConnector.ensureSchema().
+     */
+    public void setGameWinner(int gameIdParameterValue, String winnerNameParameterValue) {
+        String queryLocalVariableValue = "UPDATE games SET winner_name = ? WHERE id = ?";
+
+        try (Connection connectionLocalVariableValue =
+                     DatabaseConnector.getInstance().createConnection();
+             PreparedStatement preparedStatementLocalVariableValue =
+                     connectionLocalVariableValue.prepareStatement(queryLocalVariableValue)) {
+
+            preparedStatementLocalVariableValue.setString(1, winnerNameParameterValue);
+            preparedStatementLocalVariableValue.setInt(2, gameIdParameterValue);
+            preparedStatementLocalVariableValue.executeUpdate();
+
+        } catch (SQLException eventArgumentExceptionParameter) {
+            eventArgumentExceptionParameter.printStackTrace();
+        }
+    }
+
     // Convierte una fila de la base de datos en un objeto Game
     private Game mapGame(ResultSet resultLocalVariableValue) throws SQLException {
-        return new Game(
+        Game gameLocalVariableValue = new Game(
                 resultLocalVariableValue.getInt("id"),
                 resultLocalVariableValue.getString("home_name"),
                 resultLocalVariableValue.getString("away_name"),
@@ -231,5 +252,16 @@ public class GameDao {
                 resultLocalVariableValue.getBoolean("started"),
                 resultLocalVariableValue.getBoolean("finished")
         );
+
+        // Lectura defensiva del ganador: si la columna no existe (BDs
+        // antiguas sin la migración aplicada), se ignora el error.
+        try {
+            String winnerLocalVariableValue = resultLocalVariableValue.getString("winner_name");
+            gameLocalVariableValue.setWinnerName(winnerLocalVariableValue);
+        } catch (SQLException ignoredExceptionParameterValue) {
+            // Columna ausente; el campo queda en null.
+        }
+
+        return gameLocalVariableValue;
     }
 }

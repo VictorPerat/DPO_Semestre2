@@ -1,0 +1,40 @@
+{
+  "team_name": "Meiwa",
+  "players": [
+    {
+      "name": "Karl Heinz",
+      "email": "k.heinz@meiwa.de",
+      "number": 9,
+      "dni": "12348765B",
+      "phone": "+34 600 300 001"
+    },
+    {
+      "name": "Hermann Kaltz",
+      "email": "h.kaltz@meiwa.de",
+      "number": 2,
+      "dni": "23459876C",
+      "phone": "+34 600 300 002"
+    },
+    {
+      "name": "Franz Schester",
+      "email": "f.schester@meiwa.de",
+      "number": 4,
+      "dni": "34561987D",
+      "phone": "+34 600 300 003"
+    },
+    {
+      "name": "Stefan Levin",
+      "email": "s.levin@meiwa.de",
+      "number": 7,
+      "dni": "45673198E",
+      "phone": "+34 600 300 004"
+    },
+    {
+      "name": "Pierre Lambert",
+      "email": "p.lambert@meiwa.de",
+      "number": 10,
+      "dni": "56784219F",
+      "phone": "+34 600 300 005"
+    }
+  ]
+}

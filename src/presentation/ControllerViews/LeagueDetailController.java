@@ -72,6 +72,75 @@ public class LeagueDetailController implements ActionListener {
         this.leagueReferenceFieldReference = leagueReferenceParameterValue;
         this.informationTeamReferenceManagerServiceFieldReference = informationTeamReferenceManagerServiceParameterValue;
         this.teamReferenceManagerServiceFieldReference = teamReferenceManagerServiceParameterValue;
+
+        // Auto-refresh de la clasificación en tiempo real (apartado 2.7).
+        startStandingsAutoRefresh();
+    }
+
+    // Timer que vuelve a calcular la clasificación cada pocos segundos
+    private javax.swing.Timer standingsAutoRefreshTimerFieldReference;
+    private static final int STANDINGS_REFRESH_INTERVAL_MS = 5_000;
+
+    /**
+     * Arranca el timer que refresca la JTable de clasificación cada
+     * {@value #STANDINGS_REFRESH_INTERVAL_MS} ms y lo para cuando la
+     * vista se cierra.
+     */
+    private void startStandingsAutoRefresh() {
+        standingsAutoRefreshTimerFieldReference = new javax.swing.Timer(
+                STANDINGS_REFRESH_INTERVAL_MS,
+                eventArgumentParameterRefresh -> refreshStandingsFromDatabase()
+        );
+        standingsAutoRefreshTimerFieldReference.start();
+
+        viewInterfaceFieldReference.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent eventArgumentClosed) {
+                if (standingsAutoRefreshTimerFieldReference != null) {
+                    standingsAutoRefreshTimerFieldReference.stop();
+                }
+            }
+
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent eventArgumentClosing) {
+                if (standingsAutoRefreshTimerFieldReference != null) {
+                    standingsAutoRefreshTimerFieldReference.stop();
+                }
+            }
+        });
+    }
+
+    /**
+     * Lee de la BD la información actualizada de los equipos de esta
+     * liga y le pide a la vista que repinte la JTable.
+     */
+    private void refreshStandingsFromDatabase() {
+        int leagueIdLocalVariableValue =
+                leagueReferenceFieldReference.getId();
+
+        ArrayList<TeamInfo> freshInfoLocalVariableValue =
+                informationTeamReferenceManagerServiceFieldReference.getInfoTeamsOfLeague(
+                        leagueIdLocalVariableValue
+                );
+
+        ArrayList<Team> allTeamsLocalVariableValue =
+                teamReferenceManagerServiceFieldReference.getAllTeams();
+
+        ArrayList<Team> filteredTeamsLocalVariableValue = new ArrayList<>();
+        for (Team teamLocalVariableValue : allTeamsLocalVariableValue) {
+            for (TeamInfo infoLocalVariableValue : freshInfoLocalVariableValue) {
+                if (teamLocalVariableValue.getId() == infoLocalVariableValue.getTeamId()) {
+                    filteredTeamsLocalVariableValue.add(teamLocalVariableValue);
+                    break;
+                }
+            }
+        }
+
+        viewInterfaceFieldReference.refreshStandings(
+                freshInfoLocalVariableValue,
+                filteredTeamsLocalVariableValue,
+                playerProfileManagerServiceFieldReference
+        );
     }
 
     public static int getFlag() {

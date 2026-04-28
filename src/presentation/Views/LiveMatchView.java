@@ -227,6 +227,18 @@ public class LiveMatchView extends JFrame {
     }
 
     /**
+     * Detiene el bucle de simulación de este partido. El thread que
+     * recorre los minutos consultará la flag isRunning y saldrá de
+     * forma controlada.
+     *
+     * Llamado por el controlador cuando se aborta el partido por
+     * borrado de liga o equipo (apartados 2.10 y 2.11).
+     */
+    public void stopSimulation() {
+        isRunningFieldReference.set(false);
+    }
+
+    /**
      * Devuelve el ID del partido en vivo.
      *
      * @return ID del partido
@@ -294,6 +306,16 @@ public class LiveMatchView extends JFrame {
             SwingUtilities.invokeLater(() ->
                     scoreLabelFieldReference.setText(homeGoalsFieldReference + " - " + awayGoalsFieldReference)
             );
+
+            // Publicamos el marcador actualizado al scoreboard global
+            // para que el widget de partidos en directo (apartado 2.9)
+            // muestre el resultado en tiempo real en cualquier pantalla.
+            if (liveMatchViewInterfaceControllerHandlerFieldReference != null) {
+                liveMatchViewInterfaceControllerHandlerFieldReference.reportScoreUpdate(
+                        homeGoalsFieldReference,
+                        awayGoalsFieldReference
+                );
+            }
         }
 
         appendEvent(minParameterValue3, eventParameterValue2);

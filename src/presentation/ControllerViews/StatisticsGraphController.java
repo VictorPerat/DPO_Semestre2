@@ -88,69 +88,84 @@ public class StatisticsGraphController implements ActionListener {
         }
     }
 
+    // ID de la liga actualmente seleccionada en el gráfico (para el refresh).
+    private int currentLeagueIdFieldReference = -1;
+    private String currentLeagueNameFieldReference = "";
+
+    // Timer que refresca el gráfico en tiempo real (apartado 2.7.1).
+    private javax.swing.Timer chartAutoRefreshTimerFieldReference;
+    private static final int CHART_REFRESH_INTERVAL_MS = 5_000;
+
     /**
-     * Muestra los datos de una liga específica generando los puntos por semana
-     * para cada equipo y actualizando la gráfica en la vista.
-     *
-     * @param leagueId   ID de la liga seleccionada.
-     * @param leagueName Nombre de la liga seleccionada.
+     * Muestra los datos reales de una liga: para cada equipo, los puntos
+     * acumulados al final de cada jornada (apartado 2.7.1 del enunciado).
      */
-    public void showLeagueData(int leagueReferenceIdentifierParameterValue, String leagueReferenceDisplayNameParameterValue) {
-        ArrayList<TeamInfo> teamsLocalVariableValue = teamReferenceManagerServiceFieldReference.getInfoTeamsOfLeague(leagueReferenceIdentifierParameterValue);
-        ArrayList<Team> teamsListLocalVariableValue = realTeamReferenceManagerServiceFieldReference.getAllTeams();
-        ArrayList<Team> matchingTeamsLocalVariableValue = new ArrayList<>();
+    public void showLeagueData(int leagueReferenceIdentifierParameterValue,
+                               String leagueReferenceDisplayNameParameterValue) {
+        currentLeagueIdFieldReference = leagueReferenceIdentifierParameterValue;
+        currentLeagueNameFieldReference = leagueReferenceDisplayNameParameterValue;
 
-        for (TeamInfo informationLocalVariableValue : teamsLocalVariableValue) {
-            int informationTeamReferenceIdentifierLocalVariableValue = informationLocalVariableValue.getTeamId();
+        refreshChartDataFromDatabase();
 
-            for (Team teamReferenceLocalVariableValue : teamsListLocalVariableValue) {
-                if (teamReferenceLocalVariableValue.getId() == informationTeamReferenceIdentifierLocalVariableValue) {
-                    matchingTeamsLocalVariableValue.add(teamReferenceLocalVariableValue);
-                    break; // Si no puede haber más de un match, esto mejora eficiencia
+        // Aseguramos que el auto-refresh está corriendo desde el primer
+        // momento en que el usuario abre los datos de una liga.
+        startChartAutoRefresh();
+    }
+
+    /**
+     * Recalcula la matriz de puntos por jornada y refresca la vista.
+     * Si todavía no se ha seleccionado liga, no hace nada.
+     */
+    private void refreshChartDataFromDatabase() {
+        if (currentLeagueIdFieldReference == -1) {
+            return;
+        }
+
+        bussines.managers.LeagueManager.StandingsTimeline timelineLocalVariableValue =
+                leagueReferenceManagerServiceFieldReference.computeStandingsTimeline(
+                        currentLeagueIdFieldReference
+                );
+
+        viewInterfaceFieldReference.updateChartData(
+                currentLeagueNameFieldReference,
+                timelineLocalVariableValue.getCumulativePoints(),
+                timelineLocalVariableValue.getTotalRounds(),
+                timelineLocalVariableValue.getTeamNames(),
+                timelineLocalVariableValue.getTeamNames().length
+        );
+    }
+
+    /**
+     * Arranca el timer que refresca el gráfico cada N segundos. Se
+     * para automáticamente al cerrar la ventana.
+     */
+    private void startChartAutoRefresh() {
+        if (chartAutoRefreshTimerFieldReference != null
+                && chartAutoRefreshTimerFieldReference.isRunning()) {
+            return;
+        }
+
+        chartAutoRefreshTimerFieldReference = new javax.swing.Timer(
+                CHART_REFRESH_INTERVAL_MS,
+                eventArgumentParameterValueRefresh -> refreshChartDataFromDatabase()
+        );
+        chartAutoRefreshTimerFieldReference.start();
+
+        viewInterfaceFieldReference.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent eventArgumentParameterClosed) {
+                if (chartAutoRefreshTimerFieldReference != null) {
+                    chartAutoRefreshTimerFieldReference.stop();
                 }
             }
-        }
 
-        int[] teamReferenceIdentifierLocalVariableValue = new int[100];
-        int countIdentifiersLocalVariableValue = 0;
-        int numberWeeksLocalVariableValue = 6; // weeks hardcodeadas
-
-        String[] teamReferenceNamesLocalVariableValue = new String[teamsLocalVariableValue.size()];
-        int[][] teamReferenceDataLocalVariableValue = new int[teamsLocalVariableValue.size()][numberWeeksLocalVariableValue];
-
-        for (int indexCounterLocalVariableValue = 0; indexCounterLocalVariableValue < teamsLocalVariableValue.size(); indexCounterLocalVariableValue++) {
-            int identifierLocalVariableValue = teamsLocalVariableValue.get(indexCounterLocalVariableValue).getTeamId();
-
-            // Buscar el nombre del equipo que coincide con ese ID
-            String displayNameLocalVariableValue = "";
-            for (Team teamReferenceLocalVariableValue2 : teamsListLocalVariableValue) {
-                if (teamReferenceLocalVariableValue2.getId() == identifierLocalVariableValue) {
-                    displayNameLocalVariableValue = teamReferenceLocalVariableValue2.getName(); // o getTeamName() si se llama así
-                    break;
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent eventArgumentParameterClosing) {
+                if (chartAutoRefreshTimerFieldReference != null) {
+                    chartAutoRefreshTimerFieldReference.stop();
                 }
             }
-            teamReferenceNamesLocalVariableValue[indexCounterLocalVariableValue] = displayNameLocalVariableValue; // Guardar el nombre correspondiente
-            countIdentifiersLocalVariableValue++;
-            int cumulativePointsLocalVariableValue = teamsLocalVariableValue.get(indexCounterLocalVariableValue).getPoints();
-            int pointsPerWeekLocalVariableValue = cumulativePointsLocalVariableValue / numberWeeksLocalVariableValue;
-            int remainderLocalVariableValue = cumulativePointsLocalVariableValue % numberWeeksLocalVariableValue;
-
-            for (int secondaryIndexCounterLocalVariableValue = 0; secondaryIndexCounterLocalVariableValue < numberWeeksLocalVariableValue; secondaryIndexCounterLocalVariableValue++) {
-                teamReferenceDataLocalVariableValue[indexCounterLocalVariableValue][secondaryIndexCounterLocalVariableValue] = pointsPerWeekLocalVariableValue * (secondaryIndexCounterLocalVariableValue + 1);
-                if (secondaryIndexCounterLocalVariableValue < remainderLocalVariableValue) teamReferenceDataLocalVariableValue[indexCounterLocalVariableValue][secondaryIndexCounterLocalVariableValue] += secondaryIndexCounterLocalVariableValue + 1;
-            }
-        }
-
-        viewInterfaceFieldReference.updateChartData(leagueReferenceDisplayNameParameterValue, teamReferenceDataLocalVariableValue, numberWeeksLocalVariableValue, teamReferenceNamesLocalVariableValue, countIdentifiersLocalVariableValue);
-
-        System.out.println("Data for the league: " + leagueReferenceDisplayNameParameterValue);
-        for (int indexCounterLocalVariableValue2 = 0; indexCounterLocalVariableValue2 < teamReferenceDataLocalVariableValue.length; indexCounterLocalVariableValue2++) {
-            System.out.print("Team " + indexCounterLocalVariableValue2 + ": ");
-            for (int secondaryIndexCounterLocalVariableValue2 = 0; secondaryIndexCounterLocalVariableValue2 < teamReferenceDataLocalVariableValue[indexCounterLocalVariableValue2].length; secondaryIndexCounterLocalVariableValue2++) {
-                System.out.print(teamReferenceDataLocalVariableValue[indexCounterLocalVariableValue2][secondaryIndexCounterLocalVariableValue2] + " ");
-            }
-            System.out.println();
-        }
+        });
     }
 
     /**

@@ -63,8 +63,22 @@ public class TeamInfoManager {
         informationTeamReferenceDataAccessObjectFieldReference.deleteInfoTeam(idteamParameterValue);
     }
 
-    // Añade 3 puntos al equipo ganador
+    /**
+     * Aplica el resultado de una victoria: +3 puntos y +1 win al
+     * ganador, +1 defeat al perdedor.
+     */
     public void afegirPuntsPerVictoria(String equipGuanyadorParameterValue,
+                                       int leagueReferenceIdentifierParameterValue3) {
+        afegirPuntsPerVictoria(equipGuanyadorParameterValue, null,
+                leagueReferenceIdentifierParameterValue3);
+    }
+
+    /**
+     * Versión con perdedor explícito para que se contabilicen también
+     * las defeats. El segundo parámetro puede ser null si no se conoce.
+     */
+    public void afegirPuntsPerVictoria(String equipGuanyadorParameterValue,
+                                       String equipPerdedorParameterValue,
                                        int leagueReferenceIdentifierParameterValue3) {
 
         int teamReferenceIdentifierLocalVariableValue =
@@ -76,10 +90,29 @@ public class TeamInfoManager {
                     leagueReferenceIdentifierParameterValue3,
                     3
             );
+            informationTeamReferenceDataAccessObjectFieldReference.incrementCounter(
+                    equipGuanyadorParameterValue,
+                    leagueReferenceIdentifierParameterValue3,
+                    "wins"
+            );
+        }
+
+        if (equipPerdedorParameterValue != null) {
+            int loserIdLocalVariableValue =
+                    teamReferenceDataAccessObjectFieldReference.getTeamId(equipPerdedorParameterValue);
+            if (loserIdLocalVariableValue != -1) {
+                informationTeamReferenceDataAccessObjectFieldReference.incrementCounter(
+                        equipPerdedorParameterValue,
+                        leagueReferenceIdentifierParameterValue3,
+                        "defeats"
+                );
+            }
         }
     }
 
-    // Añade 1 punto a cada equipo si el partido termina en empate
+    /**
+     * Aplica un empate: +1 punto y +1 tie a ambos equipos.
+     */
     public void afegirPuntsPerEmpat(String equip1ParameterValue,
                                     String equip2ParameterValue,
                                     int leagueReferenceIdentifierParameterValue4) {
@@ -96,6 +129,11 @@ public class TeamInfoManager {
                     leagueReferenceIdentifierParameterValue4,
                     1
             );
+            informationTeamReferenceDataAccessObjectFieldReference.incrementCounter(
+                    equip1ParameterValue,
+                    leagueReferenceIdentifierParameterValue4,
+                    "ties"
+            );
         }
 
         if (teamReferenceIdentifier2LocalVariableValue != -1) {
@@ -103,6 +141,11 @@ public class TeamInfoManager {
                     equip2ParameterValue,
                     leagueReferenceIdentifierParameterValue4,
                     1
+            );
+            informationTeamReferenceDataAccessObjectFieldReference.incrementCounter(
+                    equip2ParameterValue,
+                    leagueReferenceIdentifierParameterValue4,
+                    "ties"
             );
         }
     }

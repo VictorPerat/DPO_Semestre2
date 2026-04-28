@@ -1,0 +1,40 @@
+{
+  "team_name": "Furano",
+  "players": [
+    {
+      "name": "Hikaru Matsuyama",
+      "email": "matsuyama@furano.school",
+      "number": 10,
+      "dni": "12131415N",
+      "phone": "+34 600 600 001"
+    },
+    {
+      "name": "Takeshi Kishida",
+      "email": "kishida@furano.school",
+      "number": 7,
+      "dni": "13141516P",
+      "phone": "+34 600 600 002"
+    },
+    {
+      "name": "Koji Nitta",
+      "email": "nitta@furano.school",
+      "number": 9,
+      "dni": "14151617Q",
+      "phone": "+34 600 600 003"
+    },
+    {
+      "name": "Mitsuru Sano",
+      "email": "sano@furano.school",
+      "number": 4,
+      "dni": "15161718R",
+      "phone": "+34 600 600 004"
+    },
+    {
+      "name": "Toshihiko Tanaka",
+      "email": "tanaka@furano.school",
+      "number": 5,
+      "dni": "16171819S",
+      "phone": "+34 600 600 005"
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import bussines.objects.League;
+import bussines.objects.LeagueListEntry;
 import presentation.ControllerViews.MenuController;
 import shared.ProjectPathResolver;
 
@@ -139,15 +140,26 @@ public class AvailableLeaguesView extends JFrame {
         leaguesPanelLocalVariableValue.setBackground(LIGHT_BLUE);
         leaguesPanelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
 
-        JPanel namesHeaderLocalVariableValue = new JPanel(new BorderLayout());
+        JPanel namesHeaderLocalVariableValue = new JPanel(new GridLayout(1, 3));
         namesHeaderLocalVariableValue.setBackground(DARK_BLUE);
         namesHeaderLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
         namesHeaderLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
-        JLabel namesLabelLocalVariableValue = new JLabel("LEAGUES", SwingConstants.CENTER);
-        namesLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 18));
+        JLabel namesLabelLocalVariableValue = new JLabel("LEAGUE", SwingConstants.CENTER);
+        namesLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 16));
         namesLabelLocalVariableValue.setForeground(Color.WHITE);
-        namesHeaderLocalVariableValue.add(namesLabelLocalVariableValue, BorderLayout.CENTER);
+
+        JLabel teamsLabelLocalVariableValue = new JLabel("TEAMS", SwingConstants.CENTER);
+        teamsLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 16));
+        teamsLabelLocalVariableValue.setForeground(Color.WHITE);
+
+        JLabel statusLabelHeaderLocalVariableValue = new JLabel("STATUS", SwingConstants.CENTER);
+        statusLabelHeaderLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 16));
+        statusLabelHeaderLocalVariableValue.setForeground(Color.WHITE);
+
+        namesHeaderLocalVariableValue.add(namesLabelLocalVariableValue);
+        namesHeaderLocalVariableValue.add(teamsLabelLocalVariableValue);
+        namesHeaderLocalVariableValue.add(statusLabelHeaderLocalVariableValue);
 
         leaguesPanelLocalVariableValue.add(namesHeaderLocalVariableValue);
         leaguesPanelLocalVariableValue.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -173,25 +185,37 @@ public class AvailableLeaguesView extends JFrame {
     }
 
     /**
-     * Muestra dinámicamente una lista de ligas dentro del panel scrollable.
-     * Si el usuario es administrador, puede acceder a funcionalidades extra.
+     * Muestra dinámicamente la lista de ligas con tres columnas:
+     * nombre, número de equipos y estado actual (apartado 2.7 del
+     * enunciado).
      *
-     * @param leagues  Lista de objetos {@link League} a mostrar.
-     * @param isAdmin  Indica si el usuario actual tiene privilegios de administrador.
-     * @param listener Controlador que maneja los clics sobre cada liga.
+     * @param entriesParameterValue lista de entradas a mostrar.
+     * @param isAdminParameterValue si es true se puede acceder a
+     *        funcionalidades extra de administrador.
+     * @param listenerParameterValue2 controlador que abre el detalle de
+     *        una liga al hacer clic.
      */
-    public void displayLeagues(List<League> leaguesParameterValue, boolean isAdminParameterValue, ActionListener listenerParameterValue2) {
+    public void displayLeagues(List<LeagueListEntry> entriesParameterValue,
+                               boolean isAdminParameterValue,
+                               ActionListener listenerParameterValue2) {
         leaguesListPanelFieldReference.removeAll();
-        if (leaguesParameterValue == null || leaguesParameterValue.isEmpty()) {
+
+        if (entriesParameterValue == null || entriesParameterValue.isEmpty()) {
             JLabel noLeaguesLabelLocalVariableValue = new JLabel("No leagues available.", SwingConstants.CENTER);
             noLeaguesLabelLocalVariableValue.setFont(new Font("Arial", Font.ITALIC, 16));
             noLeaguesLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
             noLeaguesLabelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
             leaguesListPanelFieldReference.add(noLeaguesLabelLocalVariableValue);
-        }else{
-            for (int indexCounterLocalVariableValue = 0; indexCounterLocalVariableValue < leaguesParameterValue.size(); indexCounterLocalVariableValue++){
-                League leagueReferenceLocalVariableValue = leaguesParameterValue.get(indexCounterLocalVariableValue);
-                JPanel leagueReferencePanelLocalVariableValue = new JPanel(new BorderLayout(10, 0));
+        } else {
+            for (int indexCounterLocalVariableValue = 0;
+                 indexCounterLocalVariableValue < entriesParameterValue.size();
+                 indexCounterLocalVariableValue++) {
+
+                LeagueListEntry entryLocalVariableValue =
+                        entriesParameterValue.get(indexCounterLocalVariableValue);
+                League leagueReferenceLocalVariableValue = entryLocalVariableValue.getLeague();
+
+                JPanel leagueReferencePanelLocalVariableValue = new JPanel(new GridLayout(1, 3));
                 leagueReferencePanelLocalVariableValue.setBackground(Color.WHITE);
                 leagueReferencePanelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
                 leagueReferencePanelLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
@@ -200,9 +224,25 @@ public class AvailableLeaguesView extends JFrame {
                 leagueReferencePanelLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 leagueReferencePanelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-                JLabel leagueReferenceLabelLocalVariableValue = new JLabel(leagueReferenceLocalVariableValue.getName());
-                leagueReferenceLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 16));
-                leagueReferencePanelLocalVariableValue.add(leagueReferenceLabelLocalVariableValue, BorderLayout.CENTER);
+                JLabel leagueNameLabelLocalVariableValue =
+                        new JLabel(leagueReferenceLocalVariableValue.getName(), SwingConstants.CENTER);
+                leagueNameLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 15));
+
+                JLabel teamCountLabelLocalVariableValue = new JLabel(
+                        String.valueOf(entryLocalVariableValue.getTeamCount()),
+                        SwingConstants.CENTER
+                );
+                teamCountLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 15));
+
+                JLabel statusLabelLocalVariableValue = new JLabel(
+                        entryLocalVariableValue.getStatusLabel(),
+                        SwingConstants.CENTER
+                );
+                statusLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 15));
+
+                leagueReferencePanelLocalVariableValue.add(leagueNameLabelLocalVariableValue);
+                leagueReferencePanelLocalVariableValue.add(teamCountLabelLocalVariableValue);
+                leagueReferencePanelLocalVariableValue.add(statusLabelLocalVariableValue);
 
                 leagueReferencePanelLocalVariableValue.addMouseListener(new MouseAdapter() {
                     @Override
@@ -214,7 +254,7 @@ public class AvailableLeaguesView extends JFrame {
                 });
                 leaguesListPanelFieldReference.add(leagueReferencePanelLocalVariableValue);
 
-                if (indexCounterLocalVariableValue < leaguesParameterValue.size() - 1) {
+                if (indexCounterLocalVariableValue < entriesParameterValue.size() - 1) {
                     JSeparator separatorLocalVariableValue = new JSeparator();
                     separatorLocalVariableValue.setForeground(DIVIDER_COLOR);
                     separatorLocalVariableValue.setPreferredSize(new Dimension(leaguesListPanelFieldReference.getWidth() - 40, 2));

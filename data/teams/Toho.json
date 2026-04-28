@@ -1,0 +1,40 @@
+{
+  "team_name": "Toho",
+  "players": [
+    {
+      "name": "Ken Wakashimazu",
+      "email": "ken.wakashimazu@toho.school",
+      "number": 1,
+      "dni": "66778899G",
+      "phone": "+34 600 500 001"
+    },
+    {
+      "name": "Kojiro Hyuga",
+      "email": "kojiro.hyuga@toho.school",
+      "number": 10,
+      "dni": "77889900H",
+      "phone": "+34 600 500 002"
+    },
+    {
+      "name": "Takeshi Sawada",
+      "email": "takeshi.sawada@toho.school",
+      "number": 4,
+      "dni": "88990011K",
+      "phone": "+34 600 500 003"
+    },
+    {
+      "name": "Masao Nakanishi",
+      "email": "masao.nakanishi@toho.school",
+      "number": 6,
+      "dni": "99001122L",
+      "phone": "+34 600 500 004"
+    },
+    {
+      "name": "Yoshiko Fujisawa",
+      "email": "yoshiko.fujisawa@toho.school",
+      "number": 13,
+      "dni": "10112233M",
+      "phone": "+34 600 500 005"
+    }
+  ]
+}

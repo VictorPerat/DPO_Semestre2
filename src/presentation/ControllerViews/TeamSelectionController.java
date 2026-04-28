@@ -44,6 +44,11 @@ public class TeamSelectionController implements ActionListener {
     private ArrayList<String> selectedTeamsFieldReference = new ArrayList<>();
     private int leagueReferenceIdentifierFieldReference;
 
+    // Flag de protección contra doble click sobre el botón "crear liga".
+    // Si el usuario pulsa varias veces o si Swing reentra el handler,
+    // las llamadas posteriores se ignoran.
+    private boolean leagueAlreadyCreatedFieldReference = false;
+
     // Registra la vista y deja preparado el boton de volver
     public TeamSelectionController(
             TeamSelectionView teamReferenceSelectionViewInterfaceParameterValue,
@@ -80,6 +85,11 @@ public class TeamSelectionController implements ActionListener {
 
         switch (commandLocalVariableValue) {
             case CREATE_LEAGUE:
+                // Protección contra doble click / reentradas del handler
+                if (leagueAlreadyCreatedFieldReference) {
+                    return;
+                }
+
                 int correctTeamsLocalVariableValue = handleSelectTeams();
 
                 if (correctTeamsLocalVariableValue == 0) {
@@ -87,6 +97,11 @@ public class TeamSelectionController implements ActionListener {
                             "You must choose at least two teams"
                     );
                 } else {
+                    // Marcamos como ya creada antes de tocar BD para
+                    // que un segundo click no entre aunque el primero
+                    // todavía esté procesando.
+                    leagueAlreadyCreatedFieldReference = true;
+
                     leagueReferenceManagerServiceFieldReference.createLeague(
                             leagueReferenceDisplayNameLocalVariableValue,
                             startDateLocalVariableValue,
@@ -146,7 +161,6 @@ public class TeamSelectionController implements ActionListener {
                 leagueReferenceIdentifierFieldReference,
                 resultLocalVariableValue
         );
-        System.out.println("This is the league ID" + leagueReferenceIdentifierFieldReference);
 
         ArrayList<Game> gamesLocalVariableValue =
                 gameEntityManagerServiceFieldReference.getGamesByLeague(

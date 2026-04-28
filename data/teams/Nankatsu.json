@@ -1,0 +1,40 @@
+{
+  "team_name": "Nankatsu",
+  "players": [
+    {
+      "name": "Mark Lenders",
+      "email": "mark.lenders@nankatsu.school",
+      "number": 9,
+      "dni": "55103992F",
+      "phone": "+34 600 200 001"
+    },
+    {
+      "name": "Ryo Ishizaki",
+      "email": "ryo.ishizaki@nankatsu.school",
+      "number": 4,
+      "dni": "67721154T",
+      "phone": "+34 600 200 002"
+    },
+    {
+      "name": "Patrick Everett",
+      "email": "patrick.everett@nankatsu.school",
+      "number": 6,
+      "dni": "78993321M",
+      "phone": "+34 600 200 003"
+    },
+    {
+      "name": "Julian Ross",
+      "email": "julian.ross@nankatsu.school",
+      "number": 11,
+      "dni": "89225466K",
+      "phone": "+34 600 200 004"
+    },
+    {
+      "name": "Steve Hyuga",
+      "email": "steve.hyuga@nankatsu.school",
+      "number": 13,
+      "dni": "90871234Q",
+      "phone": "+34 600 200 005"
+    }
+  ]
+}

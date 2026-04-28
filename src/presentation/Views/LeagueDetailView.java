@@ -13,16 +13,29 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
- * Clase que representa la vista detallada de una liga específica.
- * Muestra información como el nombre, ID, fecha de inicio y estadísticas de los equipos participantes.
+ * Vista detallada de una liga.
+ *
+ * Muestra los datos generales de la liga y una {@link JTable} con la
+ * clasificación de los equipos (apartado 2.7 del enunciado): nombre,
+ * número de jugadores, ganados, empatados, perdidos y puntos. La tabla
+ * se ordena por puntos descendentes y puede refrescarse en tiempo real
+ * a través de {@link #refreshStandings(ArrayList, ArrayList, PlayerManager)}.
  */
 public class LeagueDetailView extends JFrame {
-    // Tabla que muestra la clasificacion y datos de los equipos
-    private JTable tableFieldReference;
 
-    // Botones de navegacion y accesos auxiliares de la vista
+    // Columnas mostradas en la JTable de clasificación.
+    private static final String[] COLUMN_NAMES = {
+            "Position", "Team", "Players", "Won", "Drawn", "Lost", "Points"
+    };
+
+    private JTable tableFieldReference;
+    private DefaultTableModel tableModelFieldReference;
+
+    // Botones de navegación y acciones de la vista
     private final JButton backButtonFieldReference;
     private final JButton configButtonFieldReference;
     private final JButton statsButtonFieldReference;
@@ -38,12 +51,12 @@ public class LeagueDetailView extends JFrame {
     private static final Color BACKGROUND = new Color(245, 245, 245);
 
     /**
-     * Constructor que inicializa la vista detallada de una liga.
-     *
-     * @param league       Objeto {@link League} que contiene los datos generales de la liga.
-     * @param infoOfTeams  Lista de objetos {@link infoTeam} con la información de cada equipo en la liga.
+     * Constructor de la vista detallada.
      */
-    public LeagueDetailView(League leagueReferenceParameterValue, ArrayList<TeamInfo> informationOfTeamsParameterValue, ArrayList<Team> teamsParameterValue, PlayerManager playerProfileManagerServiceParameterValue) {
+    public LeagueDetailView(League leagueReferenceParameterValue,
+                            ArrayList<TeamInfo> informationOfTeamsParameterValue,
+                            ArrayList<Team> teamsParameterValue,
+                            PlayerManager playerProfileManagerServiceParameterValue) {
         setTitle("League: " + leagueReferenceParameterValue.getName());
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -51,8 +64,7 @@ public class LeagueDetailView extends JFrame {
         setLayout(new BorderLayout());
 
         // Panel principal
-        JPanel mainPanelLocalVariableValue = new JPanel();
-        mainPanelLocalVariableValue.setLayout(new BorderLayout());
+        JPanel mainPanelLocalVariableValue = new JPanel(new BorderLayout());
         mainPanelLocalVariableValue.setBackground(BACKGROUND);
 
         // Cabecera
@@ -71,7 +83,7 @@ public class LeagueDetailView extends JFrame {
         headerLocalVariableValue.add(titleLabelLocalVariableValue, BorderLayout.CENTER);
         headerLocalVariableValue.add(configButtonFieldReference, BorderLayout.EAST);
 
-        // Panel de botones superior
+        // Panel de botones de acciones (stats / calendar)
         JPanel topButtonsPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         topButtonsPanelLocalVariableValue.setBackground(BACKGROUND);
 
@@ -81,7 +93,8 @@ public class LeagueDetailView extends JFrame {
         statsButtonFieldReference.setForeground(Color.WHITE);
         calendarButtonFieldReference.setForeground(Color.WHITE);
 
-        for (JButton buttonControlLocalVariableValue : new JButton[]{statsButtonFieldReference, calendarButtonFieldReference}) {
+        for (JButton buttonControlLocalVariableValue
+                : new JButton[]{statsButtonFieldReference, calendarButtonFieldReference}) {
             buttonControlLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 14));
             buttonControlLocalVariableValue.setBackground(DARK_BLUE);
             buttonControlLocalVariableValue.setFocusPainted(false);
@@ -93,75 +106,137 @@ public class LeagueDetailView extends JFrame {
 
         // Título de la liga
         JLabel leagueReferenceTitleLocalVariableValue = new JLabel(
-                leagueReferenceParameterValue.getName() + " - ID: " + leagueReferenceParameterValue.getId() + " | Start: " + leagueReferenceParameterValue.getStartDate(),
+                leagueReferenceParameterValue.getName()
+                        + " | Start: " + leagueReferenceParameterValue.getStartDate(),
                 SwingConstants.CENTER
         );
         leagueReferenceTitleLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 18));
         leagueReferenceTitleLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
 
-        for (int indexCounterLocalVariableValue = 0; indexCounterLocalVariableValue < informationOfTeamsParameterValue.size() - 1; indexCounterLocalVariableValue++) {
-            for (int secondaryIndexCounterLocalVariableValue = 0; secondaryIndexCounterLocalVariableValue < informationOfTeamsParameterValue.size() - indexCounterLocalVariableValue - 1; secondaryIndexCounterLocalVariableValue++) {
-                TeamInfo t1LocalVariableValue = informationOfTeamsParameterValue.get(secondaryIndexCounterLocalVariableValue);
-                TeamInfo t2LocalVariableValue = informationOfTeamsParameterValue.get(secondaryIndexCounterLocalVariableValue + 1);
-                if (t1LocalVariableValue.getPoints() < t2LocalVariableValue.getPoints()) {
-                    informationOfTeamsParameterValue.set(secondaryIndexCounterLocalVariableValue, t2LocalVariableValue);
-                    informationOfTeamsParameterValue.set(secondaryIndexCounterLocalVariableValue + 1, t1LocalVariableValue);
-                }
+        // Tabla con el modelo inicial vacío; se rellena con buildRowsForStandings
+        tableModelFieldReference = new DefaultTableModel(new Object[0][COLUMN_NAMES.length], COLUMN_NAMES) {
+            @Override
+            public boolean isCellEditable(int rowParameterValue, int columnParameterValue) {
+                return false;
             }
-        }
-
-        // Tabla con estadísticas de los equipos
-        String[] columnsLocalVariableValue = {"Position", "Team", "PTS", "PLD", "DIF", "Nº Players"};
-        Object[][] dataLocalVariableValue = new Object[informationOfTeamsParameterValue.size()][6];
-
-        for (int indexCounterLocalVariableValue2 = 0; indexCounterLocalVariableValue2 < informationOfTeamsParameterValue.size(); indexCounterLocalVariableValue2++) {
-            TeamInfo informationLocalVariableValue = informationOfTeamsParameterValue.get(indexCounterLocalVariableValue2);
-            String teamReferenceDisplayNameLocalVariableValue = String.valueOf(informationLocalVariableValue.getTeamId()); // por defecto: el ID como texto
-
-            for (Team tLocalVariableValue : teamsParameterValue) {
-                if (tLocalVariableValue.getId() == informationLocalVariableValue.getTeamId()) {
-                    teamReferenceDisplayNameLocalVariableValue = tLocalVariableValue.getName(); // reemplaza el ID por el nombre real del equipo
-                    break;
-                }
-            }
-            dataLocalVariableValue[indexCounterLocalVariableValue2][0] = indexCounterLocalVariableValue2 + 1;
-            dataLocalVariableValue[indexCounterLocalVariableValue2][1] = teamReferenceDisplayNameLocalVariableValue;
-            dataLocalVariableValue[indexCounterLocalVariableValue2][2] = informationLocalVariableValue.getPoints();
-            dataLocalVariableValue[indexCounterLocalVariableValue2][3] = informationLocalVariableValue.getWins();
-            dataLocalVariableValue[indexCounterLocalVariableValue2][4] = informationLocalVariableValue.getTies();
-            dataLocalVariableValue[indexCounterLocalVariableValue2][5] = playerProfileManagerServiceParameterValue.getNumberOfPlayersByTeamName(teamReferenceDisplayNameLocalVariableValue);
-        }
-
-
-        tableFieldReference = new JTable(new DefaultTableModel(dataLocalVariableValue, columnsLocalVariableValue));
+        };
+        tableFieldReference = new JTable(tableModelFieldReference);
         tableFieldReference.setFont(new Font("Arial", Font.PLAIN, 14));
         tableFieldReference.setRowHeight(28);
         tableFieldReference.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        tableFieldReference.setAutoCreateRowSorter(false);
+
         JScrollPane scrollPaneLocalVariableValue = new JScrollPane(tableFieldReference);
 
-        // Añadir componentes al panel principal
-        mainPanelLocalVariableValue.add(topButtonsPanelLocalVariableValue, BorderLayout.NORTH);
-        mainPanelLocalVariableValue.add(leagueReferenceTitleLocalVariableValue, BorderLayout.CENTER);
-        mainPanelLocalVariableValue.add(scrollPaneLocalVariableValue, BorderLayout.SOUTH);
+        // Panel central: título arriba, tabla abajo (la tabla ocupa el grueso)
+        JPanel centerPanelLocalVariableValue = new JPanel(new BorderLayout());
+        centerPanelLocalVariableValue.setBackground(BACKGROUND);
+        centerPanelLocalVariableValue.add(leagueReferenceTitleLocalVariableValue, BorderLayout.NORTH);
+        centerPanelLocalVariableValue.add(scrollPaneLocalVariableValue, BorderLayout.CENTER);
 
-        // Añadir paneles al frame
+        mainPanelLocalVariableValue.add(topButtonsPanelLocalVariableValue, BorderLayout.NORTH);
+        mainPanelLocalVariableValue.add(centerPanelLocalVariableValue, BorderLayout.CENTER);
+
         add(headerLocalVariableValue, BorderLayout.NORTH);
         add(mainPanelLocalVariableValue, BorderLayout.CENTER);
+
+        // Carga inicial de la tabla con los datos recibidos
+        refreshStandings(
+                informationOfTeamsParameterValue,
+                teamsParameterValue,
+                playerProfileManagerServiceParameterValue
+        );
 
         setVisible(true);
     }
 
     /**
-     * Registra el controlador de eventos para los botones interactivos de la vista.
-     *
-     * @param controller Acción a ejecutar cuando se presionan los botones.
+     * Vuelve a calcular y mostrar la clasificación. Pensado para que el
+     * controlador lo llame desde un timer cada pocos segundos.
+     */
+    public void refreshStandings(ArrayList<TeamInfo> informationOfTeamsParameterValue,
+                                 ArrayList<Team> teamsParameterValue,
+                                 PlayerManager playerProfileManagerServiceParameterValue) {
+        if (informationOfTeamsParameterValue == null || teamsParameterValue == null) {
+            return;
+        }
+
+        // Ordenamos por puntos descendentes (apartado 2.7)
+        List<TeamInfo> sortedTeamsLocalVariableValue = new ArrayList<>(informationOfTeamsParameterValue);
+        sortedTeamsLocalVariableValue.sort(
+                Comparator.comparingInt(TeamInfo::getPoints).reversed()
+        );
+
+        Object[][] rowsLocalVariableValue =
+                buildRowsForStandings(
+                        sortedTeamsLocalVariableValue,
+                        teamsParameterValue,
+                        playerProfileManagerServiceParameterValue
+                );
+
+        // Reemplazamos los datos del modelo en el EDT
+        Runnable updateRunnableLocalVariableValue = () -> {
+            tableModelFieldReference.setDataVector(rowsLocalVariableValue, COLUMN_NAMES);
+            tableModelFieldReference.fireTableDataChanged();
+        };
+        if (SwingUtilities.isEventDispatchThread()) {
+            updateRunnableLocalVariableValue.run();
+        } else {
+            SwingUtilities.invokeLater(updateRunnableLocalVariableValue);
+        }
+    }
+
+    /**
+     * Construye las filas de la tabla a partir de la lista ordenada de
+     * TeamInfo y la lista de Teams reales (para resolver nombres).
+     */
+    private Object[][] buildRowsForStandings(List<TeamInfo> sortedTeamsParameterValue,
+                                             ArrayList<Team> teamsParameterValue2,
+                                             PlayerManager playerProfileManagerServiceParameterValue2) {
+        Object[][] dataLocalVariableValue =
+                new Object[sortedTeamsParameterValue.size()][COLUMN_NAMES.length];
+
+        for (int indexCounterLocalVariableValue = 0;
+             indexCounterLocalVariableValue < sortedTeamsParameterValue.size();
+             indexCounterLocalVariableValue++) {
+
+            TeamInfo informationLocalVariableValue =
+                    sortedTeamsParameterValue.get(indexCounterLocalVariableValue);
+
+            String teamNameLocalVariableValue =
+                    String.valueOf(informationLocalVariableValue.getTeamId());
+
+            for (Team teamReferenceLocalVariableValue : teamsParameterValue2) {
+                if (teamReferenceLocalVariableValue.getId() == informationLocalVariableValue.getTeamId()) {
+                    teamNameLocalVariableValue = teamReferenceLocalVariableValue.getName();
+                    break;
+                }
+            }
+
+            int playerCountLocalVariableValue =
+                    playerProfileManagerServiceParameterValue2 != null
+                            ? playerProfileManagerServiceParameterValue2
+                                    .getNumberOfPlayersByTeamName(teamNameLocalVariableValue)
+                            : 0;
+
+            dataLocalVariableValue[indexCounterLocalVariableValue][0] = indexCounterLocalVariableValue + 1;
+            dataLocalVariableValue[indexCounterLocalVariableValue][1] = teamNameLocalVariableValue;
+            dataLocalVariableValue[indexCounterLocalVariableValue][2] = playerCountLocalVariableValue;
+            dataLocalVariableValue[indexCounterLocalVariableValue][3] = informationLocalVariableValue.getWins();
+            dataLocalVariableValue[indexCounterLocalVariableValue][4] = informationLocalVariableValue.getTies();
+            dataLocalVariableValue[indexCounterLocalVariableValue][5] = informationLocalVariableValue.getDefeats();
+            dataLocalVariableValue[indexCounterLocalVariableValue][6] = informationLocalVariableValue.getPoints();
+        }
+
+        return dataLocalVariableValue;
+    }
+
+    /**
+     * Registra el controlador de eventos de los botones interactivos.
      */
     public void registerController(ActionListener controllerHandlerParameterValue) {
         backButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         backButtonFieldReference.setActionCommand(BACK);
-
-//        configButton.addActionListener(controller); //boton config comentados para inhabilitarlo
-//        configButton.setActionCommand(CONFIG);
 
         statsButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         calendarButtonFieldReference.addActionListener(controllerHandlerParameterValue);
@@ -169,15 +244,19 @@ public class LeagueDetailView extends JFrame {
         tableFieldReference.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent eventArgumentParameterValue) {
-                int rowLocalVariableValue = tableFieldReference.rowAtPoint(eventArgumentParameterValue.getPoint());
+                int rowLocalVariableValue =
+                        tableFieldReference.rowAtPoint(eventArgumentParameterValue.getPoint());
                 if (rowLocalVariableValue >= 0) {
-                    String teamReferenceDisplayNameLocalVariableValue2 = tableFieldReference.getValueAt(rowLocalVariableValue, 1).toString();
-                    ActionEvent eventLocalVariableValue = new ActionEvent(teamReferenceDisplayNameLocalVariableValue2, ActionEvent.ACTION_PERFORMED, "Show Team Info");
+                    String teamReferenceDisplayNameLocalVariableValue =
+                            tableFieldReference.getValueAt(rowLocalVariableValue, 1).toString();
+                    ActionEvent eventLocalVariableValue = new ActionEvent(
+                            teamReferenceDisplayNameLocalVariableValue,
+                            ActionEvent.ACTION_PERFORMED,
+                            "Show Team Info"
+                    );
                     controllerHandlerParameterValue.actionPerformed(eventLocalVariableValue);
                 }
             }
         });
-
     }
-
 }

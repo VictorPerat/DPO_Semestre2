@@ -152,6 +152,9 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
             }
         }
 
+        // Cierra el widget de partidos en directo (apartado 2.9)
+        presentation.LiveMatchesWidgetService.hide();
+
         // Limpia el usuario actual
         playerProfileManagerServiceFieldReference.setCurrentIdentifier(null);
 

@@ -1,5 +1,6 @@
 package bussines.managers;
 
+import bussines.LiveMatchesRegistry;
 import bussines.objects.Team;
 import persistance.TeamDao;
 import java.util.ArrayList;
@@ -33,11 +34,18 @@ public class TeamManager {
         return teamReferenceDataAccessObjectFieldReference.getTeamId(teamReferenceDisplayNameParameterValue);
     }
 
-    // Borra varios equipos y devuelve un mensaje con el resultado
+    // Borra varios equipos y devuelve un mensaje con el resultado.
+    // Antes de borrar cada equipo, paramos los partidos en curso en
+    // los que esté participando (apartado 2.11 del enunciado).
     public String deleteTeams(ArrayList<String> selectedTeamsParameterValue) {
         StringBuilder resultLocalVariableValue = new StringBuilder("Deleted teams:\n");
 
         for (String teamReferenceDisplayNameLocalVariableValue : selectedTeamsParameterValue) {
+            // Aborta cualquier simulación en curso que afecte a este equipo
+            LiveMatchesRegistry.getInstance().abortMatchesByTeam(
+                    teamReferenceDisplayNameLocalVariableValue
+            );
+
             boolean successLocalVariableValue =
                     teamReferenceDataAccessObjectFieldReference.deleteTeamByName(
                             teamReferenceDisplayNameLocalVariableValue

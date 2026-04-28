@@ -1,5 +1,9 @@
 package application;
 
+import bussines.MatchSimulationScheduler;
+import bussines.managers.ConfigManager;
+import bussines.managers.GameManager;
+import bussines.managers.LeagueManager;
 import bussines.managers.PlayerManager;
 import persistance.DatabaseConnector;
 import presentation.AppNavigator;
@@ -24,16 +28,45 @@ public final class LeagueManagerApplication {
 
     // Función principal para arrancar la aplicación
     public static void launch() {
+        // Cargamos la configuración (config.json) antes que nada
+        // para que el resto del sistema (BD, login admin, ...) la
+        // tenga disponible.
+        ConfigManager configManagerServiceLocalVariableValue = new ConfigManager();
+
         // Primero comprobamos si la base de datos está disponible
         if (!isDatabaseAvailable()) {
             System.exit(1);
         }
 
+        // Aplica migraciones idempotentes (winner_name en games, etc.)
+        DatabaseConnector.getInstance().ensureSchema();
+
         // Aplicamos el estilo visual del sistema operativo
         configureLookAndFeel();
 
+        // Arrancamos la simulación automática de partidos en segundo
+        // plano (apartados 2.6.1 y 2.8 del enunciado). El scheduler
+        // mantendrá un MatchRunner por liga, también para las ligas
+        // creadas mientras la app esté corriendo.
+        startMatchSimulation(configManagerServiceLocalVariableValue);
+
         // Iniciamos la interfaz en el hilo de Swing
         SwingUtilities.invokeLater(LeagueManagerApplication::initializeApplication);
+    }
+
+    /**
+     * Lanza el supervisor que crea un {@link bussines.MatchRunner} por
+     * cada liga existente y por cada liga que se cree en runtime.
+     */
+    private static void startMatchSimulation(ConfigManager configParameterValue) {
+        GameManager gameEntityManagerServiceLocalVariableValue = new GameManager();
+        LeagueManager leagueReferenceManagerServiceLocalVariableValue = new LeagueManager();
+
+        MatchSimulationScheduler.start(
+                gameEntityManagerServiceLocalVariableValue,
+                leagueReferenceManagerServiceLocalVariableValue,
+                configParameterValue
+        );
     }
 
     // Comprueba si hay conexión con la base de datos

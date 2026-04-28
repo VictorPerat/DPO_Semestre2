@@ -1,6 +1,9 @@
 package bussines.managers;
 
+import bussines.LiveMatchesRegistry;
+import bussines.objects.Game;
 import bussines.objects.League;
+import bussines.objects.LeagueListEntry;
 import bussines.objects.Team;
 import bussines.objects.TeamInfo;
 import persistance.LeagueDao;
@@ -35,6 +38,227 @@ public class LeagueManager {
     // Devuelve todas las ligas guardadas
     public ArrayList<League> getAllLeagues() {
         return leagueReferenceDataAccessObjectFieldReference.getAllLeagues();
+    }
+
+    /**
+     * Reconstruye la evolución de puntos por jornada de cada equipo de
+     * una liga (apartado 2.7.1 del enunciado).
+     *
+     * Recorre los partidos por orden de jornada y asigna 3 puntos al
+     * ganador (o 1 a cada uno si fue empate). Los partidos no acabados
+     * no aportan puntos. Devuelve un objeto con:
+     *  - matriz [equipo][jornada] con los puntos acumulados.
+     *  - lista de nombres de equipos (mismo orden que la matriz).
+     *  - número total de jornadas de la liga.
+     */
+    public StandingsTimeline computeStandingsTimeline(int leagueReferenceIdentifierParameterValue) {
+        ArrayList<bussines.objects.Game> gamesLocalVariableValue =
+                gameEntityManagerServiceFieldReference.getGamesByLeague(
+                        leagueReferenceIdentifierParameterValue
+                );
+
+        if (gamesLocalVariableValue == null || gamesLocalVariableValue.isEmpty()) {
+            return new StandingsTimeline(new String[0], new int[0][0], 0);
+        }
+
+        // Determinamos el conjunto de equipos y el número total de jornadas
+        java.util.LinkedHashSet<String> teamSetLocalVariableValue =
+                new java.util.LinkedHashSet<>();
+        int totalRoundsLocalVariableValue = 0;
+        for (bussines.objects.Game gameEntityLocalVariableValue : gamesLocalVariableValue) {
+            teamSetLocalVariableValue.add(gameEntityLocalVariableValue.getNomLocal());
+            teamSetLocalVariableValue.add(gameEntityLocalVariableValue.getNomVisitant());
+            if (gameEntityLocalVariableValue.getJornada() > totalRoundsLocalVariableValue) {
+                totalRoundsLocalVariableValue = gameEntityLocalVariableValue.getJornada();
+            }
+        }
+
+        String[] teamNamesLocalVariableValue =
+                teamSetLocalVariableValue.toArray(new String[0]);
+        int teamCountLocalVariableValue = teamNamesLocalVariableValue.length;
+
+        // Mapa nombre -> índice en el array final
+        java.util.HashMap<String, Integer> teamIndexLocalVariableValue =
+                new java.util.HashMap<>();
+        for (int indexCounterLocalVariableValue = 0;
+             indexCounterLocalVariableValue < teamCountLocalVariableValue;
+             indexCounterLocalVariableValue++) {
+            teamIndexLocalVariableValue.put(
+                    teamNamesLocalVariableValue[indexCounterLocalVariableValue],
+                    indexCounterLocalVariableValue
+            );
+        }
+
+        // Inicialmente todos los equipos tienen 0 puntos en cada jornada
+        int[][] cumulativePointsLocalVariableValue =
+                new int[teamCountLocalVariableValue][totalRoundsLocalVariableValue];
+
+        // Para cada jornada, los puntos acumulados son los de la
+        // jornada anterior + lo ganado en esta jornada concreta.
+        for (int roundIndexLocalVariableValue = 0;
+             roundIndexLocalVariableValue < totalRoundsLocalVariableValue;
+             roundIndexLocalVariableValue++) {
+
+            int currentRoundLocalVariableValue = roundIndexLocalVariableValue + 1;
+
+            // Copiar acumulado de la jornada anterior
+            if (roundIndexLocalVariableValue > 0) {
+                for (int teamIdxLocalVariableValue = 0;
+                     teamIdxLocalVariableValue < teamCountLocalVariableValue;
+                     teamIdxLocalVariableValue++) {
+                    cumulativePointsLocalVariableValue[teamIdxLocalVariableValue][roundIndexLocalVariableValue] =
+                            cumulativePointsLocalVariableValue[teamIdxLocalVariableValue][roundIndexLocalVariableValue - 1];
+                }
+            }
+
+            // Aplicar resultados de los partidos acabados en esta jornada
+            for (bussines.objects.Game gameEntityLocalVariableValue : gamesLocalVariableValue) {
+                if (gameEntityLocalVariableValue.getJornada() != currentRoundLocalVariableValue) {
+                    continue;
+                }
+                if (!gameEntityLocalVariableValue.isAcabat()) {
+                    continue;
+                }
+
+                String winnerLocalVariableValue =
+                        gameEntityLocalVariableValue.getWinnerName();
+                String homeLocalVariableValue =
+                        gameEntityLocalVariableValue.getNomLocal();
+                String awayLocalVariableValue =
+                        gameEntityLocalVariableValue.getNomVisitant();
+
+                Integer homeIdxLocalVariableValue =
+                        teamIndexLocalVariableValue.get(homeLocalVariableValue);
+                Integer awayIdxLocalVariableValue =
+                        teamIndexLocalVariableValue.get(awayLocalVariableValue);
+
+                if (winnerLocalVariableValue == null
+                        || winnerLocalVariableValue.equalsIgnoreCase("DRAW")) {
+                    if (homeIdxLocalVariableValue != null) {
+                        cumulativePointsLocalVariableValue[homeIdxLocalVariableValue][roundIndexLocalVariableValue] += 1;
+                    }
+                    if (awayIdxLocalVariableValue != null) {
+                        cumulativePointsLocalVariableValue[awayIdxLocalVariableValue][roundIndexLocalVariableValue] += 1;
+                    }
+                } else {
+                    Integer winnerIdxLocalVariableValue =
+                            teamIndexLocalVariableValue.get(winnerLocalVariableValue);
+                    if (winnerIdxLocalVariableValue != null) {
+                        cumulativePointsLocalVariableValue[winnerIdxLocalVariableValue][roundIndexLocalVariableValue] += 3;
+                    }
+                }
+            }
+        }
+
+        return new StandingsTimeline(
+                teamNamesLocalVariableValue,
+                cumulativePointsLocalVariableValue,
+                totalRoundsLocalVariableValue
+        );
+    }
+
+    /**
+     * Resultado del cálculo de evolución de puntos por jornada.
+     */
+    public static class StandingsTimeline {
+        private final String[] teamNamesFieldReference;
+        private final int[][] cumulativePointsFieldReference;
+        private final int totalRoundsFieldReference;
+
+        public StandingsTimeline(String[] teamNamesParameterValue,
+                                 int[][] cumulativePointsParameterValue,
+                                 int totalRoundsParameterValue) {
+            this.teamNamesFieldReference = teamNamesParameterValue;
+            this.cumulativePointsFieldReference = cumulativePointsParameterValue;
+            this.totalRoundsFieldReference = totalRoundsParameterValue;
+        }
+
+        public String[] getTeamNames() { return teamNamesFieldReference; }
+        public int[][] getCumulativePoints() { return cumulativePointsFieldReference; }
+        public int getTotalRounds() { return totalRoundsFieldReference; }
+    }
+
+    /**
+     * Calcula la etiqueta de estado de una liga (apartado 2.7 del
+     * enunciado): "Finished" si todos los partidos han acabado,
+     * "Round X" si la liga está en curso (X = jornada actual mayor con
+     * algún partido iniciado) o "Pending" si todavía no ha empezado.
+     */
+    public String getLeagueStatusLabel(int leagueReferenceIdentifierParameterValue) {
+        ArrayList<Game> gamesLocalVariableValue =
+                gameEntityManagerServiceFieldReference.getGamesByLeague(
+                        leagueReferenceIdentifierParameterValue
+                );
+
+        if (gamesLocalVariableValue == null || gamesLocalVariableValue.isEmpty()) {
+            return LeagueListEntry.STATUS_PENDING;
+        }
+
+        boolean allFinishedLocalVariableValue = true;
+        int currentRoundLocalVariableValue = 0;
+
+        for (Game gameEntityLocalVariableValue : gamesLocalVariableValue) {
+            if (!gameEntityLocalVariableValue.isAcabat()) {
+                allFinishedLocalVariableValue = false;
+            }
+            if (gameEntityLocalVariableValue.isComençat()
+                    && gameEntityLocalVariableValue.getJornada() > currentRoundLocalVariableValue) {
+                currentRoundLocalVariableValue = gameEntityLocalVariableValue.getJornada();
+            }
+        }
+
+        if (allFinishedLocalVariableValue) {
+            return LeagueListEntry.STATUS_FINISHED;
+        }
+        if (currentRoundLocalVariableValue == 0) {
+            return LeagueListEntry.STATUS_PENDING;
+        }
+        return "Round " + currentRoundLocalVariableValue;
+    }
+
+    /**
+     * Construye la lista de entradas que verá la pantalla de ligas
+     * disponibles. Cada entrada incluye nombre, número de equipos y
+     * estado actual (apartado 2.7 del enunciado).
+     *
+     * @param isAdminParameterValue si es true se devuelven todas las
+     *        ligas; si es false se filtran por las del equipo del
+     *        jugador.
+     * @param userTeamNameParameterValue nombre del equipo del jugador
+     *        actual (ignorado cuando isAdmin = true).
+     */
+    public ArrayList<LeagueListEntry> getLeagueListEntries(boolean isAdminParameterValue,
+                                                           String userTeamNameParameterValue) {
+        ArrayList<League> leaguesLocalVariableValue;
+        if (isAdminParameterValue) {
+            leaguesLocalVariableValue = getAllLeagues();
+        } else if (userTeamNameParameterValue != null) {
+            leaguesLocalVariableValue = getLeaguesByUserTeam(userTeamNameParameterValue);
+        } else {
+            leaguesLocalVariableValue = new ArrayList<>();
+        }
+
+        ArrayList<LeagueListEntry> entriesLocalVariableValue = new ArrayList<>();
+        for (League leagueReferenceLocalVariableValue : leaguesLocalVariableValue) {
+            int leagueReferenceIdentifierLocalVariableValue =
+                    getLeagueIdByName(leagueReferenceLocalVariableValue.getName());
+
+            int teamCountLocalVariableValue =
+                    informationTeamReferenceManagerServiceFieldReference
+                            .getInfoTeamsOfLeague(leagueReferenceIdentifierLocalVariableValue)
+                            .size();
+
+            String statusLabelLocalVariableValue =
+                    getLeagueStatusLabel(leagueReferenceIdentifierLocalVariableValue);
+
+            entriesLocalVariableValue.add(new LeagueListEntry(
+                    leagueReferenceLocalVariableValue,
+                    teamCountLocalVariableValue,
+                    statusLabelLocalVariableValue
+            ));
+        }
+
+        return entriesLocalVariableValue;
     }
 
     // Devuelve las ligas en las que participa un equipo
@@ -131,7 +355,28 @@ public class LeagueManager {
         return leagueReferenceDataAccessObjectFieldReference.getLeagueIdByTeam(teamReferenceDisplayNameParameterValue2);
     }
 
-    // Genera los partidos de una liga usando round-robin y los guarda
+    /**
+     * Genera los partidos de una liga usando round-robin a doble vuelta
+     * y los guarda en la base de datos (apartado 2.6.1 del enunciado).
+     *
+     * Reglas aplicadas:
+     *  - Todos los equipos juegan contra todos una vez por vuelta.
+     *  - Un equipo no juega contra sí mismo.
+     *  - Si el número de equipos es impar, se añade un equipo ficticio
+     *    "DESCANSA" para que cada jornada quede uno sin jugar.
+     *  - La primera jornada empieza 1 minuto después de la fecha y hora
+     *    indicadas por el administrador.
+     *  - Las jornadas siguientes se separan por
+     *    {@code matchTime + 1} minutos (duración del partido + 1 minuto
+     *    de espera, según el apartado 2.6.1).
+     *  - En la segunda vuelta se invierte local/visitante.
+     *
+     * @param teamReferenceNamesParameterValue2 nombres de los equipos
+     *        que participan en la liga.
+     * @param leagueReferenceIdentifierParameterValue id de la liga.
+     * @param timeParameterValue2 fecha y hora introducidas por el admin
+     *        al crear la liga (sin el +1 minuto, este método lo aplica).
+     */
     public void generateAndInsertMatchesForLeague(ArrayList<String> teamReferenceNamesParameterValue2,
                                                   int leagueReferenceIdentifierParameterValue,
                                                   LocalDateTime timeParameterValue2) {
@@ -150,6 +395,16 @@ public class LeagueManager {
         ArrayList<String> rotatedTeamsLocalVariableValue = new ArrayList<>(teamReferenceNamesParameterValue2);
         String fixedTeamReferenceLocalVariableValue = rotatedTeamsLocalVariableValue.remove(0);
 
+        // La primera jornada empieza 1 minuto después de la fecha-hora
+        // configurada por el admin (apartado 2.6.1 del enunciado).
+        LocalDateTime jornadaTimeLocalVariableValue = timeParameterValue2.plusMinutes(1);
+
+        // Separación entre jornadas: duración del partido + 1 minuto de
+        // espera. Se lee de config.json para que sea coherente con el
+        // valor "matchTime" usado por la simulación.
+        int matchDurationMinutesLocalVariableValue = ConfigManager.getDurationMatch();
+        long minutesBetweenRoundsLocalVariableValue = matchDurationMinutesLocalVariableValue + 1L;
+
         for (int roundLocalVariableValue = 1; roundLocalVariableValue <= totalRoundsLocalVariableValue * 2; roundLocalVariableValue++) {
             for (int indexCounterLocalVariableValue = 0; indexCounterLocalVariableValue < numberMatchesPerRoundLocalVariableValue; indexCounterLocalVariableValue++) {
 
@@ -164,6 +419,7 @@ public class LeagueManager {
                     visitanteLocalVariableValue =
                             rotatedTeamsLocalVariableValue.get(rotatedTeamsLocalVariableValue.size() - indexCounterLocalVariableValue - 1);
                 } else {
+                    // Segunda vuelta: se invierte local/visitante.
                     visitanteLocalVariableValue = (indexCounterLocalVariableValue == 0)
                             ? fixedTeamReferenceLocalVariableValue
                             : rotatedTeamsLocalVariableValue.get(indexCounterLocalVariableValue - 1);
@@ -182,12 +438,14 @@ public class LeagueManager {
                         visitanteLocalVariableValue,
                         leagueReferenceIdentifierParameterValue,
                         roundLocalVariableValue,
-                        timeParameterValue2
+                        jornadaTimeLocalVariableValue
                 );
             }
 
-            // Pasa al siguiente bloque horario
-            timeParameterValue2 = timeParameterValue2.plusMinutes(2);
+            // Pasa al siguiente bloque horario respetando el tiempo de
+            // partido + 1 minuto de espera entre jornadas.
+            jornadaTimeLocalVariableValue =
+                    jornadaTimeLocalVariableValue.plusMinutes(minutesBetweenRoundsLocalVariableValue);
 
             // Rota los equipos para la siguiente jornada
             String lastLocalVariableValue =
@@ -204,6 +462,12 @@ public class LeagueManager {
 
             int leagueReferenceIdentifierLocalVariableValue2 =
                     getLeagueIdByName(leagueReferenceDisplayNameLocalVariableValue);
+
+            // Antes de borrar nada, paramos los partidos en curso de
+            // esta liga (apartado 2.10 del enunciado).
+            LiveMatchesRegistry.getInstance().abortMatchesByLeague(
+                    leagueReferenceIdentifierLocalVariableValue2
+            );
 
             ArrayList<TeamInfo> teamsLocalVariableValue =
                     informationTeamReferenceManagerServiceFieldReference.getInfoTeamsOfLeague(

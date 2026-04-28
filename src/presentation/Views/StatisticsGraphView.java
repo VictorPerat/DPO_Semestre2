@@ -64,8 +64,6 @@ public class StatisticsGraphView extends JFrame {
         mainPanelFieldReference.add(chartContainerFieldReference, BorderLayout.CENTER);
 
         add(mainPanelFieldReference);
-
-        initializeLeaguesData();
     }
     /**
      * Crea el panel de título con los botones de navegación y el título principal.
@@ -162,35 +160,6 @@ public class StatisticsGraphView extends JFrame {
         containerLocalVariableValue2.add(chartPanelFieldReference, BorderLayout.CENTER);
 
         return containerLocalVariableValue2;
-    }
-    /**
-     * Inicializa datos ficticios de ligas y equipos para pruebas de visualización.
-     */
-    private void initializeLeaguesData() {
-        Random randLocalVariableValue = new Random();
-        for (int leagueReferenceLocalVariableValue2 = 1; leagueReferenceLocalVariableValue2 <= 10; leagueReferenceLocalVariableValue2++) {
-            int[][] pointsLocalVariableValue = new int[15][40];
-            for (int teamReferenceLocalVariableValue = 0; teamReferenceLocalVariableValue < 15; teamReferenceLocalVariableValue++) {
-                int cumulativeLocalVariableValue = 0;
-                for (int weekLocalVariableValue = 0; weekLocalVariableValue < 40; weekLocalVariableValue++) {
-                    cumulativeLocalVariableValue += randLocalVariableValue.nextInt(90);
-                    pointsLocalVariableValue[teamReferenceLocalVariableValue][weekLocalVariableValue] = cumulativeLocalVariableValue;
-                }
-            }
-            leagueReferenceDataFieldReference.put(leagueReferenceLocalVariableValue2, pointsLocalVariableValue);
-            currentWeeksFieldReference.put(leagueReferenceLocalVariableValue2, randLocalVariableValue.nextInt(40) + 1);
-        }
-    }
-    /**
-     * Muestra los datos del gráfico correspondientes a una liga específica.
-     * @param league ID de la liga.
-     */
-    public void showLeagueData(int leagueReferenceParameterValue) {
-        leagueReferenceTitleLabelFieldReference.setText("STATISTICS - LEAGUE " + leagueReferenceParameterValue);
-        chartPanelFieldReference.updateData(
-                leagueReferenceDataFieldReference.get(leagueReferenceParameterValue),
-                currentWeeksFieldReference.get(leagueReferenceParameterValue)
-        );
     }
     /**
      * Actualiza los datos del gráfico con información real.

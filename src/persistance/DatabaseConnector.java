@@ -19,6 +19,9 @@ public class DatabaseConnector {
     // Conexión compartida con la base de datos
     private Connection connFieldReference;
 
+    // Bandera para imprimir el mensaje de éxito solo una vez
+    private static boolean firstConnectionLoggedFieldReference = false;
+
     // Manager que lee la configuración del proyecto
     private final ConfigManager configManagerServiceFieldReference;
 
@@ -71,7 +74,12 @@ public class DatabaseConnector {
                     userPasswordLocalVariableValue
             );
 
-            System.out.println("Conexión exitosa a la base de datos.");
+            // Solo se notifica la primera vez que se establece conexión
+            // para no inundar la consola con cada reconexión.
+            if (!firstConnectionLoggedFieldReference) {
+                System.out.println("Conexión exitosa a la base de datos.");
+                firstConnectionLoggedFieldReference = true;
+            }
 
         } catch (SQLException eventArgumentExceptionParameter) {
             connFieldReference = null;
@@ -103,6 +111,29 @@ public class DatabaseConnector {
             return connFieldReference != null && !connFieldReference.isClosed();
         } catch (SQLException eventArgumentExceptionParameter3) {
             return false;
+        }
+    }
+
+    /**
+     * Aplica migraciones de esquema mínimas si todavía no se han
+     * aplicado. Se llama una vez al arrancar la aplicación. Si la
+     * columna o tabla ya existe el ALTER falla silenciosamente.
+     */
+    public void ensureSchema() {
+        runSilentDdl("ALTER TABLE games ADD COLUMN winner_name VARCHAR(100) NULL DEFAULT NULL");
+    }
+
+    /**
+     * Ejecuta una sentencia DDL (ALTER, CREATE…) ignorando errores.
+     * Útil para migraciones idempotentes que pueden fallar si ya están
+     * aplicadas.
+     */
+    private void runSilentDdl(String ddlStatementParameterValue) {
+        try (Connection ddlConnectionLocalVariableValue = createConnection();
+             Statement ddlStatementLocalVariableValue = ddlConnectionLocalVariableValue.createStatement()) {
+            ddlStatementLocalVariableValue.executeUpdate(ddlStatementParameterValue);
+        } catch (SQLException ignoredExceptionParameterValue) {
+            // Si la columna/tabla ya existe, ignoramos el error.
         }
     }
 
