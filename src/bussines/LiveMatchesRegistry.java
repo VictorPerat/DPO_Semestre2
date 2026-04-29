@@ -26,6 +26,7 @@ public final class LiveMatchesRegistry {
         int getLeagueId();
         String getHomeTeamName();
         String getAwayTeamName();
+        void showMatchWindow();
         void abortMatch();
     }
 
@@ -51,6 +52,30 @@ public final class LiveMatchesRegistry {
     /** Quita un partido del registro (al acabar normalmente). */
     public void unregister(int gameIdParameterValue) {
         activeMatchesFieldReference.remove(gameIdParameterValue);
+    }
+
+    /** Indica si ya existe una simulación activa para ese partido. */
+    public boolean isRegistered(int gameIdParameterValue) {
+        return activeMatchesFieldReference.containsKey(gameIdParameterValue);
+    }
+
+    /**
+     * Intenta mostrar la ventana asociada al partido en curso.
+     *
+     * @return true si el partido estaba registrado y se pudo delegar la
+     *         apertura de su ventana; false si no existe simulación
+     *         activa para ese gameId.
+     */
+    public boolean showMatchWindow(int gameIdParameterValue) {
+        AbortableMatch matchLocalVariableValue =
+                activeMatchesFieldReference.get(gameIdParameterValue);
+
+        if (matchLocalVariableValue == null) {
+            return false;
+        }
+
+        matchLocalVariableValue.showMatchWindow();
+        return true;
     }
 
     /**

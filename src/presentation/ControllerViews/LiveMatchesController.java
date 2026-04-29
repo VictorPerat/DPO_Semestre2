@@ -1,9 +1,9 @@
 package presentation.ControllerViews;
 
+import bussines.LiveMatchesRegistry;
 import bussines.managers.GameManager;
 import bussines.managers.PlayerManager;
 import presentation.AppNavigator;
-import presentation.Views.LiveMatchView;
 import presentation.Views.LiveMatchesView;
 
 import java.awt.event.ActionEvent;
@@ -71,8 +71,16 @@ public class LiveMatchesController implements ActionListener {
                 if (matchLocalVariableValue.length >= 3) {
                     try {
                         int gameIdLocalVariableValue = Integer.parseInt(matchLocalVariableValue[2]);
-                        LiveMatchView matchViewInterfaceLocalVariableValue = new LiveMatchView(matchLocalVariableValue[0], matchLocalVariableValue[1], gameIdLocalVariableValue);
-                        matchViewInterfaceLocalVariableValue.setVisible(true);
+                        boolean openedExistingMatchLocalVariableValue =
+                                LiveMatchesRegistry.getInstance().showMatchWindow(
+                                        gameIdLocalVariableValue
+                                );
+
+                        if (!openedExistingMatchLocalVariableValue) {
+                            viewInterfaceFieldReference.showMessageDialog(
+                                    "This live match is still starting. Try again in a moment."
+                            );
+                        }
                     } catch (NumberFormatException ignoredExceptionParameterValue) {
                         viewInterfaceFieldReference.showMessageDialog("Cannot open this match.");
                     }

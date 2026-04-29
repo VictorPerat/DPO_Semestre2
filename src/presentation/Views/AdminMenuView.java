@@ -234,7 +234,6 @@ public class AdminMenuView extends JPanel {
         rowLocalVariableValue.setOpaque(false);
 
         rowLocalVariableValue.add(buildMainMenuCard());
-        rowLocalVariableValue.add(buildLiveMatchesCard());
 
         return rowLocalVariableValue;
     }

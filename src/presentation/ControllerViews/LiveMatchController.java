@@ -174,6 +174,19 @@ public class LiveMatchController implements LiveMatchesRegistry.AbortableMatch {
         return gameEntityFieldReference.getNomVisitant();
     }
 
+    @Override
+    public void showMatchWindow() {
+        if (simulateViewInterfaceFieldReference == null) {
+            return;
+        }
+
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            simulateViewInterfaceFieldReference.setVisible(true);
+            simulateViewInterfaceFieldReference.toFront();
+            simulateViewInterfaceFieldReference.requestFocus();
+        });
+    }
+
     /**
      * Detiene la simulación a medio curso, marca el partido como
      * acabado en BD (sin asignar puntos a nadie) y libera la vista.

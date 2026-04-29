@@ -7,6 +7,7 @@ import bussines.managers.LeagueManager;
 import bussines.managers.PlayerManager;
 import persistance.DatabaseConnector;
 import presentation.AppNavigator;
+import presentation.LiveMatchesWidgetService;
 import presentation.ControllerViews.*;
 import presentation.Views.*;
 
@@ -139,6 +140,7 @@ public final class LeagueManagerApplication {
         );
 
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.PROFILE, userProfileControllerHandlerLocalVariableValue::refreshCurrentPlayer);
+        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.LOGIN, LiveMatchesWidgetService::hide);
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.CHANGE_PASSWORD, changePasswordViewInterfaceLocalVariableValue::clearForm);
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.AVAILABLE_LEAGUES, availableLeaguesControllerHandlerLocalVariableValue::startAutoRefresh);
         navigatorLocalVariableValue.registerOnHideHook(AppNavigator.AVAILABLE_LEAGUES, availableLeaguesControllerHandlerLocalVariableValue::stopAutoRefresh);

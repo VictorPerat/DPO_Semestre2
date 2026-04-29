@@ -1,6 +1,5 @@
 package presentation.ControllerViews;
 
-import bussines.managers.GameManager;
 import bussines.managers.PlayerManager;
 import presentation.AppNavigator;
 import presentation.Views.PlayerMenuView;
@@ -14,7 +13,6 @@ import java.util.List;
 public class PlayerMenuController implements ActionListener, MenuController, DeletePlayerListener {
     private final PlayerMenuView playerProfileMenuScreenInterfaceFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
-    private final GameManager gameEntityManagerServiceFieldReference = new GameManager();
     private final AppNavigator navigatorFieldReference;
 
     private Timer liveMatchesPreviewTimerFieldReference;
@@ -64,7 +62,7 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
 
     public void refreshLiveMatchesPreview() {
         List<String[]> liveGamesLocalVariableValue =
-                gameEntityManagerServiceFieldReference.getLiveGames();
+                playerProfileManagerServiceFieldReference.getLiveMatches();
 
         playerProfileMenuScreenInterfaceFieldReference.updateLiveMatches(liveGamesLocalVariableValue);
     }

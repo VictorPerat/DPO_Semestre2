@@ -173,7 +173,42 @@ public class PlayerManager {
 
     // Devuelve los partidos en directo
     public List<String[]> getLiveMatches() {
-        return new ArrayList<>();
+        Player currentPlayerProfileLocalVariableValue = getCurrentPlayer();
+
+        if (currentPlayerProfileLocalVariableValue == null
+                || currentPlayerProfileLocalVariableValue.getTeam() == null
+                || currentPlayerProfileLocalVariableValue.getTeam().trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LeagueManager leagueReferenceManagerServiceLocalVariableValue = new LeagueManager();
+        GameManager gameEntityManagerServiceLocalVariableValue = new GameManager();
+
+        ArrayList<bussines.objects.League> playerLeaguesLocalVariableValue =
+                leagueReferenceManagerServiceLocalVariableValue.getLeaguesByUserTeam(
+                        currentPlayerProfileLocalVariableValue.getTeam()
+                );
+
+        java.util.HashSet<Integer> leagueIdsLocalVariableValue = new java.util.HashSet<>();
+
+        for (bussines.objects.League leagueReferenceLocalVariableValue : playerLeaguesLocalVariableValue) {
+            int leagueIdLocalVariableValue = leagueReferenceLocalVariableValue.getId();
+
+            if (leagueIdLocalVariableValue <= 0) {
+                leagueIdLocalVariableValue =
+                        leagueReferenceManagerServiceLocalVariableValue.getLeagueIdByName(
+                                leagueReferenceLocalVariableValue.getName()
+                        );
+            }
+
+            if (leagueIdLocalVariableValue != -1) {
+                leagueIdsLocalVariableValue.add(leagueIdLocalVariableValue);
+            }
+        }
+
+        return gameEntityManagerServiceLocalVariableValue.getLiveGamesByLeagueIds(
+                leagueIdsLocalVariableValue
+        );
     }
 
     /**

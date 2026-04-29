@@ -58,7 +58,7 @@ public class LiveMatchView extends JFrame {
         setTitle(homeTeamReferenceParameterValue + " vs " + awayTeamReferenceParameterValue);
         setSize(800, 500);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         getContentPane().setBackground(BACKGROUND);
 
         setupUI(homeTeamReferenceParameterValue, awayTeamReferenceParameterValue);
@@ -80,7 +80,9 @@ public class LiveMatchView extends JFrame {
         topPanelLocalVariableValue.setPreferredSize(new Dimension(getWidth(), 60));
 
         JButton backButtonLocalVariableValue = new JButton("←");
-        backButtonLocalVariableValue.addActionListener(eventArgumentParameterValue -> dispose());
+        backButtonLocalVariableValue.addActionListener(
+                eventArgumentParameterValue -> setVisible(false)
+        );
         backButtonLocalVariableValue.setForeground(TEXT_WHITE);
         backButtonLocalVariableValue.setBackground(DARK_BLUE);
         backButtonLocalVariableValue.setBorder(null);

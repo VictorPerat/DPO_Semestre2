@@ -4,6 +4,7 @@ import bussines.objects.Game;
 import persistance.GameDao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
 public class GameManager {
 
     // DAO que se usa para acceder a los datos de los partidos
-    private GameDao gameEntityDataAccessObjectFieldReference = new GameDao();
+    private final GameDao gameEntityDataAccessObjectFieldReference = new GameDao();
 
     // Devuelve todos los partidos de una liga
     public ArrayList<Game> getGamesByLeague(int leagueReferenceIdentifierParameterValue) {
@@ -24,19 +25,30 @@ public class GameManager {
         gameEntityDataAccessObjectFieldReference.actualitzaComençat(gameEntityIdentifierParameterValue, començatParameterValue);
     }
 
+    // Devuelve los partidos en directo visibles para admin
+    public List<String[]> getLiveGames() {
+        return gameEntityDataAccessObjectFieldReference.getLiveGames();
+    }
+
+    // Devuelve los partidos en directo filtrados por ligas
+    public List<String[]> getLiveGamesByLeagueIds(Collection<Integer> leagueIdsParameterValue) {
+        return gameEntityDataAccessObjectFieldReference.getLiveGamesByLeagueIds(leagueIdsParameterValue);
+    }
+
     // Busca el id de un partido usando los nombres de los equipos y la liga
-    public int getGameIdByLeague(String localParameterValue, String visitantParameterValue, int identifierParameterValue) {
-        return gameEntityDataAccessObjectFieldReference.getGameId(localParameterValue, visitantParameterValue, identifierParameterValue);
+    public int getGameIdByLeague(String localParameterValue,
+                                 String visitantParameterValue,
+                                 int identifierParameterValue) {
+        return gameEntityDataAccessObjectFieldReference.getGameId(
+                localParameterValue,
+                visitantParameterValue,
+                identifierParameterValue
+        );
     }
 
     // Borra todos los partidos donde participa un equipo
     public void deleteGamesByTeam(String displayNameParameterValue) {
         gameEntityDataAccessObjectFieldReference.deleteGamesByTeam(displayNameParameterValue);
-    }
-
-    // Devuelve los partidos que están en juego en este momento
-    public List<String[]> getLiveGames() {
-        return gameEntityDataAccessObjectFieldReference.getLiveGames();
     }
 
     // Marca un partido como finalizado
@@ -45,13 +57,12 @@ public class GameManager {
     }
 
     /**
-     * Guarda el ganador del partido (o "DRAW" si fue empate). Esto
-     * permite reconstruir la evolución de puntos por jornada para el
-     * gráfico de estadísticas (apartado 2.7.1 del enunciado).
+     * Guarda el ganador del partido o "DRAW" si fue empate.
      */
     public void setGameWinner(int gameIdParameterValue, String winnerNameParameterValue) {
         gameEntityDataAccessObjectFieldReference.setGameWinner(
-                gameIdParameterValue, winnerNameParameterValue
+                gameIdParameterValue,
+                winnerNameParameterValue
         );
     }
 
@@ -60,10 +71,6 @@ public class GameManager {
         ArrayList<Game> gamesLocalVariableValue =
                 gameEntityDataAccessObjectFieldReference.searchPlayingTeams(selectedTeamsParameterValue);
 
-        if (gamesLocalVariableValue.size() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return gamesLocalVariableValue.size() > 0;
     }
 }

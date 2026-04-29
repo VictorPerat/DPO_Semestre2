@@ -5,6 +5,7 @@ import bussines.objects.Game;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 /**
  * Esta clase se encarga de acceder a los datos de los partidos en la base de datos.
@@ -61,6 +62,102 @@ public class GameDao {
         }
     }
 
+    public List<String[]> getLiveGames() {
+        List<String[]> liveGamesLocalVariableValue = new ArrayList<>();
+
+        String queryLocalVariableValue =
+                "SELECT g.id, g.league_id, th.name AS home_name, ta.name AS away_name " +
+                        "FROM games g " +
+                        "JOIN teams th ON th.id = g.home_team_id " +
+                        "JOIN teams ta ON ta.id = g.away_team_id " +
+                        "WHERE g.started = TRUE AND g.finished = FALSE " +
+                        "ORDER BY g.league_id, g.round_number, g.id";
+
+        try (Connection connectionLocalVariableValue =
+                     DatabaseConnector.getInstance().createConnection();
+             PreparedStatement preparedStatementLocalVariableValue =
+                     connectionLocalVariableValue.prepareStatement(queryLocalVariableValue);
+             ResultSet resultLocalVariableValue =
+                     preparedStatementLocalVariableValue.executeQuery()) {
+
+            while (resultLocalVariableValue.next()) {
+                liveGamesLocalVariableValue.add(mapLiveGame(resultLocalVariableValue));
+            }
+
+        } catch (SQLException eventArgumentExceptionParameter) {
+            eventArgumentExceptionParameter.printStackTrace();
+        }
+
+        return liveGamesLocalVariableValue;
+    }
+
+    public List<String[]> getLiveGamesByLeagueIds(Collection<Integer> leagueIdsParameterValue) {
+        List<String[]> liveGamesLocalVariableValue = new ArrayList<>();
+
+        if (leagueIdsParameterValue == null || leagueIdsParameterValue.isEmpty()) {
+            return liveGamesLocalVariableValue;
+        }
+
+        StringBuilder placeholdersLocalVariableValue = new StringBuilder();
+
+        for (int indexCounterLocalVariableValue = 0;
+             indexCounterLocalVariableValue < leagueIdsParameterValue.size();
+             indexCounterLocalVariableValue++) {
+
+            if (indexCounterLocalVariableValue > 0) {
+                placeholdersLocalVariableValue.append(", ");
+            }
+
+            placeholdersLocalVariableValue.append("?");
+        }
+
+        String queryLocalVariableValue =
+                "SELECT g.id, g.league_id, th.name AS home_name, ta.name AS away_name " +
+                        "FROM games g " +
+                        "JOIN teams th ON th.id = g.home_team_id " +
+                        "JOIN teams ta ON ta.id = g.away_team_id " +
+                        "WHERE g.started = TRUE AND g.finished = FALSE " +
+                        "AND g.league_id IN (" + placeholdersLocalVariableValue + ") " +
+                        "ORDER BY g.league_id, g.round_number, g.id";
+
+        try (Connection connectionLocalVariableValue =
+                     DatabaseConnector.getInstance().createConnection();
+             PreparedStatement preparedStatementLocalVariableValue =
+                     connectionLocalVariableValue.prepareStatement(queryLocalVariableValue)) {
+
+            int parameterCounterLocalVariableValue = 1;
+
+            for (Integer leagueIdLocalVariableValue : leagueIdsParameterValue) {
+                preparedStatementLocalVariableValue.setInt(
+                        parameterCounterLocalVariableValue++,
+                        leagueIdLocalVariableValue
+                );
+            }
+
+            try (ResultSet resultLocalVariableValue =
+                         preparedStatementLocalVariableValue.executeQuery()) {
+
+                while (resultLocalVariableValue.next()) {
+                    liveGamesLocalVariableValue.add(mapLiveGame(resultLocalVariableValue));
+                }
+            }
+
+        } catch (SQLException eventArgumentExceptionParameter) {
+            eventArgumentExceptionParameter.printStackTrace();
+        }
+
+        return liveGamesLocalVariableValue;
+    }
+
+    private String[] mapLiveGame(ResultSet resultLocalVariableValue) throws SQLException {
+        return new String[]{
+                resultLocalVariableValue.getString("home_name"),
+                resultLocalVariableValue.getString("away_name"),
+                String.valueOf(resultLocalVariableValue.getInt("id")),
+                String.valueOf(resultLocalVariableValue.getInt("league_id"))
+        };
+    }
+
     // Actualiza si un partido ha empezado o no
     public void actualitzaComençat(int gameEntityIdentifierParameterValue, boolean startedParameterValue) {
         String queryLocalVariableValue = "UPDATE games SET started = ? WHERE id = ?";
@@ -110,37 +207,6 @@ public class GameDao {
         }
 
         return -1;
-    }
-
-    // Devuelve los partidos que están en directo
-    public List<String[]> getLiveGames() {
-        List<String[]> liveGamesLocalVariableValue = new ArrayList<>();
-
-        String queryLocalVariableValue =
-                "SELECT th.name AS home_name, ta.name AS away_name " +
-                        "FROM games g " +
-                        "JOIN teams th ON th.id = g.home_team_id " +
-                        "JOIN teams ta ON ta.id = g.away_team_id " +
-                        "WHERE g.started = TRUE AND g.finished = FALSE";
-
-        try (Connection connectionLocalVariableValue =
-                     DatabaseConnector.getInstance().createConnection();
-             PreparedStatement preparedStatementLocalVariableValue =
-                     connectionLocalVariableValue.prepareStatement(queryLocalVariableValue);
-             ResultSet resultLocalVariableValue = preparedStatementLocalVariableValue.executeQuery()) {
-
-            while (resultLocalVariableValue.next()) {
-                liveGamesLocalVariableValue.add(new String[]{
-                        resultLocalVariableValue.getString("home_name"),
-                        resultLocalVariableValue.getString("away_name")
-                });
-            }
-
-        } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
-        }
-
-        return liveGamesLocalVariableValue;
     }
 
     // Marca un partido como finalizado
