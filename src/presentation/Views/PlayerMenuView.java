@@ -133,7 +133,7 @@ public class PlayerMenuView extends JFrame {
             Image rawIconLocalVariableValue =
                     new ImageIcon(iconPathLocalVariableValue).getImage();
             Image scaledIconLocalVariableValue =
-                    rawIconLocalVariableValue.getScaledInstance(140, 140, Image.SCALE_SMOOTH);
+                    rawIconLocalVariableValue.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
             buttonControlLocalVariableValue.setIcon(new ImageIcon(scaledIconLocalVariableValue));
 
             buttonControlLocalVariableValue.setPreferredSize(new Dimension(170, 170));
@@ -167,7 +167,7 @@ public class PlayerMenuView extends JFrame {
             Image rawImageLocalVariableValue =
                     new ImageIcon(absolutePathLocalVariableValue).getImage();
             Image scaledImageLocalVariableValue =
-                    rawImageLocalVariableValue.getScaledInstance(165, 165, Image.SCALE_SMOOTH);
+                    rawImageLocalVariableValue.getScaledInstance(180, 180, Image.SCALE_SMOOTH);
             return new ImageIcon(scaledImageLocalVariableValue);
         } catch (Exception ignoredExceptionParameterValue) {
             return null;
@@ -391,9 +391,9 @@ public class PlayerMenuView extends JFrame {
             iconHolderLabelFieldReference.setHorizontalAlignment(SwingConstants.CENTER);
             iconHolderLabelFieldReference.setVerticalAlignment(SwingConstants.CENTER);
             iconHolderLabelFieldReference.setAlignmentX(Component.CENTER_ALIGNMENT);
-            iconHolderLabelFieldReference.setPreferredSize(new Dimension(175, 175));
-            iconHolderLabelFieldReference.setMinimumSize(new Dimension(175, 175));
-            iconHolderLabelFieldReference.setMaximumSize(new Dimension(175, 175));
+            iconHolderLabelFieldReference.setPreferredSize(new Dimension(200, 200));
+            iconHolderLabelFieldReference.setMinimumSize(new Dimension(200, 200));
+            iconHolderLabelFieldReference.setMaximumSize(new Dimension(200, 200));
 
             // Título
             titleLabelFieldReference = new JLabel(titleParameterValue, SwingConstants.CENTER);
