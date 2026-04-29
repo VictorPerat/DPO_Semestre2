@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Vista del menú principal del jugador.
@@ -150,6 +152,55 @@ public class PlayerMenuView extends JPanel {
 
         return buttonControlLocalVariableValue;
     }
+
+    public void updateLiveMatches(List<String[]> liveGamesParameterValue) {
+        List<String[]> liveGamesLocalVariableValue =
+                liveGamesParameterValue == null ? new ArrayList<>() : liveGamesParameterValue;
+
+        if (liveGamesLocalVariableValue.isEmpty()) {
+            watchMatchesCardFieldReference.setDescriptionHtml(
+                    "No hay partidos en directo actualmente."
+            );
+            return;
+        }
+
+        StringBuilder htmlBuilderLocalVariableValue = new StringBuilder();
+
+        int maxRowsLocalVariableValue = Math.min(3, liveGamesLocalVariableValue.size());
+
+        for (int indexCounterLocalVariableValue = 0;
+             indexCounterLocalVariableValue < maxRowsLocalVariableValue;
+             indexCounterLocalVariableValue++) {
+
+            String[] matchLocalVariableValue = liveGamesLocalVariableValue.get(indexCounterLocalVariableValue);
+
+            String homeLocalVariableValue =
+                    matchLocalVariableValue.length > 0 ? matchLocalVariableValue[0] : "Home";
+            String awayLocalVariableValue =
+                    matchLocalVariableValue.length > 1 ? matchLocalVariableValue[1] : "Away";
+
+            htmlBuilderLocalVariableValue
+                    .append("<b>LIVE</b> ")
+                    .append(homeLocalVariableValue)
+                    .append(" vs ")
+                    .append(awayLocalVariableValue);
+
+            if (indexCounterLocalVariableValue < maxRowsLocalVariableValue - 1) {
+                htmlBuilderLocalVariableValue.append("<br>");
+            }
+        }
+
+        if (liveGamesLocalVariableValue.size() > maxRowsLocalVariableValue) {
+            htmlBuilderLocalVariableValue
+                    .append("<br>+")
+                    .append(liveGamesLocalVariableValue.size() - maxRowsLocalVariableValue)
+                    .append(" more");
+        }
+
+        watchMatchesCardFieldReference.setDescriptionHtml(htmlBuilderLocalVariableValue.toString());
+    }
+
+
 
     /**
      * Carga un icono PNG de la carpeta photos/ y lo escala al tamaño
@@ -381,6 +432,17 @@ public class PlayerMenuView extends JPanel {
         private ActionListener listenerFieldReference;
         private boolean hoverFieldReference = false;
 
+
+        public void setDescriptionHtml(String htmlContentParameterValue) {
+            descriptionLabelFieldReference.setText(
+                    "<html><div style='text-align:center;'>"
+                            + htmlContentParameterValue
+                            + "</div></html>"
+            );
+            descriptionLabelFieldReference.revalidate();
+            descriptionLabelFieldReference.repaint();
+        }
+
         MenuCardPanel(String titleParameterValue,
                       String descriptionParameterValue,
                       Color accentColorParameterValue,
@@ -467,6 +529,7 @@ public class PlayerMenuView extends JPanel {
                     }
                 }
             });
+
         }
 
         public void setActionListener(ActionListener listenerParameterValue) {

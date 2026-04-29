@@ -1,5 +1,6 @@
 package presentation.ControllerViews;
 
+import bussines.managers.GameManager;
 import bussines.managers.PlayerManager;
 import presentation.AppNavigator;
 import presentation.Views.PlayerMenuView;
@@ -13,7 +14,11 @@ import java.util.List;
 public class PlayerMenuController implements ActionListener, MenuController, DeletePlayerListener {
     private final PlayerMenuView playerProfileMenuScreenInterfaceFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
+    private final GameManager gameEntityManagerServiceFieldReference = new GameManager();
     private final AppNavigator navigatorFieldReference;
+
+    private Timer liveMatchesPreviewTimerFieldReference;
+    private static final int LIVE_MATCHES_REFRESH_INTERVAL_MS = 3_000;
 
     public PlayerMenuController(PlayerMenuView playerProfileMenuScreenInterfaceParameterValue,
                                 PlayerManager playerProfileManagerServiceParameterValue,
@@ -23,6 +28,7 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
         this.navigatorFieldReference = navigatorParameterValue;
         this.playerProfileMenuScreenInterfaceFieldReference.registerController(this);
         this.playerProfileMenuScreenInterfaceFieldReference.setConfigController(this);
+        refreshLiveMatchesPreview();
     }
 
     public PlayerMenuController(PlayerMenuView playerProfileMenuScreenInterfaceParameterValue,
@@ -34,10 +40,39 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
     @Override public void onPlayersDeleted() { showPlayerMenu(); }
     @Override public void returnToMenu() { showPlayerMenu(); }
 
+    public void startLiveMatchesPreviewAutoRefresh() {
+        refreshLiveMatchesPreview();
+
+        if (liveMatchesPreviewTimerFieldReference != null
+                && liveMatchesPreviewTimerFieldReference.isRunning()) {
+            return;
+        }
+
+        liveMatchesPreviewTimerFieldReference = new Timer(
+                LIVE_MATCHES_REFRESH_INTERVAL_MS,
+                eventArgumentParameterValue -> refreshLiveMatchesPreview()
+        );
+        liveMatchesPreviewTimerFieldReference.start();
+    }
+
+    public void stopLiveMatchesPreviewAutoRefresh() {
+        if (liveMatchesPreviewTimerFieldReference != null) {
+            liveMatchesPreviewTimerFieldReference.stop();
+            liveMatchesPreviewTimerFieldReference = null;
+        }
+    }
+
+    public void refreshLiveMatchesPreview() {
+        List<String[]> liveGamesLocalVariableValue =
+                gameEntityManagerServiceFieldReference.getLiveGames();
+
+        playerProfileMenuScreenInterfaceFieldReference.updateLiveMatches(liveGamesLocalVariableValue);
+    }
+
     @Override
     public void handleLogout() {
+        stopLiveMatchesPreviewAutoRefresh();
         playerProfileManagerServiceFieldReference.setCurrentIdentifier(null);
-        presentation.LiveMatchesWidgetService.hide();
         navigatorFieldReference.show(AppNavigator.LOGIN);
     }
 
@@ -45,46 +80,70 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
         switch (commandLocalVariableValue) {
-            case PlayerMenuView.WATCH_MATCHES: handleWatchMatches(); break;
-            case PlayerMenuView.VIEW_LEAGUES: handleViewLeagues(); break;
-            case PlayerMenuView.DELETE_PLAYER: handleDeleteAccount(); break;
-            case PlayerMenuView.LOGOUT: handleLogout(); break;
-            case PlayerMenuView.CONFIG: showConfigDialog(); break;
-            default: break;
+            case PlayerMenuView.WATCH_MATCHES:
+                handleWatchMatches();
+                break;
+            case PlayerMenuView.VIEW_LEAGUES:
+                handleViewLeagues();
+                break;
+            case PlayerMenuView.DELETE_PLAYER:
+                handleDeleteAccount();
+                break;
+            case PlayerMenuView.LOGOUT:
+                handleLogout();
+                break;
+            case PlayerMenuView.CONFIG:
+                showConfigDialog();
+                break;
+            default:
+                break;
         }
     }
 
     private void handleWatchMatches() {
-        List<String[]> liveGamesLocalVariableValue = playerProfileManagerServiceFieldReference.getLiveMatches();
-        if (liveGamesLocalVariableValue.isEmpty()) {
-            playerProfileMenuScreenInterfaceFieldReference.showMessageDialog("There are no live matches at the moment.");
-        } else {
-            navigatorFieldReference.show(AppNavigator.LIVE_MATCHES);
-        }
+        navigatorFieldReference.show(AppNavigator.LIVE_MATCHES);
     }
 
-    private void handleViewLeagues() { navigatorFieldReference.show(AppNavigator.AVAILABLE_LEAGUES); }
+    private void handleViewLeagues() {
+        navigatorFieldReference.show(AppNavigator.AVAILABLE_LEAGUES);
+    }
 
-    public void showPlayerMenu() { navigatorFieldReference.show(AppNavigator.PLAYER_MENU); }
+    public void showPlayerMenu() {
+        navigatorFieldReference.show(AppNavigator.PLAYER_MENU);
+    }
 
     @Override
     public void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
+        Rounded.ConfigDialog configDialogLocalVariableValue =
+                Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
+
         configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
             configDialogLocalVariableValue.dispose();
             switch (eventArgumentParameterValue.getActionCommand()) {
-                case Rounded.ConfigDialog.LOGOUT: handleLogout(); break;
-                case Rounded.ConfigDialog.DELETE_ACCOUNT: handleDeleteAccount(); break;
-                case Rounded.ConfigDialog.CHANGE_PASSWORD: openChangePasswordView(); break;
-                default: break;
+                case Rounded.ConfigDialog.LOGOUT:
+                    handleLogout();
+                    break;
+                case Rounded.ConfigDialog.DELETE_ACCOUNT:
+                    handleDeleteAccount();
+                    break;
+                case Rounded.ConfigDialog.CHANGE_PASSWORD:
+                    openChangePasswordView();
+                    break;
+                default:
+                    break;
             }
         });
-        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
+
+        configDialogLocalVariableValue.setBackButtonListener(
+                eventArgumentParameterValue -> configDialogLocalVariableValue.dispose()
+        );
         configDialogLocalVariableValue.setVisible(true);
     }
 
     private void openChangePasswordView() {
-        navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.PLAYER_MENU));
+        navigatorFieldReference.setChangePasswordReturnAction(
+                () -> navigatorFieldReference.show(AppNavigator.PLAYER_MENU)
+        );
         navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
     }
 
@@ -96,8 +155,11 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE
         );
+
         if (confirmLocalVariableValue == JOptionPane.YES_OPTION) {
-            boolean successLocalVariableValue = playerProfileManagerServiceFieldReference.deleteCurrentPlayer();
+            boolean successLocalVariableValue =
+                    playerProfileManagerServiceFieldReference.deleteCurrentPlayer();
+
             if (successLocalVariableValue) {
                 playerProfileMenuScreenInterfaceFieldReference.showMessageDialog("Account deleted successfully");
                 handleLogout();

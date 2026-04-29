@@ -120,6 +120,24 @@ public final class LeagueManagerApplication {
         DeletePlayerController deletePlayerControllerHandlerLocalVariableValue = new DeletePlayerController(deletePlayerViewInterfaceLocalVariableValue, adminMenuControllerHandlerLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
         LiveMatchesController liveMatchesControllerHandlerLocalVariableValue = new LiveMatchesController(liveMatchesViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
 
+        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.ADMIN_MENU, () -> {
+            adminMenuControllerHandlerLocalVariableValue.startLiveMatchesPreviewAutoRefresh();
+        });
+
+        navigatorLocalVariableValue.registerOnHideHook(
+                AppNavigator.ADMIN_MENU,
+                adminMenuControllerHandlerLocalVariableValue::stopLiveMatchesPreviewAutoRefresh
+        );
+
+        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.PLAYER_MENU, () -> {
+            playerMenuControllerHandlerLocalVariableValue.startLiveMatchesPreviewAutoRefresh();
+        });
+
+        navigatorLocalVariableValue.registerOnHideHook(
+                AppNavigator.PLAYER_MENU,
+                playerMenuControllerHandlerLocalVariableValue::stopLiveMatchesPreviewAutoRefresh
+        );
+
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.PROFILE, userProfileControllerHandlerLocalVariableValue::refreshCurrentPlayer);
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.CHANGE_PASSWORD, changePasswordViewInterfaceLocalVariableValue::clearForm);
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.AVAILABLE_LEAGUES, availableLeaguesControllerHandlerLocalVariableValue::startAutoRefresh);
