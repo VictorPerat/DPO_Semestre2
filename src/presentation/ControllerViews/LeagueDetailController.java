@@ -1,331 +1,173 @@
 package presentation.ControllerViews;
 
 import bussines.managers.GameManager;
+import bussines.managers.LeagueManager;
 import bussines.managers.PlayerManager;
-import bussines.managers.TeamManager;
 import bussines.managers.TeamInfoManager;
+import bussines.managers.TeamManager;
+import bussines.objects.Game;
 import bussines.objects.League;
 import bussines.objects.Player;
 import bussines.objects.Team;
 import bussines.objects.TeamInfo;
 import presentation.AppNavigator;
-import presentation.Views.*;
+import presentation.Views.LeagueDetailView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-/**
- * Controlador para la vista de detalle de una liga.
- * Gestiona las interacciones del usuario con la pantalla de detalles de liga,
- * como mostrar estadísticas, calendario, configuración, y gestionar sesión.
- */
+/** Controlador del detalle de liga. */
 public class LeagueDetailController implements ActionListener {
-
-    /** Vista de detalle de liga */
-    private LeagueDetailView viewInterfaceFieldReference;
-
-    /** Controlador del menú administrador */
-    private AdminMenuController adminMenuControllerHandlerFieldReference;
-
-    /** Controlador del menú jugador */
-    private PlayerMenuController playerProfileMenuControllerHandlerFieldReference;
-
-    /** Gestor de jugadores */
+    private final LeagueDetailView viewInterfaceFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
+    private final LeagueManager leagueReferenceManagerServiceFieldReference = new LeagueManager();
+    private final TeamInfoManager informationTeamReferenceManagerServiceFieldReference = new TeamInfoManager();
+    private final TeamManager teamReferenceManagerServiceFieldReference = new TeamManager();
+    private final GameManager gameEntityManagerServiceFieldReference = new GameManager();
+    private final AppNavigator navigatorFieldReference;
+    private TeamDetailController teamDetailControllerHandlerFieldReference;
+    private StatisticsGraphController statisticsGraphControllerHandlerFieldReference;
+    private CalendarViewLoader calendarViewLoaderHandlerFieldReference;
+    private League currentLeagueFieldReference;
+    private Timer standingsAutoRefreshTimerFieldReference;
+    private static final int REFRESH_INTERVAL_MS = 5_000;
 
-    /** Gestor de juegos */
-    private final GameManager gameEntityManagerServiceFieldReference;
-
-    /** Liga actual cuyo detalle se muestra */
-    private final League leagueReferenceFieldReference;
-
-    /** Gestor de información de equipos */
-    private final TeamInfoManager informationTeamReferenceManagerServiceFieldReference;
-
-    /** Gestor de equipos */
-    private final TeamManager teamReferenceManagerServiceFieldReference;
-    private static int flagFieldReference = 0;
-
-    /**
-     * Constructor que inicializa el controlador con la vista y los gestores necesarios.
-     *
-     * @param view Vista de detalle de liga
-     * @param adminMenuController Controlador del menú administrador
-     * @param playerMenuController Controlador del menú jugador
-     * @param playerManager Gestor de jugadores
-     * @param gameManager Gestor de juegos
-     * @param league Liga cuyo detalle se muestra
-     * @param infoTeamManager Gestor de información de equipos
-     * @param teamManager Gestor de equipos
-     */
-    public LeagueDetailController(LeagueDetailView viewInterfaceParameterValue, AdminMenuController adminMenuControllerHandlerParameterValue, PlayerMenuController playerProfileMenuControllerHandlerParameterValue, PlayerManager playerProfileManagerServiceParameterValue, GameManager gameEntityManagerServiceParameterValue, League leagueReferenceParameterValue, TeamInfoManager informationTeamReferenceManagerServiceParameterValue, TeamManager teamReferenceManagerServiceParameterValue) {
-        this.viewInterfaceFieldReference = viewInterfaceParameterValue;
-        this.adminMenuControllerHandlerFieldReference = adminMenuControllerHandlerParameterValue;
-        this.playerProfileMenuControllerHandlerFieldReference = playerProfileMenuControllerHandlerParameterValue;
-        this.viewInterfaceFieldReference.registerController(this);
-        this.playerProfileManagerServiceFieldReference = playerProfileManagerServiceParameterValue;
-        this.gameEntityManagerServiceFieldReference = gameEntityManagerServiceParameterValue;
-        this.leagueReferenceFieldReference = leagueReferenceParameterValue;
-        this.informationTeamReferenceManagerServiceFieldReference = informationTeamReferenceManagerServiceParameterValue;
-        this.teamReferenceManagerServiceFieldReference = teamReferenceManagerServiceParameterValue;
-
-        // Auto-refresh de la clasificación en tiempo real (apartado 2.7).
-        startStandingsAutoRefresh();
+    public interface CalendarViewLoader {
+        void loadCalendar(ArrayList<String> teamsParameterValue, ArrayList<Game> gamesParameterValue);
     }
 
-    // Timer que vuelve a calcular la clasificación cada pocos segundos
-    private javax.swing.Timer standingsAutoRefreshTimerFieldReference;
-    private static final int STANDINGS_REFRESH_INTERVAL_MS = 5_000;
-
-    /**
-     * Arranca el timer que refresca la JTable de clasificación cada
-     * {@value #STANDINGS_REFRESH_INTERVAL_MS} ms y lo para cuando la
-     * vista se cierra.
-     */
-    private void startStandingsAutoRefresh() {
-        standingsAutoRefreshTimerFieldReference = new javax.swing.Timer(
-                STANDINGS_REFRESH_INTERVAL_MS,
-                eventArgumentParameterRefresh -> refreshStandingsFromDatabase()
-        );
-        standingsAutoRefreshTimerFieldReference.start();
-
-        viewInterfaceFieldReference.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosed(java.awt.event.WindowEvent eventArgumentClosed) {
-                if (standingsAutoRefreshTimerFieldReference != null) {
-                    standingsAutoRefreshTimerFieldReference.stop();
+    public LeagueDetailController(LeagueDetailView viewInterfaceParameterValue,
+                                  PlayerManager playerProfileManagerServiceParameterValue,
+                                  AppNavigator navigatorParameterValue) {
+        this.viewInterfaceFieldReference = viewInterfaceParameterValue;
+        this.playerProfileManagerServiceFieldReference = playerProfileManagerServiceParameterValue;
+        this.navigatorFieldReference = navigatorParameterValue;
+        this.viewInterfaceFieldReference.registerController(this);
+        this.viewInterfaceFieldReference.getStandingsTable().addMouseListener(new MouseAdapter() {
+            @Override public void mouseClicked(MouseEvent eventArgumentParameterValue) {
+                if (eventArgumentParameterValue.getClickCount() >= 2) {
+                    openSelectedTeam();
                 }
             }
-
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent eventArgumentClosing) {
-                if (standingsAutoRefreshTimerFieldReference != null) {
-                    standingsAutoRefreshTimerFieldReference.stop();
-                }
+        });
+        this.viewInterfaceFieldReference.addHierarchyListener(eventArgumentParameterValue -> {
+            if ((eventArgumentParameterValue.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+                if (viewInterfaceFieldReference.isShowing()) { startStandingsAutoRefresh(); }
+                else { stopStandingsAutoRefresh(); }
             }
         });
     }
 
-    /**
-     * Lee de la BD la información actualizada de los equipos de esta
-     * liga y le pide a la vista que repinte la JTable.
-     */
-    private void refreshStandingsFromDatabase() {
-        int leagueIdLocalVariableValue =
-                leagueReferenceFieldReference.getId();
+    public LeagueDetailController(LeagueDetailView viewInterfaceParameterValue,
+                                  MenuController menuControllerHandlerParameterValue,
+                                  PlayerManager playerProfileManagerServiceParameterValue) {
+        this(viewInterfaceParameterValue, playerProfileManagerServiceParameterValue, AppNavigator.getInstance());
+    }
 
-        ArrayList<TeamInfo> freshInfoLocalVariableValue =
-                informationTeamReferenceManagerServiceFieldReference.getInfoTeamsOfLeague(
-                        leagueIdLocalVariableValue
-                );
+    public void setTeamDetailController(TeamDetailController controllerParameterValue) { this.teamDetailControllerHandlerFieldReference = controllerParameterValue; }
+    public void setStatisticsGraphController(StatisticsGraphController controllerParameterValue) { this.statisticsGraphControllerHandlerFieldReference = controllerParameterValue; }
+    public void setCalendarViewLoader(CalendarViewLoader loaderParameterValue) { this.calendarViewLoaderHandlerFieldReference = loaderParameterValue; }
 
-        ArrayList<Team> allTeamsLocalVariableValue =
-                teamReferenceManagerServiceFieldReference.getAllTeams();
+    public void openLeague(League leagueReferenceParameterValue) {
+        this.currentLeagueFieldReference = leagueReferenceParameterValue;
+        refreshCurrentLeague();
+        navigatorFieldReference.show(AppNavigator.LEAGUE_DETAIL);
+    }
 
-        ArrayList<Team> filteredTeamsLocalVariableValue = new ArrayList<>();
-        for (Team teamLocalVariableValue : allTeamsLocalVariableValue) {
-            for (TeamInfo infoLocalVariableValue : freshInfoLocalVariableValue) {
-                if (teamLocalVariableValue.getId() == infoLocalVariableValue.getTeamId()) {
-                    filteredTeamsLocalVariableValue.add(teamLocalVariableValue);
-                    break;
-                }
-            }
+    public void refreshCurrentLeague() {
+        if (currentLeagueFieldReference == null) { return; }
+        int identifierLocalVariableValue = leagueReferenceManagerServiceFieldReference.getLeagueIdByName(currentLeagueFieldReference.getName());
+        ArrayList<TeamInfo> informationOfTeamsLocalVariableValue = informationTeamReferenceManagerServiceFieldReference.getInfoTeamsOfLeague(identifierLocalVariableValue);
+        ArrayList<Team> teamsLocalVariableValue = teamReferenceManagerServiceFieldReference.getAllTeams();
+        viewInterfaceFieldReference.loadLeague(currentLeagueFieldReference, informationOfTeamsLocalVariableValue, teamsLocalVariableValue, playerProfileManagerServiceFieldReference);
+    }
+
+    public void startStandingsAutoRefresh() {
+        refreshCurrentLeague();
+        if (standingsAutoRefreshTimerFieldReference != null && standingsAutoRefreshTimerFieldReference.isRunning()) { return; }
+        standingsAutoRefreshTimerFieldReference = new Timer(REFRESH_INTERVAL_MS, eventArgumentParameterValue -> refreshCurrentLeague());
+        standingsAutoRefreshTimerFieldReference.start();
+    }
+
+    public void stopStandingsAutoRefresh() {
+        if (standingsAutoRefreshTimerFieldReference != null) {
+            standingsAutoRefreshTimerFieldReference.stop();
+            standingsAutoRefreshTimerFieldReference = null;
         }
-
-        viewInterfaceFieldReference.refreshStandings(
-                freshInfoLocalVariableValue,
-                filteredTeamsLocalVariableValue,
-                playerProfileManagerServiceFieldReference
-        );
     }
 
-    public static int getFlag() {
-        return flagFieldReference;
-    }
-    /**
-     * Gestiona las acciones de la vista según el comando recibido.
-     * Comandos manejados incluyen configuración, volver atrás, mostrar estadísticas y mostrar calendario.
-     *
-     * @param e Evento de acción
-     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
-        String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
-
-        switch (commandLocalVariableValue) {
+        switch (eventArgumentParameterValue.getActionCommand()) {
+            case LeagueDetailView.BACK:
+                navigatorFieldReference.show(AppNavigator.AVAILABLE_LEAGUES);
+                break;
             case LeagueDetailView.CONFIG:
                 showConfigDialog();
-                flagFieldReference = 0;
                 break;
-
-            case LeagueDetailView.BACK:
-                viewInterfaceFieldReference.dispose();
-                flagFieldReference = 1;
+            case LeagueDetailView.SHOW_STATS:
+                showStats();
                 break;
-
-            case "Show Stats":
-                flagFieldReference = 0;
-                viewInterfaceFieldReference.dispose();
-                StatisticsGraphView statsViewInterfaceLocalVariableValue = new StatisticsGraphView();
-                statsViewInterfaceLocalVariableValue.addWindowListener(new WindowAdapter() {
-                    @Override
-                    public void windowClosed(WindowEvent eventArgumentParameterValue2) {
-                            viewInterfaceFieldReference.setVisible(true);
-                    }
-                });
-
-                new StatisticsGraphController(statsViewInterfaceLocalVariableValue, adminMenuControllerHandlerFieldReference, playerProfileManagerServiceFieldReference);
-                statsViewInterfaceLocalVariableValue.setVisible(true);
+            case LeagueDetailView.SHOW_CALENDAR:
+                showCalendar();
                 break;
-
-            case "Show Calendar":
-                flagFieldReference = 0;
-                viewInterfaceFieldReference.dispose();
-                ArrayList<String> leagueReferenceTeamsLocalVariableValue = new ArrayList<>();
-                ArrayList<TeamInfo> infoteamsLocalVariableValue = informationTeamReferenceManagerServiceFieldReference.getInfoTeamsOfLeague(leagueReferenceFieldReference.getId());
-                for (TeamInfo informationTeamReferenceLocalVariableValue : infoteamsLocalVariableValue) {
-                    for (Team teamReferenceLocalVariableValue : teamReferenceManagerServiceFieldReference.getAllTeams()){
-                        if (teamReferenceLocalVariableValue.getId() == informationTeamReferenceLocalVariableValue.getTeamId()){
-                            leagueReferenceTeamsLocalVariableValue.add(teamReferenceLocalVariableValue.getName());
-                        }
-                    }
-                }
-                CalendarView calendarScreenInterfaceLocalVariableValue = new CalendarView(
-                        leagueReferenceTeamsLocalVariableValue,
-                        gameEntityManagerServiceFieldReference.getGamesByLeague(leagueReferenceFieldReference.getId())
-                );
-                calendarScreenInterfaceLocalVariableValue.addWindowListener(new WindowAdapter() {
-                    @Override
-                    public void windowClosed(WindowEvent eventArgumentParameterValue3) {
-                                viewInterfaceFieldReference.setVisible(true);
-
-                    }
-                });
-                CalendarController controllerHandlerLocalVariableValue = new CalendarController(calendarScreenInterfaceLocalVariableValue, adminMenuControllerHandlerFieldReference);
-                calendarScreenInterfaceLocalVariableValue.registerController(controllerHandlerLocalVariableValue);
-                calendarScreenInterfaceLocalVariableValue.setVisible(true);
-
-                break;
-
-            case "Show Team Info":
-                Object sourceLocalVariableValue = eventArgumentParameterValue.getSource();
-                if (sourceLocalVariableValue instanceof String) {
-                    String teamName = (String) sourceLocalVariableValue;
-                    viewInterfaceFieldReference.setVisible(false);
-                    ArrayList<Player> playersLocalVariableValue = playerProfileManagerServiceFieldReference.getPlayersByTeam(teamName);
-                    TeamDetailView teamReferenceDetailViewInterfaceLocalVariableValue = new TeamDetailView(teamName, playersLocalVariableValue);
-                    TeamDetailController teamReferenceDetailControllerHandlerLocalVariableValue = new TeamDetailController(teamReferenceDetailViewInterfaceLocalVariableValue, viewInterfaceFieldReference);
-                    teamReferenceDetailViewInterfaceLocalVariableValue.registerController(teamReferenceDetailControllerHandlerLocalVariableValue);
-                    teamReferenceDetailViewInterfaceLocalVariableValue.setVisible(true);
-                }
-                break;
-
             default:
-                System.out.println("Unknown command: " + commandLocalVariableValue);
+                break;
         }
     }
 
-    /**
-     * Muestra el diálogo de configuración con opciones como cerrar sesión, eliminar cuenta o cambiar contraseña.
-     */
+    private void openSelectedTeam() {
+        int rowLocalVariableValue = viewInterfaceFieldReference.getStandingsTable().getSelectedRow();
+        String teamNameLocalVariableValue = viewInterfaceFieldReference.getTeamNameAtViewRow(rowLocalVariableValue);
+        if (teamNameLocalVariableValue == null) { return; }
+        ArrayList<Player> playersLocalVariableValue = playerProfileManagerServiceFieldReference.getPlayersByTeam(teamNameLocalVariableValue);
+        if (teamDetailControllerHandlerFieldReference != null) {
+            teamDetailControllerHandlerFieldReference.openTeam(teamNameLocalVariableValue, playersLocalVariableValue);
+        }
+    }
+
+    private void showStats() {
+        if (currentLeagueFieldReference == null) { return; }
+        if (statisticsGraphControllerHandlerFieldReference != null) {
+            int leagueIdLocalVariableValue = leagueReferenceManagerServiceFieldReference.getLeagueIdByName(currentLeagueFieldReference.getName());
+            statisticsGraphControllerHandlerFieldReference.showLeagueData(leagueIdLocalVariableValue, currentLeagueFieldReference.getName());
+        }
+        navigatorFieldReference.show(AppNavigator.STATISTICS);
+    }
+
+    private void showCalendar() {
+        if (currentLeagueFieldReference == null) { return; }
+        int leagueIdLocalVariableValue = leagueReferenceManagerServiceFieldReference.getLeagueIdByName(currentLeagueFieldReference.getName());
+        ArrayList<Game> gamesLocalVariableValue = gameEntityManagerServiceFieldReference.getGamesByLeague(leagueIdLocalVariableValue);
+        ArrayList<String> teamNamesLocalVariableValue = new ArrayList<>();
+        for (Team teamLocalVariableValue : viewInterfaceFieldReference.getCurrentTeams()) {
+            teamNamesLocalVariableValue.add(teamLocalVariableValue.getName());
+        }
+        navigatorFieldReference.setReturnAction(() -> navigatorFieldReference.show(AppNavigator.LEAGUE_DETAIL));
+        if (calendarViewLoaderHandlerFieldReference != null) {
+            calendarViewLoaderHandlerFieldReference.loadCalendar(teamNamesLocalVariableValue, gamesLocalVariableValue);
+        }
+        navigatorFieldReference.show(AppNavigator.CALENDAR);
+    }
+
     private void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = new Rounded.ConfigDialog(viewInterfaceFieldReference);
-        configDialogLocalVariableValue.registerController(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent eventArgumentParameterValue4) {
-                configDialogLocalVariableValue.dispose();
-                handleConfigAction(eventArgumentParameterValue4.getActionCommand());
+        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
+        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
+            configDialogLocalVariableValue.dispose();
+            if (Rounded.ConfigDialog.LOGOUT.equals(eventArgumentParameterValue.getActionCommand())) {
+                playerProfileManagerServiceFieldReference.logoutCurrentUser();
+                navigatorFieldReference.show(AppNavigator.LOGIN);
+            } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(eventArgumentParameterValue.getActionCommand())) {
+                navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.LEAGUE_DETAIL));
+                navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
             }
         });
+        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
         configDialogLocalVariableValue.setVisible(true);
     }
-
-    /**
-     * Maneja las acciones seleccionadas dentro del diálogo de configuración.
-     *
-     * @param action Acción seleccionada en el diálogo de configuración
-     */
-    private void handleConfigAction(String actionParameterValue) {
-        switch (actionParameterValue) {
-            case Rounded.ConfigDialog.LOGOUT:
-                handleLogout(playerProfileManagerServiceFieldReference.getCurrentIdentifier());
-                break;
-            case Rounded.ConfigDialog.DELETE_ACCOUNT:
-                handleDeleteAccount();
-
-                break;
-            case Rounded.ConfigDialog.CHANGE_PASSWORD:
-                openChangePasswordView();
-                break;
-        }
-    }
-
-
-    /**
-     * Cierra la vista actual y redirige al menú correspondiente según el tipo de usuario.
-     * @param identifier identificador del usuario.
-     */
-    private void handleLogout(String identifierParameterValue) {
-        viewInterfaceFieldReference.dispose();
-        if ("admin".equals(identifierParameterValue)) {
-            adminMenuControllerHandlerFieldReference.handleLogout();
-        } else {
-            playerProfileMenuControllerHandlerFieldReference.handleLogout();
-        }
-    }
-
-    /**
-     * Abre la vista para cambiar la contraseña a través del navegador,
-     * registrando el retorno a la vista de detalle de liga al finalizar.
-     */
-    private void openChangePasswordView() {
-        final LeagueDetailView previousScreenLocalVariableValue =
-                viewInterfaceFieldReference;
-        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
-
-        previousScreenLocalVariableValue.setVisible(false);
-        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
-            navigatorLocalVariableValue.hideMainWindow();
-            previousScreenLocalVariableValue.setVisible(true);
-        });
-        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
-    }
-
-    /**
-     * Muestra un diálogo de confirmación para eliminar la cuenta actual.
-     * Si el usuario confirma, se elimina la cuenta y se realiza el logout.
-     */
-    private void handleDeleteAccount() {
-        int confirmLocalVariableValue = JOptionPane.showConfirmDialog(
-                viewInterfaceFieldReference,
-                "Are you sure you want to delete your account?\nThis action cannot be undone.",
-                "Confirm Deletion",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
-        );
-
-        if (confirmLocalVariableValue == JOptionPane.YES_OPTION) {
-            String currentIdentifierLocalVariableValue = playerProfileManagerServiceFieldReference.getCurrentIdentifier();
-
-            if ("admin".equals(currentIdentifierLocalVariableValue)) {
-                // Si es admin, no eliminar cuenta, solo hacer logout
-                adminMenuControllerHandlerFieldReference.handleLogout();
-                viewInterfaceFieldReference.dispose();
-                return;
-            }
-
-            // Si no es admin, borrar cuenta y logout
-            boolean deletedLocalVariableValue = playerProfileManagerServiceFieldReference.deleteCurrentPlayer();
-
-            if (deletedLocalVariableValue) {
-                JOptionPane.showMessageDialog(viewInterfaceFieldReference, "Account deleted successfully.");
-                handleLogout(currentIdentifierLocalVariableValue);
-            } else {
-                JOptionPane.showMessageDialog(viewInterfaceFieldReference, "Error deleting account.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }}
+}

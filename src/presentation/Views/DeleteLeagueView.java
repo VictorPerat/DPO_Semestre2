@@ -4,6 +4,7 @@ import bussines.objects.League;
 import shared.ProjectPathResolver;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,295 +13,712 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Vista para eliminar ligas del sistema.
- * Muestra una lista de ligas disponibles con casillas de verificación,
- * un botón para eliminar las ligas seleccionadas,
- * y una cabecera con botones para volver atrás y configurar.
- */
-public class DeleteLeagueView extends JFrame {
+/** Vista para borrar ligas como JPanel. */
+public class DeleteLeagueView extends JPanel {
 
-    private static final Color DARK_BLUE = new Color(22, 49, 72);
-    private static final Color LIGHT_BLUE = new Color(195, 216, 236);
-    private static final Color BACKGROUND = new Color(255, 255, 255); // Fondo blanco
-    private static final Color DARK_RED = new Color(180, 40, 40);
-    private static final Color BRIGHT_RED = new Color(220, 60, 60);
+    private static final Color ACCENT_COLOR = new Color(55, 109, 230);
+    private static final Color TITLE_WHITE = new Color(245, 247, 250);
+    private static final Color SUBTITLE_WHITE = new Color(238, 241, 247);
 
-    private List<JCheckBox> leagueReferenceCheckboxesFieldReference = new ArrayList<>();
+    private static final Color CARD_TITLE_COLOR = new Color(28, 35, 51);
+    private static final Color CARD_BODY_COLOR = new Color(100, 112, 135);
+    private static final Color FIELD_BACKGROUND = new Color(245, 249, 255);
+    private static final Color FIELD_BORDER = new Color(190, 210, 235);
+
+    private static final Color DANGER_RED = new Color(220, 60, 60);
+    private static final Color DANGER_RED_DARK = new Color(170, 35, 35);
+
+    private static final String BACKGROUND_IMAGE_PATH =
+            ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
+
+    private static final String LEAGUE_ICON_PATH =
+            ProjectPathResolver.resolveProjectPath("photos/Leagues.png");
+
     private ActionListener configControllerHandlerFieldReference;
-    private ArrayList<League> leaguesFieldReference;
-    public final String DELETE_LEAGUES_BUTTON = "DELETE_LEAGUES";
 
-    /**
-     * Constructor que inicializa la ventana con la lista de ligas y controles.
-     *
-     * @param leagues Lista de ligas disponibles para mostrar.
-     */
-    public DeleteLeagueView(ArrayList<League> leaguesParameterValue) {
-        this.leaguesFieldReference = leaguesParameterValue;
-        setTitle("Eliminar Ligas");
-        setSize(800, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    private ArrayList<League> leaguesFieldReference = new ArrayList<>();
+    private final ArrayList<JCheckBox> leagueReferenceCheckboxesFieldReference = new ArrayList<>();
 
-        JPanel mainPanelLocalVariableValue = new JPanel(new BorderLayout());
-        mainPanelLocalVariableValue.setBackground(BACKGROUND); // Fondo blanco principal
-        mainPanelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    private JPanel listContainerFieldReference;
 
-        // 1. Panel del título
-        mainPanelLocalVariableValue.add(createTitlePanel(), BorderLayout.NORTH);
+    private Rounded.RoundedButton backButtonFieldReference;
+    private Rounded.RoundedButton deleteButtonFieldReference;
+    private JButton configButtonFieldReference;
 
-        // 2. Panel de ligas compacto
-        mainPanelLocalVariableValue.add(createCompactLeaguesPanel(), BorderLayout.CENTER);
-
-        // 3. Panel del botón DELETE con recuadro rojo sobre fondo blanco
-        mainPanelLocalVariableValue.add(createDeleteButtonPanel(), BorderLayout.SOUTH);
-
-        add(mainPanelLocalVariableValue);
+    public DeleteLeagueView() {
+        this(new ArrayList<>());
     }
 
-    /**
-     * Asigna el controlador que manejará eventos de configuración.
-     *
-     * @param controller ActionListener para los eventos.
-     */
+    public DeleteLeagueView(ArrayList<League> leaguesParameterValue) {
+        this.leaguesFieldReference =
+                leaguesParameterValue == null ? new ArrayList<>() : leaguesParameterValue;
+
+        setLayout(new BorderLayout());
+        add(buildBackgroundPanel(), BorderLayout.CENTER);
+    }
+
+    public void loadLeagues(ArrayList<League> leaguesParameterValue) {
+        this.leaguesFieldReference =
+                leaguesParameterValue == null ? new ArrayList<>() : leaguesParameterValue;
+        refreshLeaguesList();
+    }
+
     public void setConfigController(ActionListener controllerHandlerParameterValue) {
         this.configControllerHandlerFieldReference = controllerHandlerParameterValue;
     }
 
-    /**
-     * Crea el panel de cabecera con botones para volver atrás,
-     * título con iconos y botón de configuración.
-     *
-     * @return JPanel con la cabecera configurada.
-     */
-    private JPanel createTitlePanel() {
-        JPanel panelLocalVariableValue = new JPanel(new BorderLayout());
-        panelLocalVariableValue.setBackground(DARK_BLUE);
-        panelLocalVariableValue.setPreferredSize(new Dimension(getWidth(), 60));
+    private JPanel buildBackgroundPanel() {
+        Image backgroundImageLocalVariableValue =
+                new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
-        JButton backButtonLocalVariableValue = Rounded.HeaderButtonHelper.createBackButton(eventArgumentParameterValue -> dispose());
-        panelLocalVariableValue.add(backButtonLocalVariableValue, BorderLayout.WEST);
+        JPanel backgroundPanelLocalVariableValue = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics graphicsParameterValue) {
+                super.paintComponent(graphicsParameterValue);
 
-        ImageIcon ballIconLocalVariableValue =
-                new ImageIcon(ProjectPathResolver.resolveProjectPath("photos/football.png"));
-        Image ballImageLocalVariableValue = ballIconLocalVariableValue.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-        ImageIcon scaledBallIconLocalVariableValue = new ImageIcon(ballImageLocalVariableValue);
+                graphicsParameterValue.drawImage(
+                        backgroundImageLocalVariableValue,
+                        0,
+                        0,
+                        getWidth(),
+                        getHeight(),
+                        this
+                );
 
-        JLabel leftBallLocalVariableValue = new JLabel(scaledBallIconLocalVariableValue);
-        JLabel rightBallLocalVariableValue = new JLabel(scaledBallIconLocalVariableValue);
+                Graphics2D g2LocalVariableValue =
+                        (Graphics2D) graphicsParameterValue.create();
+                g2LocalVariableValue.setColor(new Color(0, 0, 0, 55));
+                g2LocalVariableValue.fillRect(0, 0, getWidth(), getHeight());
+                g2LocalVariableValue.dispose();
+            }
+        };
 
-        JPanel centerPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        centerPanelLocalVariableValue.setOpaque(false);
+        backgroundPanelLocalVariableValue.setLayout(new BorderLayout());
+        backgroundPanelLocalVariableValue.add(buildTopBar(), BorderLayout.NORTH);
+        backgroundPanelLocalVariableValue.add(buildCenterContent(), BorderLayout.CENTER);
+        backgroundPanelLocalVariableValue.add(buildBottomBar(), BorderLayout.SOUTH);
 
-        JLabel titleLocalVariableValue = new JLabel("DELETE LEAGUE");
-        titleLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLocalVariableValue.setForeground(Color.WHITE);
-
-        centerPanelLocalVariableValue.add(leftBallLocalVariableValue);
-        centerPanelLocalVariableValue.add(titleLocalVariableValue);
-        centerPanelLocalVariableValue.add(rightBallLocalVariableValue);
-
-        panelLocalVariableValue.add(centerPanelLocalVariableValue, BorderLayout.CENTER);
-
-        // Botón de configuración (derecha) inhabilitado
-        JButton configButtonLocalVariableValue = Rounded.HeaderButtonHelper.createConfigButton(eventArgumentParameterValue2 -> {
-//            if (configController != null) {
-//                ((DeleteLeagueController) configController).showConfigDialog();
-//            } else {
-//                JOptionPane.showMessageDialog(this,
-//                        "Error: Controller not initialized",
-//                        "Configuration Error",
-//                        JOptionPane.ERROR_MESSAGE);
-//            }
-        });
-        panelLocalVariableValue.add(configButtonLocalVariableValue, BorderLayout.EAST);
-
-        return panelLocalVariableValue;
+        return backgroundPanelLocalVariableValue;
     }
 
-    /**
-     * Crea un panel compacto que muestra la lista de ligas
-     * con casillas de verificación para seleccionar.
-     *
-     * @return JScrollPane con la lista de ligas.
-     */
-    private JScrollPane createCompactLeaguesPanel() {
-        JPanel containerLocalVariableValue = new JPanel();
-        containerLocalVariableValue.setLayout(new BoxLayout(containerLocalVariableValue, BoxLayout.Y_AXIS));
-        containerLocalVariableValue.setBackground(BACKGROUND);
-        containerLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+    private JPanel buildTopBar() {
+        JPanel topBarLocalVariableValue = new JPanel(new BorderLayout());
+        topBarLocalVariableValue.setOpaque(false);
+        topBarLocalVariableValue.setBorder(new EmptyBorder(28, 40, 0, 40));
 
-        // Cabecera
-        JPanel headerPanelLocalVariableValue = new JPanel(new BorderLayout());
-        headerPanelLocalVariableValue.setBackground(DARK_BLUE);
-        headerPanelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        headerPanelLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        JPanel rightPanelLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        rightPanelLocalVariableValue.setOpaque(false);
 
-        JLabel headerLabelLocalVariableValue = new JLabel("AVAILABLE LEAGUES", SwingConstants.CENTER);
-        headerLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 16));
-        headerLabelLocalVariableValue.setForeground(Color.WHITE);
-        headerPanelLocalVariableValue.add(headerLabelLocalVariableValue, BorderLayout.CENTER);
+        backButtonFieldReference = new Rounded.RoundedButton("← BACK", 18);
+        backButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 15));
+        backButtonFieldReference.setForeground(ACCENT_COLOR);
+        backButtonFieldReference.setBackground(new Color(255, 255, 255, 230));
+        backButtonFieldReference.setOutlineMode(ACCENT_COLOR, 2);
+        backButtonFieldReference.setShadowEnabled(false);
+        backButtonFieldReference.setPreferredSize(new Dimension(145, 44));
 
-        containerLocalVariableValue.add(headerPanelLocalVariableValue);
-        containerLocalVariableValue.add(Box.createRigidArea(new Dimension(0, 10)));
+        backButtonFieldReference.addActionListener(
+                eventArgumentParameterValue -> fireCommand("BACK")
+        );
 
-        JPanel columnsPanelLocalVariableValue = new JPanel(new GridLayout(0, 3, 10, 10));
-        columnsPanelLocalVariableValue.setBackground(BACKGROUND);
+        rightPanelLocalVariableValue.add(backButtonFieldReference);
+        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.EAST);
 
-        for (League leagueReferenceLocalVariableValue : leaguesFieldReference) {
-            JPanel leagueReferencePanelLocalVariableValue = new JPanel(new BorderLayout());
-            leagueReferencePanelLocalVariableValue.setBackground(Color.WHITE);
-            leagueReferencePanelLocalVariableValue.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(LIGHT_BLUE, 1),
-                    BorderFactory.createEmptyBorder(8, 10, 8, 10)
-            ));
+        return topBarLocalVariableValue;
+    }
 
-            JCheckBox checkBoxLocalVariableValue = new JCheckBox(leagueReferenceLocalVariableValue.getName());
-            checkBoxLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 12));
-            checkBoxLocalVariableValue.setBackground(Color.WHITE);
-            leagueReferenceCheckboxesFieldReference.add(checkBoxLocalVariableValue); // seguimos guardando para luego poder eliminarlas
+    private JPanel buildBottomBar() {
+        JPanel bottomBarLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 8));
+        bottomBarLocalVariableValue.setOpaque(false);
+        bottomBarLocalVariableValue.setBorder(new EmptyBorder(0, 20, 18, 0));
 
-            leagueReferencePanelLocalVariableValue.add(checkBoxLocalVariableValue, BorderLayout.CENTER);
-            columnsPanelLocalVariableValue.add(leagueReferencePanelLocalVariableValue);
+        configButtonFieldReference = buildConfigButton();
+        bottomBarLocalVariableValue.add(configButtonFieldReference);
+
+        return bottomBarLocalVariableValue;
+    }
+
+    private JButton buildConfigButton() {
+        JButton buttonControlLocalVariableValue = new JButton();
+        buttonControlLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
+        buttonControlLocalVariableValue.setContentAreaFilled(false);
+        buttonControlLocalVariableValue.setFocusPainted(false);
+        buttonControlLocalVariableValue.setOpaque(false);
+        buttonControlLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        try {
+            String iconPathLocalVariableValue = resolveExistingIconPath(
+                    "photos/Rueda_Ajustes.png",
+                    "photos/Rueda Ajustes.png"
+            );
+
+            Image rawIconLocalVariableValue =
+                    new ImageIcon(iconPathLocalVariableValue).getImage();
+
+            Image scaledIconLocalVariableValue =
+                    rawIconLocalVariableValue.getScaledInstance(
+                            82,
+                            82,
+                            Image.SCALE_SMOOTH
+                    );
+
+            buttonControlLocalVariableValue.setIcon(
+                    new ImageIcon(scaledIconLocalVariableValue)
+            );
+            buttonControlLocalVariableValue.setPreferredSize(new Dimension(120, 120));
+        } catch (Exception ignoredExceptionParameterValue) {
+            buttonControlLocalVariableValue.setText("⚙");
+            buttonControlLocalVariableValue.setForeground(Color.WHITE);
+            buttonControlLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 32));
         }
 
-        containerLocalVariableValue.add(columnsPanelLocalVariableValue);
+        buttonControlLocalVariableValue.addActionListener(
+                eventArgumentParameterValue -> fireCommand("CONFIG")
+        );
 
-        JScrollPane scrollPaneLocalVariableValue = new JScrollPane(containerLocalVariableValue);
-        scrollPaneLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
-        scrollPaneLocalVariableValue.getViewport().setBackground(BACKGROUND);
-        scrollPaneLocalVariableValue.setPreferredSize(new Dimension(450, 200));
+        return buttonControlLocalVariableValue;
+    }
+
+    private JPanel buildCenterContent() {
+        JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
+        centerWrapperLocalVariableValue.setOpaque(false);
+
+        JPanel contentPanelLocalVariableValue = new JPanel();
+        contentPanelLocalVariableValue.setOpaque(false);
+        contentPanelLocalVariableValue.setLayout(
+                new BoxLayout(contentPanelLocalVariableValue, BoxLayout.Y_AXIS)
+        );
+        contentPanelLocalVariableValue.setBorder(new EmptyBorder(0, 50, 16, 50));
+
+        JPanel titleBlockLocalVariableValue = buildTitleBlock();
+        JPanel deleteCardLocalVariableValue = buildDeleteCard();
+
+        titleBlockLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        deleteCardLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        contentPanelLocalVariableValue.add(titleBlockLocalVariableValue);
+        contentPanelLocalVariableValue.add(Box.createVerticalStrut(38));
+        contentPanelLocalVariableValue.add(deleteCardLocalVariableValue);
+
+        GridBagConstraints constraintsLocalVariableValue = new GridBagConstraints();
+        constraintsLocalVariableValue.gridx = 0;
+        constraintsLocalVariableValue.gridy = 0;
+        constraintsLocalVariableValue.weightx = 1.0;
+        constraintsLocalVariableValue.weighty = 1.0;
+        constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
+
+        centerWrapperLocalVariableValue.add(
+                contentPanelLocalVariableValue,
+                constraintsLocalVariableValue
+        );
+
+        return centerWrapperLocalVariableValue;
+    }
+
+    private JPanel buildTitleBlock() {
+        Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
+
+        int mainTitleSizeLocalVariableValue =
+                Math.max(58, (int) (screenHeightLocalVariableValue * 0.075));
+
+        int subtitleSizeLocalVariableValue =
+                Math.max(20, (int) (screenHeightLocalVariableValue * 0.025));
+
+        JPanel titleContainerLocalVariableValue = new JPanel();
+        titleContainerLocalVariableValue.setOpaque(false);
+        titleContainerLocalVariableValue.setLayout(
+                new BoxLayout(titleContainerLocalVariableValue, BoxLayout.Y_AXIS)
+        );
+
+        JPanel titleLineLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        titleLineLocalVariableValue.setOpaque(false);
+
+        JLabel deleteLabelLocalVariableValue = new JLabel("DELETE ");
+        deleteLabelLocalVariableValue.setForeground(ACCENT_COLOR);
+        deleteLabelLocalVariableValue.setFont(
+                new Font("Arial", Font.BOLD, mainTitleSizeLocalVariableValue)
+        );
+
+        JLabel leagueLabelLocalVariableValue = new JLabel("LEAGUE");
+        leagueLabelLocalVariableValue.setForeground(TITLE_WHITE);
+        leagueLabelLocalVariableValue.setFont(
+                new Font("Arial", Font.BOLD, mainTitleSizeLocalVariableValue)
+        );
+
+        titleLineLocalVariableValue.add(deleteLabelLocalVariableValue);
+        titleLineLocalVariableValue.add(leagueLabelLocalVariableValue);
+
+        JPanel underlineWrapperLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        underlineWrapperLocalVariableValue.setOpaque(false);
+
+        JPanel underlinePanelLocalVariableValue = new JPanel();
+        underlinePanelLocalVariableValue.setBackground(ACCENT_COLOR);
+        underlinePanelLocalVariableValue.setPreferredSize(new Dimension(170, 6));
+        underlinePanelLocalVariableValue.setMinimumSize(new Dimension(170, 6));
+        underlinePanelLocalVariableValue.setMaximumSize(new Dimension(170, 6));
+
+        underlineWrapperLocalVariableValue.add(underlinePanelLocalVariableValue);
+
+        JLabel subtitleLabelLocalVariableValue = new JLabel(
+                "Select leagues to remove from the system",
+                SwingConstants.CENTER
+        );
+        subtitleLabelLocalVariableValue.setForeground(SUBTITLE_WHITE);
+        subtitleLabelLocalVariableValue.setFont(
+                new Font("Arial", Font.PLAIN, subtitleSizeLocalVariableValue)
+        );
+        subtitleLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        subtitleLabelLocalVariableValue.setBorder(new EmptyBorder(18, 0, 0, 0));
+
+        titleContainerLocalVariableValue.add(titleLineLocalVariableValue);
+        titleContainerLocalVariableValue.add(Box.createVerticalStrut(12));
+        titleContainerLocalVariableValue.add(underlineWrapperLocalVariableValue);
+        titleContainerLocalVariableValue.add(subtitleLabelLocalVariableValue);
+
+        return titleContainerLocalVariableValue;
+    }
+
+    private JPanel buildDeleteCard() {
+        JPanel cardLocalVariableValue = new RoundedCardPanel();
+        cardLocalVariableValue.setOpaque(false);
+        cardLocalVariableValue.setLayout(
+                new BoxLayout(cardLocalVariableValue, BoxLayout.Y_AXIS)
+        );
+        cardLocalVariableValue.setBorder(new EmptyBorder(24, 34, 30, 34));
+
+        cardLocalVariableValue.setPreferredSize(new Dimension(820, 560));
+        cardLocalVariableValue.setMinimumSize(new Dimension(820, 560));
+        cardLocalVariableValue.setMaximumSize(new Dimension(820, 560));
+
+        JPanel iconPanelLocalVariableValue = buildLeagueIconPanel();
+        iconPanelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel titleLabelLocalVariableValue =
+                new JLabel("LEAGUE LIST", SwingConstants.CENTER);
+        titleLabelLocalVariableValue.setForeground(CARD_TITLE_COLOR);
+        titleLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel helperLabelLocalVariableValue = new JLabel(
+                "Mark one or more leagues and confirm the deletion",
+                SwingConstants.CENTER
+        );
+        helperLabelLocalVariableValue.setForeground(CARD_BODY_COLOR);
+        helperLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 14));
+        helperLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        cardLocalVariableValue.add(iconPanelLocalVariableValue);
+        cardLocalVariableValue.add(Box.createVerticalStrut(6));
+        cardLocalVariableValue.add(titleLabelLocalVariableValue);
+        cardLocalVariableValue.add(Box.createVerticalStrut(8));
+        cardLocalVariableValue.add(helperLabelLocalVariableValue);
+        cardLocalVariableValue.add(Box.createVerticalStrut(18));
+
+        JScrollPane leaguesScrollPaneLocalVariableValue = createCompactLeaguesPanel();
+        leaguesScrollPaneLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cardLocalVariableValue.add(leaguesScrollPaneLocalVariableValue);
+
+        cardLocalVariableValue.add(Box.createVerticalStrut(18));
+
+        deleteButtonFieldReference = new Rounded.RoundedButton("DELETE SELECTED", 18);
+        deleteButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 15));
+        deleteButtonFieldReference.setForeground(Color.WHITE);
+        deleteButtonFieldReference.setBackground(DANGER_RED);
+        deleteButtonFieldReference.setGradientColors(DANGER_RED, DANGER_RED_DARK);
+        deleteButtonFieldReference.setPreferredSize(new Dimension(620, 46));
+        deleteButtonFieldReference.setMaximumSize(new Dimension(620, 46));
+        deleteButtonFieldReference.setMinimumSize(new Dimension(620, 46));
+        deleteButtonFieldReference.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        deleteButtonFieldReference.addActionListener(
+                eventArgumentParameterValue -> fireCommand("DELETE_LEAGUES")
+        );
+
+        cardLocalVariableValue.add(deleteButtonFieldReference);
+
+        return cardLocalVariableValue;
+    }
+
+    private JPanel buildLeagueIconPanel() {
+        JPanel iconPanelLocalVariableValue = new JPanel(new GridBagLayout());
+        iconPanelLocalVariableValue.setOpaque(false);
+
+        iconPanelLocalVariableValue.setPreferredSize(new Dimension(120, 120));
+        iconPanelLocalVariableValue.setMaximumSize(new Dimension(120, 120));
+        iconPanelLocalVariableValue.setMinimumSize(new Dimension(120, 120));
+
+        JLabel iconLabelLocalVariableValue = new JLabel();
+        iconLabelLocalVariableValue.setHorizontalAlignment(SwingConstants.CENTER);
+        iconLabelLocalVariableValue.setVerticalAlignment(SwingConstants.CENTER);
+
+        try {
+            Image iconImageLocalVariableValue =
+                    new ImageIcon(LEAGUE_ICON_PATH).getImage();
+
+            Image scaledIconLocalVariableValue =
+                    iconImageLocalVariableValue.getScaledInstance(
+                            115,
+                            115,
+                            Image.SCALE_SMOOTH
+                    );
+
+            iconLabelLocalVariableValue.setIcon(
+                    new ImageIcon(scaledIconLocalVariableValue)
+            );
+        } catch (Exception ignoredExceptionParameterValue) {
+            iconLabelLocalVariableValue.setText("🏆");
+            iconLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 62));
+        }
+
+        iconPanelLocalVariableValue.add(iconLabelLocalVariableValue);
+
+        return iconPanelLocalVariableValue;
+    }
+
+    private JScrollPane createCompactLeaguesPanel() {
+        listContainerFieldReference = new JPanel();
+        listContainerFieldReference.setLayout(
+                new BoxLayout(listContainerFieldReference, BoxLayout.Y_AXIS)
+        );
+        listContainerFieldReference.setBackground(FIELD_BACKGROUND);
+        listContainerFieldReference.setBorder(new EmptyBorder(10, 12, 10, 12));
+
+        JScrollPane scrollPaneLocalVariableValue =
+                new JScrollPane(listContainerFieldReference);
+
+        scrollPaneLocalVariableValue.setBorder(
+                BorderFactory.createLineBorder(FIELD_BORDER, 1)
+        );
+        scrollPaneLocalVariableValue.getViewport().setBackground(FIELD_BACKGROUND);
+        scrollPaneLocalVariableValue.setHorizontalScrollBarPolicy(
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        );
+        scrollPaneLocalVariableValue.setVerticalScrollBarPolicy(
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
+        );
+
+        scrollPaneLocalVariableValue.setPreferredSize(new Dimension(620, 220));
+        scrollPaneLocalVariableValue.setMaximumSize(new Dimension(620, 220));
+        scrollPaneLocalVariableValue.setMinimumSize(new Dimension(620, 220));
+
+        populateLeaguesList();
 
         return scrollPaneLocalVariableValue;
     }
 
-    /**
-     * Crea el panel inferior con el botón para eliminar las ligas seleccionadas.
-     *
-     * @return JPanel con el botón eliminar.
-     */
-    private JPanel createDeleteButtonPanel() {
-        // Panel exterior con fondo blanco
-        JPanel outerPanelLocalVariableValue = new JPanel(new BorderLayout());
-        outerPanelLocalVariableValue.setBackground(BACKGROUND);
-        outerPanelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+    private void populateLeaguesList() {
+        if (listContainerFieldReference == null) {
+            return;
+        }
 
-        // Panel interior con fondo rojo (el recuadro rojo)
-        JPanel redPanelLocalVariableValue = new JPanel(new BorderLayout());
-        redPanelLocalVariableValue.setBackground(DARK_RED);
-        redPanelLocalVariableValue.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 1, 0, DARK_RED),
-                BorderFactory.createEmptyBorder(15, 0, 15, 0)
-        ));
+        listContainerFieldReference.removeAll();
+        leagueReferenceCheckboxesFieldReference.clear();
 
-        // Botón DELETE
-        JButton deleteButtonLocalVariableValue = new JButton("DELETE");
-        deleteButtonLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 18));
-        deleteButtonLocalVariableValue.setForeground(Color.WHITE);
-        deleteButtonLocalVariableValue.setBackground(BRIGHT_RED);
-        deleteButtonLocalVariableValue.setFocusPainted(false);
-        deleteButtonLocalVariableValue.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(150, 30, 30), 2),
-                BorderFactory.createEmptyBorder(8, 40, 8, 40)
-        ));
+        JPanel headerPanelLocalVariableValue = buildListHeader();
+        listContainerFieldReference.add(headerPanelLocalVariableValue);
+        listContainerFieldReference.add(Box.createVerticalStrut(8));
 
-        // Efecto hover
-        deleteButtonLocalVariableValue.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent evtParameterValue) {
-                deleteButtonLocalVariableValue.setBackground(new Color(255, 255, 255));
+        if (leaguesFieldReference == null || leaguesFieldReference.isEmpty()) {
+            JLabel emptyLabelLocalVariableValue =
+                    new JLabel("No leagues available.", SwingConstants.CENTER);
+            emptyLabelLocalVariableValue.setForeground(new Color(120, 132, 155));
+            emptyLabelLocalVariableValue.setFont(new Font("Arial", Font.ITALIC, 16));
+            emptyLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+            emptyLabelLocalVariableValue.setBorder(new EmptyBorder(62, 0, 20, 0));
+
+            listContainerFieldReference.add(emptyLabelLocalVariableValue);
+        } else {
+            for (League leagueReferenceLocalVariableValue : leaguesFieldReference) {
+                listContainerFieldReference.add(
+                        createLeagueRow(leagueReferenceLocalVariableValue)
+                );
+                listContainerFieldReference.add(Box.createVerticalStrut(8));
             }
-            public void mouseExited(MouseEvent evtParameterValue2) {
-                deleteButtonLocalVariableValue.setBackground(BRIGHT_RED);
-            }
-        });
+        }
 
+        listContainerFieldReference.revalidate();
+        listContainerFieldReference.repaint();
+    }
 
-        deleteButtonLocalVariableValue.addActionListener(eventArgumentParameterValue3 -> {
-            if (configControllerHandlerFieldReference != null) {
-                ((ActionListener) configControllerHandlerFieldReference).actionPerformed(
-                        new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "DELETE_LEAGUES")
+    private JPanel buildListHeader() {
+        JPanel headerPanelLocalVariableValue = new JPanel(new GridLayout(1, 4));
+        headerPanelLocalVariableValue.setOpaque(false);
+        headerPanelLocalVariableValue.setMaximumSize(new Dimension(580, 34));
+        headerPanelLocalVariableValue.setPreferredSize(new Dimension(580, 34));
+        headerPanelLocalVariableValue.setMinimumSize(new Dimension(580, 34));
+        headerPanelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        String[] headersLocalVariableValue = {"SELECT", "LEAGUE", "START", "TEAMS"};
+
+        for (String headerLocalVariableValue : headersLocalVariableValue) {
+            JLabel labelLocalVariableValue =
+                    new JLabel(headerLocalVariableValue, SwingConstants.CENTER);
+            labelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 13));
+            labelLocalVariableValue.setForeground(new Color(75, 88, 115));
+            headerPanelLocalVariableValue.add(labelLocalVariableValue);
+        }
+
+        return headerPanelLocalVariableValue;
+    }
+
+    private JPanel createLeagueRow(League leagueReferenceParameterValue) {
+        JPanel rowPanelLocalVariableValue = new SelectableRowPanel();
+        rowPanelLocalVariableValue.setLayout(new GridLayout(1, 4));
+        rowPanelLocalVariableValue.setOpaque(false);
+        rowPanelLocalVariableValue.setBorder(new EmptyBorder(8, 16, 8, 16));
+        rowPanelLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        rowPanelLocalVariableValue.setPreferredSize(new Dimension(580, 48));
+        rowPanelLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        rowPanelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JCheckBox checkBoxLocalVariableValue = new JCheckBox();
+        checkBoxLocalVariableValue.setOpaque(false);
+        checkBoxLocalVariableValue.setHorizontalAlignment(SwingConstants.CENTER);
+        checkBoxLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        checkBoxLocalVariableValue.setText(leagueReferenceParameterValue.getName());
+
+        leagueReferenceCheckboxesFieldReference.add(checkBoxLocalVariableValue);
+
+        JLabel nameLabelLocalVariableValue = createRowLabel(
+                leagueReferenceParameterValue.getName(),
+                Font.BOLD,
+                CARD_TITLE_COLOR
+        );
+
+        JLabel startLabelLocalVariableValue = createRowLabel(
+                leagueReferenceParameterValue.getStartDate(),
+                Font.PLAIN,
+                new Color(54, 66, 87)
+        );
+
+        int teamCountLocalVariableValue =
+                leagueReferenceParameterValue.getParticipatingTeams() == null
+                        ? 0
+                        : leagueReferenceParameterValue.getParticipatingTeams().size();
+
+        JLabel teamsLabelLocalVariableValue = createRowLabel(
+                String.valueOf(teamCountLocalVariableValue),
+                Font.PLAIN,
+                new Color(54, 66, 87)
+        );
+
+        rowPanelLocalVariableValue.add(checkBoxLocalVariableValue);
+        rowPanelLocalVariableValue.add(nameLabelLocalVariableValue);
+        rowPanelLocalVariableValue.add(startLabelLocalVariableValue);
+        rowPanelLocalVariableValue.add(teamsLabelLocalVariableValue);
+
+        rowPanelLocalVariableValue.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent eventArgumentParameterValue) {
+                checkBoxLocalVariableValue.setSelected(
+                        !checkBoxLocalVariableValue.isSelected()
                 );
             }
         });
 
-
-        // Centrar el botón en el panel rojo
-        JPanel buttonContainerLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonContainerLocalVariableValue.setBackground(DARK_RED);
-        buttonContainerLocalVariableValue.add(deleteButtonLocalVariableValue);
-
-        redPanelLocalVariableValue.add(buttonContainerLocalVariableValue, BorderLayout.CENTER);
-        outerPanelLocalVariableValue.add(redPanelLocalVariableValue, BorderLayout.CENTER);
-
-        return outerPanelLocalVariableValue;
+        return rowPanelLocalVariableValue;
     }
 
+    private JLabel createRowLabel(String textParameterValue,
+                                  int styleParameterValue,
+                                  Color colorParameterValue) {
+        JLabel labelLocalVariableValue =
+                new JLabel(textParameterValue == null ? "-" : textParameterValue,
+                        SwingConstants.CENTER);
+        labelLocalVariableValue.setFont(new Font("Arial", styleParameterValue, 14));
+        labelLocalVariableValue.setForeground(colorParameterValue);
+        return labelLocalVariableValue;
+    }
 
-    /**
-     * Refresca la lista de ligas eliminando y reconstruyendo la interfaz.
-     */
+    private void fireCommand(String commandParameterValue) {
+        if (configControllerHandlerFieldReference != null) {
+            configControllerHandlerFieldReference.actionPerformed(
+                    new ActionEvent(
+                            this,
+                            ActionEvent.ACTION_PERFORMED,
+                            commandParameterValue
+                    )
+            );
+        }
+    }
+
     public void refreshLeaguesList() {
-        getContentPane().removeAll();
-        leagueReferenceCheckboxesFieldReference.clear();
-
-        JPanel mainPanelLocalVariableValue2 = new JPanel(new BorderLayout());
-        mainPanelLocalVariableValue2.setBackground(BACKGROUND);
-        mainPanelLocalVariableValue2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        mainPanelLocalVariableValue2.add(createTitlePanel(), BorderLayout.NORTH);
-        mainPanelLocalVariableValue2.add(createCompactLeaguesPanel(), BorderLayout.CENTER);
-        mainPanelLocalVariableValue2.add(createDeleteButtonPanel(), BorderLayout.SOUTH);
-
-        add(mainPanelLocalVariableValue2);
-        revalidate();
-        repaint();
+        populateLeaguesList();
     }
 
-    /**
-     * Obtiene la lista de nombres de ligas seleccionadas para eliminar.
-     *
-     * @return ArrayList con los nombres de ligas seleccionadas.
-     */
     public ArrayList<String> getSelectedLeagues() {
         ArrayList<String> selectedLocalVariableValue = new ArrayList<>();
-        for (JCheckBox checkBoxLocalVariableValue2 : leagueReferenceCheckboxesFieldReference) {
-            if (checkBoxLocalVariableValue2.isSelected()) {
-                selectedLocalVariableValue.add(checkBoxLocalVariableValue2.getText());
+
+        for (JCheckBox checkBoxLocalVariableValue : leagueReferenceCheckboxesFieldReference) {
+            if (checkBoxLocalVariableValue.isSelected()) {
+                selectedLocalVariableValue.add(checkBoxLocalVariableValue.getText());
             }
         }
+
         return selectedLocalVariableValue;
     }
 
-    /**
-     * Muestra un diálogo de advertencia con un mensaje personalizado.
-     *
-     * @param message Texto a mostrar.
-     */
     public void showMessageDialog(String messageParameterValue) {
-        JOptionPane.showMessageDialog(this, messageParameterValue, "DELETE", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                messageParameterValue,
+                "DELETE",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 
-    /**
-     * Muestra un diálogo de confirmación antes de eliminar ligas.
-     *
-     * @param leaguesToDelete Lista de ligas seleccionadas para eliminar.
-     * @return Entero con la opción elegida por el usuario (Sí/No).
-     */
-    public int confirmDelete (List<String> leaguesToDeleteParameterValue) {
-        int resultLocalVariableValue  = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete " + leaguesToDeleteParameterValue.size() + " league(s)?",
-                "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-        return resultLocalVariableValue;
+    public int confirmDelete(List<String> leaguesToDeleteParameterValue) {
+        return JOptionPane.showConfirmDialog(
+                SwingUtilities.getWindowAncestor(this),
+                "Are you sure you want to delete "
+                        + leaguesToDeleteParameterValue.size()
+                        + " league(s)?",
+                "Confirm Deletion",
+                JOptionPane.YES_NO_OPTION
+        );
     }
 
-    /**
-     * Muestra un mensaje con el resultado de la eliminación.
-     *
-     * @param message Mensaje a mostrar.
-     */
-    public void messageDelete (String messageParameterValue2) {
-        JOptionPane.showMessageDialog(this, messageParameterValue2,
-                "Deletion Result", JOptionPane.INFORMATION_MESSAGE);
+    public void messageDelete(String messageParameterValue) {
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                messageParameterValue,
+                "Leagues Deleted",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private String resolveExistingIconPath(String primaryRelativePathParameterValue,
+                                           String fallbackRelativePathParameterValue) {
+        String primaryAbsolutePathLocalVariableValue =
+                ProjectPathResolver.resolveProjectPath(primaryRelativePathParameterValue);
+
+        if (new java.io.File(primaryAbsolutePathLocalVariableValue).exists()) {
+            return primaryAbsolutePathLocalVariableValue;
+        }
+
+        return ProjectPathResolver.resolveProjectPath(fallbackRelativePathParameterValue);
+    }
+
+    private static class RoundedCardPanel extends JPanel {
+        @Override
+        protected void paintComponent(Graphics graphicsParameterValue) {
+            Graphics2D g2LocalVariableValue =
+                    (Graphics2D) graphicsParameterValue.create();
+
+            g2LocalVariableValue.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            int widthLocalVariableValue = getWidth();
+            int heightLocalVariableValue = getHeight();
+            int radiusLocalVariableValue = 22;
+
+            g2LocalVariableValue.setColor(new Color(8, 20, 46, 42));
+            g2LocalVariableValue.fillRoundRect(
+                    8,
+                    10,
+                    widthLocalVariableValue - 16,
+                    heightLocalVariableValue - 10,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.setColor(new Color(255, 255, 255, 250));
+            g2LocalVariableValue.fillRoundRect(
+                    0,
+                    0,
+                    widthLocalVariableValue - 1,
+                    heightLocalVariableValue - 4,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.setColor(new Color(22, 150, 83));
+            g2LocalVariableValue.setStroke(new BasicStroke(2f));
+            g2LocalVariableValue.drawRoundRect(
+                    0,
+                    0,
+                    widthLocalVariableValue - 1,
+                    heightLocalVariableValue - 5,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.dispose();
+            super.paintComponent(graphicsParameterValue);
+        }
+    }
+
+    private static class SelectableRowPanel extends JPanel {
+        private boolean hoverFieldReference = false;
+
+        SelectableRowPanel() {
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent eventArgumentParameterValue) {
+                    hoverFieldReference = true;
+                    repaint();
+                }
+
+                @Override
+                public void mouseExited(MouseEvent eventArgumentParameterValue) {
+                    hoverFieldReference = false;
+                    repaint();
+                }
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics graphicsParameterValue) {
+            Graphics2D g2LocalVariableValue =
+                    (Graphics2D) graphicsParameterValue.create();
+
+            g2LocalVariableValue.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            int radiusLocalVariableValue = 16;
+
+            g2LocalVariableValue.setColor(
+                    hoverFieldReference
+                            ? new Color(255, 238, 238)
+                            : Color.WHITE
+            );
+
+            g2LocalVariableValue.fillRoundRect(
+                    0,
+                    0,
+                    getWidth() - 1,
+                    getHeight() - 1,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.setColor(
+                    hoverFieldReference
+                            ? DANGER_RED
+                            : new Color(218, 228, 242)
+            );
+
+            g2LocalVariableValue.setStroke(new BasicStroke(1.4f));
+            g2LocalVariableValue.drawRoundRect(
+                    0,
+                    0,
+                    getWidth() - 1,
+                    getHeight() - 1,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.dispose();
+            super.paintComponent(graphicsParameterValue);
+        }
     }
 }

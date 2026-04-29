@@ -1,210 +1,438 @@
 package presentation.Views;
 
+import bussines.objects.League;
+import bussines.objects.LeagueListEntry;
 import presentation.ControllerViews.AvailableLeaguesController;
+import presentation.ControllerViews.MenuController;
+import shared.ProjectPathResolver;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import bussines.objects.League;
-import bussines.objects.LeagueListEntry;
-import presentation.ControllerViews.MenuController;
-import shared.ProjectPathResolver;
 
-/**
- * Vista que muestra las ligas de fútbol disponibles.
- * Permite a los usuarios (y administradores) ver una lista de ligas y acceder a sus detalles.
- * Incorpora botones de navegación y configuración en el encabezado.
- */
-public class AvailableLeaguesView extends JFrame {
+/** Vista JPanel con listado de ligas disponibles. */
+public class AvailableLeaguesView extends JPanel {
 
-    // Colores personalizados para mantener consistencia visual
-    private static final Color DARK_BLUE = new Color(22, 49, 72);    // #163148
-    private static final Color LIGHT_BLUE = new Color(195, 216, 236); // #C3D8EC
-    private static final Color BACKGROUND = new Color(240, 240, 240);
-    private static final Color DIVIDER_COLOR = Color.BLACK;
+    private static final Color ACCENT_COLOR = new Color(55, 109, 230);
+    private static final Color TITLE_WHITE = new Color(245, 247, 250);
+    private static final Color SUBTITLE_WHITE = new Color(238, 241, 247);
 
-    private JButton configButtonFieldReference;
+    private static final Color CARD_TITLE_COLOR = new Color(28, 35, 51);
+    private static final Color CARD_BODY_COLOR = new Color(100, 112, 135);
+    private static final Color FIELD_BACKGROUND = new Color(245, 249, 255);
+    private static final Color FIELD_BORDER = new Color(190, 210, 235);
+
+    private static final Color STATUS_PENDING_COLOR = new Color(245, 137, 47);
+    private static final Color STATUS_RUNNING_COLOR = new Color(55, 109, 230);
+    private static final Color STATUS_FINISHED_COLOR = new Color(38, 166, 91);
+
+    private static final String BACKGROUND_IMAGE_PATH =
+            ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
+
+    private static final String LEAGUES_ICON_PATH =
+            ProjectPathResolver.resolveProjectPath("photos/Leagues.png");
+
     private ActionListener configControllerHandlerFieldReference;
-    private JPanel leaguesListPanelFieldReference;
-    private JScrollPane leaguesScrollPaneFieldReference;
     private ActionListener backControllerHandlerFieldReference;
     private MenuController menuControllerHandlerFieldReference;
 
-    /**
-     * Establece el controlador que maneja la acción del botón de configuración.
-     *
-     * @param configController El {@link ActionListener} que maneja la acción.
-     */
-    public void setConfigController(ActionListener configControllerHandlerParameterValue) {
-        this.configControllerHandlerFieldReference = configControllerHandlerParameterValue;
+    private JPanel leaguesListPanelFieldReference;
+
+    private Rounded.RoundedButton backButtonFieldReference;
+    private JButton configButtonFieldReference;
+
+    public AvailableLeaguesView() {
+        setLayout(new BorderLayout());
+        add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
-
-    /**
-     * Constructor que inicializa la interfaz gráfica de la pantalla de ligas disponibles.
-     */
-    public AvailableLeaguesView() {
-        setTitle("Gestión de Ligas de Fútbol");
-        setSize(800, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        JPanel mainPanelLocalVariableValue = new JPanel(new BorderLayout());
-        mainPanelLocalVariableValue.setBackground(BACKGROUND);
-
-
-        // Añadir componentes al panel principal
-        mainPanelLocalVariableValue.add(createTitlePanel(), BorderLayout.NORTH);
-        mainPanelLocalVariableValue.add(createLeaguesScrollPane(), BorderLayout.CENTER);
-
-        add(mainPanelLocalVariableValue);
+    public void setConfigController(ActionListener configControllerHandlerParameterValue) {
+        this.configControllerHandlerFieldReference = configControllerHandlerParameterValue;
     }
 
     public void setBackButtonListener(ActionListener listenerParameterValue) {
         this.backControllerHandlerFieldReference = listenerParameterValue;
     }
 
-    // nuevo campo
-
     public void setMenuController(MenuController controllerHandlerParameterValue) {
         this.menuControllerHandlerFieldReference = controllerHandlerParameterValue;
     }
 
-    /**
-     * Crea el panel del título que contiene el nombre, el ícono y los botones de navegación/configuración.
-     *
-     * @return Panel del encabezado configurado.
-     */
-    private JPanel createTitlePanel() {
-        JPanel panelLocalVariableValue = new JPanel(new BorderLayout());
-        panelLocalVariableValue.setBackground(DARK_BLUE);
-        panelLocalVariableValue.setPreferredSize(new Dimension(getWidth(), 60));
+    private JPanel buildBackgroundPanel() {
+        Image backgroundImageLocalVariableValue =
+                new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
-        // Botón de volver atrás
-        JButton backButtonLocalVariableValue = Rounded.HeaderButtonHelper.createBackButton(eventArgumentParameterValue -> {
+        JPanel backgroundPanelLocalVariableValue = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics graphicsParameterValue) {
+                super.paintComponent(graphicsParameterValue);
+
+                graphicsParameterValue.drawImage(
+                        backgroundImageLocalVariableValue,
+                        0,
+                        0,
+                        getWidth(),
+                        getHeight(),
+                        this
+                );
+
+                Graphics2D g2LocalVariableValue =
+                        (Graphics2D) graphicsParameterValue.create();
+                g2LocalVariableValue.setColor(new Color(0, 0, 0, 55));
+                g2LocalVariableValue.fillRect(0, 0, getWidth(), getHeight());
+                g2LocalVariableValue.dispose();
+            }
+        };
+
+        backgroundPanelLocalVariableValue.setLayout(new BorderLayout());
+        backgroundPanelLocalVariableValue.add(buildTopBar(), BorderLayout.NORTH);
+        backgroundPanelLocalVariableValue.add(buildCenterContent(), BorderLayout.CENTER);
+        backgroundPanelLocalVariableValue.add(buildBottomBar(), BorderLayout.SOUTH);
+
+        return backgroundPanelLocalVariableValue;
+    }
+
+    private JPanel buildTopBar() {
+        JPanel topBarLocalVariableValue = new JPanel(new BorderLayout());
+        topBarLocalVariableValue.setOpaque(false);
+        topBarLocalVariableValue.setBorder(new EmptyBorder(28, 40, 0, 40));
+
+        JPanel rightPanelLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        rightPanelLocalVariableValue.setOpaque(false);
+
+        backButtonFieldReference = new Rounded.RoundedButton("← BACK", 18);
+        backButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 15));
+        backButtonFieldReference.setForeground(ACCENT_COLOR);
+        backButtonFieldReference.setBackground(new Color(255, 255, 255, 230));
+        backButtonFieldReference.setOutlineMode(ACCENT_COLOR, 2);
+        backButtonFieldReference.setShadowEnabled(false);
+        backButtonFieldReference.setPreferredSize(new Dimension(145, 44));
+
+        backButtonFieldReference.addActionListener(eventArgumentParameterValue -> {
             if (backControllerHandlerFieldReference != null) {
-                backControllerHandlerFieldReference.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "BACK"));
-            } else {
-                dispose();
-                menuControllerHandlerFieldReference.showMenu();// comportamiento por defecto si no hay listener
+                backControllerHandlerFieldReference.actionPerformed(
+                        new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "BACK")
+                );
+            } else if (menuControllerHandlerFieldReference != null) {
+                menuControllerHandlerFieldReference.showMenu();
             }
         });
-        panelLocalVariableValue.add(backButtonLocalVariableValue, BorderLayout.WEST);
 
-        // Íconos de pelota de fútbol
-        ImageIcon ballIconLocalVariableValue =
-                new ImageIcon(ProjectPathResolver.resolveProjectPath("photos/football.png"));
-        Image scaledLocalVariableValue = ballIconLocalVariableValue.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-        ImageIcon scaledBallIconLocalVariableValue = new ImageIcon(scaledLocalVariableValue);
+        rightPanelLocalVariableValue.add(backButtonFieldReference);
+        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.EAST);
 
-        JLabel leftBallLocalVariableValue = new JLabel(scaledBallIconLocalVariableValue);
-        JLabel rightBallLocalVariableValue = new JLabel(scaledBallIconLocalVariableValue);
+        return topBarLocalVariableValue;
+    }
 
-        JLabel titleLocalVariableValue = new JLabel("AVAILABLE LEAGUES");
-        titleLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 20));
-        titleLocalVariableValue.setForeground(Color.WHITE);
+    private JPanel buildBottomBar() {
+        JPanel bottomBarLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 8));
+        bottomBarLocalVariableValue.setOpaque(false);
+        bottomBarLocalVariableValue.setBorder(new EmptyBorder(0, 20, 18, 0));
 
-        JPanel centerPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        centerPanelLocalVariableValue.setOpaque(false);
-        centerPanelLocalVariableValue.add(leftBallLocalVariableValue);
-        centerPanelLocalVariableValue.add(titleLocalVariableValue);
-        centerPanelLocalVariableValue.add(rightBallLocalVariableValue);
+        configButtonFieldReference = buildConfigButton();
+        bottomBarLocalVariableValue.add(configButtonFieldReference);
 
-        panelLocalVariableValue.add(centerPanelLocalVariableValue, BorderLayout.CENTER);
+        return bottomBarLocalVariableValue;
+    }
 
-        configButtonFieldReference = Rounded.HeaderButtonHelper.createConfigButton(eventArgumentParameterValue2 -> { //inhabilitamos
-//            if (configController != null) {
-//                ((AvailableLeaguesController) configController).showConfigDialog();
-//            }
+    private JButton buildConfigButton() {
+        JButton buttonControlLocalVariableValue = new JButton();
+        buttonControlLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
+        buttonControlLocalVariableValue.setContentAreaFilled(false);
+        buttonControlLocalVariableValue.setFocusPainted(false);
+        buttonControlLocalVariableValue.setOpaque(false);
+        buttonControlLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        try {
+            String iconPathLocalVariableValue = resolveExistingIconPath(
+                    "photos/Rueda_Ajustes.png",
+                    "photos/Rueda Ajustes.png"
+            );
+
+            Image rawIconLocalVariableValue =
+                    new ImageIcon(iconPathLocalVariableValue).getImage();
+
+            Image scaledIconLocalVariableValue =
+                    rawIconLocalVariableValue.getScaledInstance(
+                            82,
+                            82,
+                            Image.SCALE_SMOOTH
+                    );
+
+            buttonControlLocalVariableValue.setIcon(
+                    new ImageIcon(scaledIconLocalVariableValue)
+            );
+            buttonControlLocalVariableValue.setPreferredSize(new Dimension(120, 120));
+        } catch (Exception ignoredExceptionParameterValue) {
+            buttonControlLocalVariableValue.setText("⚙");
+            buttonControlLocalVariableValue.setForeground(Color.WHITE);
+            buttonControlLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 32));
+        }
+
+        buttonControlLocalVariableValue.addActionListener(eventArgumentParameterValue -> {
+            if (configControllerHandlerFieldReference != null) {
+                configControllerHandlerFieldReference.actionPerformed(
+                        new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CONFIG")
+                );
+            }
         });
-        panelLocalVariableValue.add(configButtonFieldReference, BorderLayout.EAST);
 
-        return panelLocalVariableValue;
+        return buttonControlLocalVariableValue;
     }
 
-    /**
-     * Crea el panel principal scrollable que contiene la lista de ligas.
-     *
-     * @return Un {@link JScrollPane} que envuelve la lista de ligas.
-     */
+    private JPanel buildCenterContent() {
+        JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
+        centerWrapperLocalVariableValue.setOpaque(false);
+
+        JPanel contentPanelLocalVariableValue = new JPanel();
+        contentPanelLocalVariableValue.setOpaque(false);
+        contentPanelLocalVariableValue.setLayout(
+                new BoxLayout(contentPanelLocalVariableValue, BoxLayout.Y_AXIS)
+        );
+        contentPanelLocalVariableValue.setBorder(new EmptyBorder(0, 50, 16, 50));
+
+        JPanel titleBlockLocalVariableValue = buildTitleBlock();
+        JPanel listCardLocalVariableValue = buildLeaguesCard();
+
+        titleBlockLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        listCardLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        contentPanelLocalVariableValue.add(titleBlockLocalVariableValue);
+        contentPanelLocalVariableValue.add(Box.createVerticalStrut(38));
+        contentPanelLocalVariableValue.add(listCardLocalVariableValue);
+
+        GridBagConstraints constraintsLocalVariableValue = new GridBagConstraints();
+        constraintsLocalVariableValue.gridx = 0;
+        constraintsLocalVariableValue.gridy = 0;
+        constraintsLocalVariableValue.weightx = 1.0;
+        constraintsLocalVariableValue.weighty = 1.0;
+        constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
+
+        centerWrapperLocalVariableValue.add(
+                contentPanelLocalVariableValue,
+                constraintsLocalVariableValue
+        );
+
+        return centerWrapperLocalVariableValue;
+    }
+
+    private JPanel buildTitleBlock() {
+        Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
+
+        int mainTitleSizeLocalVariableValue =
+                Math.max(58, (int) (screenHeightLocalVariableValue * 0.075));
+
+        int subtitleSizeLocalVariableValue =
+                Math.max(20, (int) (screenHeightLocalVariableValue * 0.025));
+
+        JPanel titleContainerLocalVariableValue = new JPanel();
+        titleContainerLocalVariableValue.setOpaque(false);
+        titleContainerLocalVariableValue.setLayout(
+                new BoxLayout(titleContainerLocalVariableValue, BoxLayout.Y_AXIS)
+        );
+
+        JPanel titleLineLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        titleLineLocalVariableValue.setOpaque(false);
+
+        JLabel availableLabelLocalVariableValue = new JLabel("AVAILABLE ");
+        availableLabelLocalVariableValue.setForeground(ACCENT_COLOR);
+        availableLabelLocalVariableValue.setFont(
+                new Font("Arial", Font.BOLD, mainTitleSizeLocalVariableValue)
+        );
+
+        JLabel leaguesLabelLocalVariableValue = new JLabel("LEAGUES");
+        leaguesLabelLocalVariableValue.setForeground(TITLE_WHITE);
+        leaguesLabelLocalVariableValue.setFont(
+                new Font("Arial", Font.BOLD, mainTitleSizeLocalVariableValue)
+        );
+
+        titleLineLocalVariableValue.add(availableLabelLocalVariableValue);
+        titleLineLocalVariableValue.add(leaguesLabelLocalVariableValue);
+
+        JPanel underlineWrapperLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        underlineWrapperLocalVariableValue.setOpaque(false);
+
+        JPanel underlinePanelLocalVariableValue = new JPanel();
+        underlinePanelLocalVariableValue.setBackground(ACCENT_COLOR);
+        underlinePanelLocalVariableValue.setPreferredSize(new Dimension(170, 6));
+        underlinePanelLocalVariableValue.setMinimumSize(new Dimension(170, 6));
+        underlinePanelLocalVariableValue.setMaximumSize(new Dimension(170, 6));
+
+        underlineWrapperLocalVariableValue.add(underlinePanelLocalVariableValue);
+
+        JLabel subtitleLabelLocalVariableValue = new JLabel(
+                "Browse and select a league",
+                SwingConstants.CENTER
+        );
+        subtitleLabelLocalVariableValue.setForeground(SUBTITLE_WHITE);
+        subtitleLabelLocalVariableValue.setFont(
+                new Font("Arial", Font.PLAIN, subtitleSizeLocalVariableValue)
+        );
+        subtitleLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        subtitleLabelLocalVariableValue.setBorder(new EmptyBorder(18, 0, 0, 0));
+
+        titleContainerLocalVariableValue.add(titleLineLocalVariableValue);
+        titleContainerLocalVariableValue.add(Box.createVerticalStrut(12));
+        titleContainerLocalVariableValue.add(underlineWrapperLocalVariableValue);
+        titleContainerLocalVariableValue.add(subtitleLabelLocalVariableValue);
+
+        return titleContainerLocalVariableValue;
+    }
+
+    private JPanel buildLeaguesCard() {
+        JPanel cardLocalVariableValue = new RoundedCardPanel();
+        cardLocalVariableValue.setOpaque(false);
+        cardLocalVariableValue.setLayout(
+                new BoxLayout(cardLocalVariableValue, BoxLayout.Y_AXIS)
+        );
+        cardLocalVariableValue.setBorder(new EmptyBorder(24, 34, 30, 34));
+
+        cardLocalVariableValue.setPreferredSize(new Dimension(820, 560));
+        cardLocalVariableValue.setMinimumSize(new Dimension(820, 560));
+        cardLocalVariableValue.setMaximumSize(new Dimension(820, 560));
+
+        JPanel iconPanelLocalVariableValue = buildLeaguesIconPanel();
+        iconPanelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel titleLabelLocalVariableValue =
+                new JLabel("LEAGUE LIST", SwingConstants.CENTER);
+        titleLabelLocalVariableValue.setForeground(CARD_TITLE_COLOR);
+        titleLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel helperLabelLocalVariableValue = new JLabel(
+                "Double click or select one league to see its details",
+                SwingConstants.CENTER
+        );
+        helperLabelLocalVariableValue.setForeground(CARD_BODY_COLOR);
+        helperLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 14));
+        helperLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        cardLocalVariableValue.add(iconPanelLocalVariableValue);
+        cardLocalVariableValue.add(Box.createVerticalStrut(6));
+        cardLocalVariableValue.add(titleLabelLocalVariableValue);
+        cardLocalVariableValue.add(Box.createVerticalStrut(8));
+        cardLocalVariableValue.add(helperLabelLocalVariableValue);
+        cardLocalVariableValue.add(Box.createVerticalStrut(18));
+        cardLocalVariableValue.add(buildTableHeader());
+        cardLocalVariableValue.add(Box.createVerticalStrut(8));
+        cardLocalVariableValue.add(createLeaguesScrollPane());
+
+        return cardLocalVariableValue;
+    }
+
+    private JPanel buildLeaguesIconPanel() {
+        JPanel iconPanelLocalVariableValue = new JPanel(new GridBagLayout());
+        iconPanelLocalVariableValue.setOpaque(false);
+
+        iconPanelLocalVariableValue.setPreferredSize(new Dimension(120, 120));
+        iconPanelLocalVariableValue.setMaximumSize(new Dimension(120, 120));
+        iconPanelLocalVariableValue.setMinimumSize(new Dimension(120, 120));
+
+        JLabel iconLabelLocalVariableValue = new JLabel();
+        iconLabelLocalVariableValue.setHorizontalAlignment(SwingConstants.CENTER);
+        iconLabelLocalVariableValue.setVerticalAlignment(SwingConstants.CENTER);
+
+        try {
+            Image iconImageLocalVariableValue =
+                    new ImageIcon(LEAGUES_ICON_PATH).getImage();
+
+            Image scaledIconLocalVariableValue =
+                    iconImageLocalVariableValue.getScaledInstance(
+                            115,
+                            115,
+                            Image.SCALE_SMOOTH
+                    );
+
+            iconLabelLocalVariableValue.setIcon(
+                    new ImageIcon(scaledIconLocalVariableValue)
+            );
+        } catch (Exception ignoredExceptionParameterValue) {
+            iconLabelLocalVariableValue.setText("🏆");
+            iconLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 62));
+        }
+
+        iconPanelLocalVariableValue.add(iconLabelLocalVariableValue);
+
+        return iconPanelLocalVariableValue;
+    }
+
+    private JPanel buildTableHeader() {
+        JPanel headerPanelLocalVariableValue = new JPanel(new GridLayout(1, 3));
+        headerPanelLocalVariableValue.setOpaque(false);
+        headerPanelLocalVariableValue.setMaximumSize(new Dimension(720, 36));
+        headerPanelLocalVariableValue.setPreferredSize(new Dimension(720, 36));
+        headerPanelLocalVariableValue.setMinimumSize(new Dimension(720, 36));
+        headerPanelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        String[] headersLocalVariableValue = {"LEAGUE", "TEAMS", "STATUS"};
+
+        for (String headerLocalVariableValue : headersLocalVariableValue) {
+            JLabel labelLocalVariableValue =
+                    new JLabel(headerLocalVariableValue, SwingConstants.CENTER);
+            labelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 13));
+            labelLocalVariableValue.setForeground(new Color(75, 88, 115));
+            headerPanelLocalVariableValue.add(labelLocalVariableValue);
+        }
+
+        return headerPanelLocalVariableValue;
+    }
+
     private JScrollPane createLeaguesScrollPane() {
-        JPanel containerLocalVariableValue = new JPanel(new BorderLayout());
-        containerLocalVariableValue.setBackground(BACKGROUND);
-
-        JPanel leaguesPanelLocalVariableValue = new JPanel();
-        leaguesPanelLocalVariableValue.setLayout(new BoxLayout(leaguesPanelLocalVariableValue, BoxLayout.Y_AXIS));
-        leaguesPanelLocalVariableValue.setBackground(LIGHT_BLUE);
-        leaguesPanelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
-
-        JPanel namesHeaderLocalVariableValue = new JPanel(new GridLayout(1, 3));
-        namesHeaderLocalVariableValue.setBackground(DARK_BLUE);
-        namesHeaderLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
-        namesHeaderLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
-
-        JLabel namesLabelLocalVariableValue = new JLabel("LEAGUE", SwingConstants.CENTER);
-        namesLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 16));
-        namesLabelLocalVariableValue.setForeground(Color.WHITE);
-
-        JLabel teamsLabelLocalVariableValue = new JLabel("TEAMS", SwingConstants.CENTER);
-        teamsLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 16));
-        teamsLabelLocalVariableValue.setForeground(Color.WHITE);
-
-        JLabel statusLabelHeaderLocalVariableValue = new JLabel("STATUS", SwingConstants.CENTER);
-        statusLabelHeaderLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 16));
-        statusLabelHeaderLocalVariableValue.setForeground(Color.WHITE);
-
-        namesHeaderLocalVariableValue.add(namesLabelLocalVariableValue);
-        namesHeaderLocalVariableValue.add(teamsLabelLocalVariableValue);
-        namesHeaderLocalVariableValue.add(statusLabelHeaderLocalVariableValue);
-
-        leaguesPanelLocalVariableValue.add(namesHeaderLocalVariableValue);
-        leaguesPanelLocalVariableValue.add(Box.createRigidArea(new Dimension(0, 5)));
-
         leaguesListPanelFieldReference = new JPanel();
-        leaguesListPanelFieldReference.setLayout(new BoxLayout(leaguesListPanelFieldReference, BoxLayout.Y_AXIS));
-        leaguesListPanelFieldReference.setBackground(LIGHT_BLUE);
-        leaguesPanelLocalVariableValue.add(leaguesListPanelFieldReference);
+        leaguesListPanelFieldReference.setLayout(
+                new BoxLayout(leaguesListPanelFieldReference, BoxLayout.Y_AXIS)
+        );
+        leaguesListPanelFieldReference.setBackground(FIELD_BACKGROUND);
+        leaguesListPanelFieldReference.setBorder(new EmptyBorder(10, 12, 10, 12));
 
-        JPanel blueContainerLocalVariableValue = new JPanel(new BorderLayout());
-        blueContainerLocalVariableValue.setBackground(LIGHT_BLUE);
-        blueContainerLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
-        blueContainerLocalVariableValue.add(leaguesPanelLocalVariableValue, BorderLayout.CENTER);
+        JScrollPane scrollPaneLocalVariableValue =
+                new JScrollPane(leaguesListPanelFieldReference);
 
-        containerLocalVariableValue.add(blueContainerLocalVariableValue, BorderLayout.CENTER);
+        scrollPaneLocalVariableValue.setBorder(
+                BorderFactory.createLineBorder(FIELD_BORDER, 1)
+        );
+        scrollPaneLocalVariableValue.getViewport().setBackground(FIELD_BACKGROUND);
+        scrollPaneLocalVariableValue.setHorizontalScrollBarPolicy(
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        );
+        scrollPaneLocalVariableValue.setVerticalScrollBarPolicy(
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
+        );
 
-        leaguesScrollPaneFieldReference = new JScrollPane(containerLocalVariableValue);
-        leaguesScrollPaneFieldReference.setBorder(BorderFactory.createEmptyBorder());
-        leaguesScrollPaneFieldReference.getViewport().setBackground(BACKGROUND);
+        scrollPaneLocalVariableValue.setPreferredSize(new Dimension(720, 245));
+        scrollPaneLocalVariableValue.setMaximumSize(new Dimension(720, 245));
+        scrollPaneLocalVariableValue.setMinimumSize(new Dimension(720, 245));
+        scrollPaneLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-
-        return leaguesScrollPaneFieldReference;
+        return scrollPaneLocalVariableValue;
     }
 
-    /**
-     * Muestra dinámicamente la lista de ligas con tres columnas:
-     * nombre, número de equipos y estado actual (apartado 2.7 del
-     * enunciado).
-     *
-     * @param entriesParameterValue lista de entradas a mostrar.
-     * @param isAdminParameterValue si es true se puede acceder a
-     *        funcionalidades extra de administrador.
-     * @param listenerParameterValue2 controlador que abre el detalle de
-     *        una liga al hacer clic.
-     */
     public void displayLeagues(List<LeagueListEntry> entriesParameterValue,
                                boolean isAdminParameterValue,
-                               ActionListener listenerParameterValue2) {
+                               ActionListener listenerParameterValue) {
         leaguesListPanelFieldReference.removeAll();
 
         if (entriesParameterValue == null || entriesParameterValue.isEmpty()) {
-            JLabel noLeaguesLabelLocalVariableValue = new JLabel("No leagues available.", SwingConstants.CENTER);
+            JLabel noLeaguesLabelLocalVariableValue =
+                    new JLabel("No leagues available.", SwingConstants.CENTER);
             noLeaguesLabelLocalVariableValue.setFont(new Font("Arial", Font.ITALIC, 16));
+            noLeaguesLabelLocalVariableValue.setForeground(new Color(120, 132, 155));
             noLeaguesLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
-            noLeaguesLabelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+            noLeaguesLabelLocalVariableValue.setBorder(
+                    BorderFactory.createEmptyBorder(70, 0, 20, 0)
+            );
+
             leaguesListPanelFieldReference.add(noLeaguesLabelLocalVariableValue);
         } else {
             for (int indexCounterLocalVariableValue = 0;
@@ -213,79 +441,247 @@ public class AvailableLeaguesView extends JFrame {
 
                 LeagueListEntry entryLocalVariableValue =
                         entriesParameterValue.get(indexCounterLocalVariableValue);
-                League leagueReferenceLocalVariableValue = entryLocalVariableValue.getLeague();
 
-                JPanel leagueReferencePanelLocalVariableValue = new JPanel(new GridLayout(1, 3));
-                leagueReferencePanelLocalVariableValue.setBackground(Color.WHITE);
-                leagueReferencePanelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
-                leagueReferencePanelLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
-                leagueReferencePanelLocalVariableValue.setMinimumSize(new Dimension(100, 45));
-                leagueReferencePanelLocalVariableValue.setPreferredSize(new Dimension(300, 45));
-                leagueReferencePanelLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
-                leagueReferencePanelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-                JLabel leagueNameLabelLocalVariableValue =
-                        new JLabel(leagueReferenceLocalVariableValue.getName(), SwingConstants.CENTER);
-                leagueNameLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 15));
-
-                JLabel teamCountLabelLocalVariableValue = new JLabel(
-                        String.valueOf(entryLocalVariableValue.getTeamCount()),
-                        SwingConstants.CENTER
+                leaguesListPanelFieldReference.add(
+                        createLeagueRow(entryLocalVariableValue, listenerParameterValue)
                 );
-                teamCountLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 15));
-
-                JLabel statusLabelLocalVariableValue = new JLabel(
-                        entryLocalVariableValue.getStatusLabel(),
-                        SwingConstants.CENTER
-                );
-                statusLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 15));
-
-                leagueReferencePanelLocalVariableValue.add(leagueNameLabelLocalVariableValue);
-                leagueReferencePanelLocalVariableValue.add(teamCountLabelLocalVariableValue);
-                leagueReferencePanelLocalVariableValue.add(statusLabelLocalVariableValue);
-
-                leagueReferencePanelLocalVariableValue.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent eventArgumentParameterValue3) {
-                        if (listenerParameterValue2 instanceof AvailableLeaguesController) {
-                            ((AvailableLeaguesController) listenerParameterValue2).openLeagueDetails(leagueReferenceLocalVariableValue);
-                        }
-                    }
-                });
-                leaguesListPanelFieldReference.add(leagueReferencePanelLocalVariableValue);
 
                 if (indexCounterLocalVariableValue < entriesParameterValue.size() - 1) {
-                    JSeparator separatorLocalVariableValue = new JSeparator();
-                    separatorLocalVariableValue.setForeground(DIVIDER_COLOR);
-                    separatorLocalVariableValue.setPreferredSize(new Dimension(leaguesListPanelFieldReference.getWidth() - 40, 2));
-                    separatorLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
-                    separatorLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    leaguesListPanelFieldReference.add(Box.createRigidArea(new Dimension(0, 1)));
-                    leaguesListPanelFieldReference.add(separatorLocalVariableValue);
-                    leaguesListPanelFieldReference.add(Box.createRigidArea(new Dimension(0, 1)));
+                    leaguesListPanelFieldReference.add(Box.createVerticalStrut(8));
                 }
             }
         }
+
         leaguesListPanelFieldReference.revalidate();
         leaguesListPanelFieldReference.repaint();
     }
 
-    /**
-     * Permite mostrar u ocultar funciones exclusivas para administradores.
-     * Actualmente sin implementación.
-     *
-     * @param visible true para mostrar, false para ocultar.
-     */
+    private JPanel createLeagueRow(LeagueListEntry entryParameterValue,
+                                   ActionListener listenerParameterValue) {
+        League leagueReferenceLocalVariableValue = entryParameterValue.getLeague();
+
+        JPanel rowPanelLocalVariableValue = new LeagueRowPanel();
+        rowPanelLocalVariableValue.setLayout(new GridLayout(1, 3));
+        rowPanelLocalVariableValue.setOpaque(false);
+        rowPanelLocalVariableValue.setBorder(new EmptyBorder(10, 16, 10, 16));
+        rowPanelLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        rowPanelLocalVariableValue.setPreferredSize(new Dimension(680, 48));
+        rowPanelLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        rowPanelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel leagueNameLabelLocalVariableValue = createRowLabel(
+                leagueReferenceLocalVariableValue == null
+                        ? "-"
+                        : leagueReferenceLocalVariableValue.getName(),
+                Font.BOLD,
+                CARD_TITLE_COLOR
+        );
+
+        JLabel teamCountLabelLocalVariableValue = createRowLabel(
+                String.valueOf(entryParameterValue.getTeamCount()),
+                Font.PLAIN,
+                new Color(54, 66, 87)
+        );
+
+        JLabel statusLabelLocalVariableValue = createStatusLabel(
+                entryParameterValue.getStatusLabel()
+        );
+
+        rowPanelLocalVariableValue.add(leagueNameLabelLocalVariableValue);
+        rowPanelLocalVariableValue.add(teamCountLabelLocalVariableValue);
+        rowPanelLocalVariableValue.add(statusLabelLocalVariableValue);
+
+        rowPanelLocalVariableValue.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent eventArgumentParameterValue) {
+                if (listenerParameterValue instanceof AvailableLeaguesController) {
+                    ((AvailableLeaguesController) listenerParameterValue)
+                            .openLeagueDetails(leagueReferenceLocalVariableValue);
+                } else if (listenerParameterValue != null) {
+                    listenerParameterValue.actionPerformed(
+                            new ActionEvent(
+                                    leagueReferenceLocalVariableValue,
+                                    ActionEvent.ACTION_PERFORMED,
+                                    "OPEN_LEAGUE"
+                            )
+                    );
+                }
+            }
+        });
+
+        return rowPanelLocalVariableValue;
+    }
+
+    private JLabel createRowLabel(String textParameterValue,
+                                  int styleParameterValue,
+                                  Color colorParameterValue) {
+        JLabel labelLocalVariableValue =
+                new JLabel(textParameterValue, SwingConstants.CENTER);
+        labelLocalVariableValue.setFont(new Font("Arial", styleParameterValue, 14));
+        labelLocalVariableValue.setForeground(colorParameterValue);
+        return labelLocalVariableValue;
+    }
+
+    private JLabel createStatusLabel(String statusParameterValue) {
+        JLabel labelLocalVariableValue =
+                new JLabel(statusParameterValue, SwingConstants.CENTER);
+
+        labelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 13));
+        labelLocalVariableValue.setOpaque(false);
+
+        if (statusParameterValue == null) {
+            labelLocalVariableValue.setForeground(CARD_BODY_COLOR);
+        } else if (statusParameterValue.equalsIgnoreCase(LeagueListEntry.STATUS_FINISHED)) {
+            labelLocalVariableValue.setForeground(STATUS_FINISHED_COLOR);
+        } else if (statusParameterValue.equalsIgnoreCase(LeagueListEntry.STATUS_PENDING)) {
+            labelLocalVariableValue.setForeground(STATUS_PENDING_COLOR);
+        } else {
+            labelLocalVariableValue.setForeground(STATUS_RUNNING_COLOR);
+        }
+
+        return labelLocalVariableValue;
+    }
+
+    private String resolveExistingIconPath(String primaryRelativePathParameterValue,
+                                           String fallbackRelativePathParameterValue) {
+        String primaryAbsolutePathLocalVariableValue =
+                ProjectPathResolver.resolveProjectPath(primaryRelativePathParameterValue);
+
+        if (new java.io.File(primaryAbsolutePathLocalVariableValue).exists()) {
+            return primaryAbsolutePathLocalVariableValue;
+        }
+
+        return ProjectPathResolver.resolveProjectPath(fallbackRelativePathParameterValue);
+    }
+
     public void setAdminFunctionsVisible(boolean visibleParameterValue) {
+        // Se mantiene por compatibilidad con controllers antiguos.
     }
 
-    /**
-     * Muestra un cuadro de diálogo con un mensaje de advertencia sobre ligas disponibles.
-     *
-     * @param message Texto que se mostrará en el cuadro de diálogo.
-     */
     public void showMessageDialog(String messageParameterValue) {
-        JOptionPane.showMessageDialog(this, messageParameterValue, "Avaliable leagues", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                messageParameterValue,
+                "Available leagues",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 
+    private static class RoundedCardPanel extends JPanel {
+        @Override
+        protected void paintComponent(Graphics graphicsParameterValue) {
+            Graphics2D g2LocalVariableValue =
+                    (Graphics2D) graphicsParameterValue.create();
+
+            g2LocalVariableValue.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            int widthLocalVariableValue = getWidth();
+            int heightLocalVariableValue = getHeight();
+            int radiusLocalVariableValue = 22;
+
+            g2LocalVariableValue.setColor(new Color(8, 20, 46, 42));
+            g2LocalVariableValue.fillRoundRect(
+                    8,
+                    10,
+                    widthLocalVariableValue - 16,
+                    heightLocalVariableValue - 10,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.setColor(new Color(255, 255, 255, 250));
+            g2LocalVariableValue.fillRoundRect(
+                    0,
+                    0,
+                    widthLocalVariableValue - 1,
+                    heightLocalVariableValue - 4,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.setColor(new Color(22, 150, 83));
+            g2LocalVariableValue.setStroke(new BasicStroke(2f));
+            g2LocalVariableValue.drawRoundRect(
+                    0,
+                    0,
+                    widthLocalVariableValue - 1,
+                    heightLocalVariableValue - 5,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.dispose();
+            super.paintComponent(graphicsParameterValue);
+        }
+    }
+
+    private static class LeagueRowPanel extends JPanel {
+        private boolean hoverFieldReference = false;
+
+        LeagueRowPanel() {
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent eventArgumentParameterValue) {
+                    hoverFieldReference = true;
+                    repaint();
+                }
+
+                @Override
+                public void mouseExited(MouseEvent eventArgumentParameterValue) {
+                    hoverFieldReference = false;
+                    repaint();
+                }
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics graphicsParameterValue) {
+            Graphics2D g2LocalVariableValue =
+                    (Graphics2D) graphicsParameterValue.create();
+
+            g2LocalVariableValue.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            int radiusLocalVariableValue = 16;
+
+            g2LocalVariableValue.setColor(
+                    hoverFieldReference
+                            ? new Color(236, 242, 255)
+                            : Color.WHITE
+            );
+
+            g2LocalVariableValue.fillRoundRect(
+                    0,
+                    0,
+                    getWidth() - 1,
+                    getHeight() - 1,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.setColor(
+                    hoverFieldReference
+                            ? ACCENT_COLOR
+                            : new Color(218, 228, 242)
+            );
+
+            g2LocalVariableValue.setStroke(new BasicStroke(1.4f));
+            g2LocalVariableValue.drawRoundRect(
+                    0,
+                    0,
+                    getWidth() - 1,
+                    getHeight() - 1,
+                    radiusLocalVariableValue,
+                    radiusLocalVariableValue
+            );
+
+            g2LocalVariableValue.dispose();
+            super.paintComponent(graphicsParameterValue);
+        }
+    }
 }

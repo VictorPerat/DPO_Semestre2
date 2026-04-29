@@ -6,16 +6,7 @@ import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Navegador central de la aplicación.
- *
- * - Centraliza la navegación entre las pantallas registradas en {@link MainView}.
- * - Sustituye al antiguo patrón "dispose() + new OtraView()".
- * - Se expone como singleton para que controladores legacy (PlayerMenu,
- *   AdminMenu, etc., que de momento siguen siendo JFrame independientes)
- *   puedan invocar la navegación al login o al cambio de contraseña sin
- *   necesidad de pasarse referencias entre constructores.
- */
+/** Navegador central: un único JFrame (MainView) + CardLayout. */
 public class AppNavigator {
 
     public static final String LOGIN = "LOGIN";
@@ -23,42 +14,47 @@ public class AppNavigator {
     public static final String PROFILE = "PROFILE";
     public static final String CHANGE_PASSWORD = "CHANGE_PASSWORD";
     public static final String ADMIN_MENU = "ADMIN_MENU";
+    public static final String PLAYER_MENU = "PLAYER_MENU";
+    public static final String AVAILABLE_LEAGUES = "AVAILABLE_LEAGUES";
+    public static final String LEAGUE_DETAIL = "LEAGUE_DETAIL";
+    public static final String CREATE_LEAGUE = "CREATE_LEAGUE";
+    public static final String TEAM_SELECTION = "TEAM_SELECTION";
+    public static final String CREATE_TEAM = "CREATE_TEAM";
+    public static final String DELETE_LEAGUE = "DELETE_LEAGUE";
+    public static final String DELETE_TEAM = "DELETE_TEAM";
+    public static final String DELETE_PLAYER = "DELETE_PLAYER";
+    public static final String CALENDAR = "CALENDAR";
+    public static final String TEAM_DETAIL = "TEAM_DETAIL";
+    public static final String STATISTICS = "STATISTICS";
+    public static final String LIVE_MATCH = "LIVE_MATCH";
+    public static final String LIVE_MATCHES = "LIVE_MATCHES";
+    public static final String DB_ERROR = "DB_ERROR";
+
     private static AppNavigator instanceFieldReference;
-
     private final MainView mainViewInterfaceFieldReference;
-
-    /**
-     * Acción a ejecutar cuando el flujo de cambio de contraseña termina
-     * (ya sea por "Back" o por guardar correctamente). Permite que las
-     * pantallas legacy de tipo JFrame (PlayerMenu, AdminMenu, ...) puedan
-     * indicar a dónde volver tras cambiar la contraseña.
-     *
-     * Si es null, ChangePasswordController vuelve por defecto al PROFILE.
-     */
-    private Runnable changePasswordReturnActionFieldReference;
-
-    /**
-     * Hooks que se ejecutan cuando una pantalla se muestra.
-     * Permite, por ejemplo, refrescar los datos del perfil cada vez
-     * que se navega a PROFILE sin acoplar el LoginController al
-     * UserProfileController.
-     */
     private final Map<String, Runnable> onShowHooksFieldReference = new HashMap<>();
+    private final Map<String, Runnable> onHideHooksFieldReference = new HashMap<>();
+    private Runnable changePasswordReturnActionFieldReference;
+    private Runnable returnActionFieldReference;
+    private String currentScreenIdentifierFieldReference;
 
     public AppNavigator(MainView mainViewInterfaceParameterValue) {
         this.mainViewInterfaceFieldReference = mainViewInterfaceParameterValue;
         instanceFieldReference = this;
     }
 
-    public static AppNavigator getInstance() {
-        return instanceFieldReference;
-    }
+    public static AppNavigator getInstance() { return instanceFieldReference; }
 
-    /**
-     * Muestra la pantalla con el identificador indicado y asegura que la
-     * ventana principal esté visible y al frente.
-     */
     public void show(String screenIdentifierParameterValue) {
+        if (currentScreenIdentifierFieldReference != null
+                && !currentScreenIdentifierFieldReference.equals(screenIdentifierParameterValue)) {
+            Runnable hideHookLocalVariableValue = onHideHooksFieldReference.get(currentScreenIdentifierFieldReference);
+            if (hideHookLocalVariableValue != null) {
+                hideHookLocalVariableValue.run();
+            }
+        }
+
+        currentScreenIdentifierFieldReference = screenIdentifierParameterValue;
         mainViewInterfaceFieldReference.showScreen(screenIdentifierParameterValue);
         if (!mainViewInterfaceFieldReference.isVisible()) {
             mainViewInterfaceFieldReference.setVisible(true);
@@ -72,47 +68,43 @@ public class AppNavigator {
         }
     }
 
-    /**
-     * Registra una acción que se ejecutará cada vez que se muestre la
-     * pantalla indicada. Útil para refrescar datos al entrar.
-     */
     public void registerOnShowHook(String screenIdentifierParameterValue, Runnable hookParameterValue) {
         onShowHooksFieldReference.put(screenIdentifierParameterValue, hookParameterValue);
     }
 
-    /**
-     * Oculta la ventana principal sin destruirla.
-     * Útil cuando la navegación pasa a una pantalla legacy basada en JFrame.
-     */
-    public void hideMainWindow() {
-        mainViewInterfaceFieldReference.setVisible(false);
+    public void registerOnHideHook(String screenIdentifierParameterValue, Runnable hookParameterValue) {
+        onHideHooksFieldReference.put(screenIdentifierParameterValue, hookParameterValue);
     }
 
-    public MainView getMainView() {
-        return mainViewInterfaceFieldReference;
-    }
+    public MainView getMainView() { return mainViewInterfaceFieldReference; }
 
-    /**
-     * Permite a una pantalla legacy registrar a dónde quiere volver
-     * después del cambio de contraseña.
-     */
+    public void hideMainWindow() { mainViewInterfaceFieldReference.setVisible(false); }
+
     public void setChangePasswordReturnAction(Runnable returnActionParameterValue) {
         this.changePasswordReturnActionFieldReference = returnActionParameterValue;
     }
 
-    /**
-     * Llamado por ChangePasswordController al terminar el flujo.
-     * Si hay una acción registrada, la consume y la ejecuta. Si no,
-     * vuelve a la pantalla de PROFILE por defecto.
-     */
     public void finishChangePasswordFlow() {
         Runnable pendingActionLocalVariableValue = this.changePasswordReturnActionFieldReference;
         this.changePasswordReturnActionFieldReference = null;
-
         if (pendingActionLocalVariableValue != null) {
             SwingUtilities.invokeLater(pendingActionLocalVariableValue);
         } else {
             show(PROFILE);
+        }
+    }
+
+    public void setReturnAction(Runnable returnActionParameterValue) {
+        this.returnActionFieldReference = returnActionParameterValue;
+    }
+
+    public void runReturnActionOrShow(String fallbackScreenIdentifierParameterValue) {
+        Runnable pendingActionLocalVariableValue = this.returnActionFieldReference;
+        this.returnActionFieldReference = null;
+        if (pendingActionLocalVariableValue != null) {
+            SwingUtilities.invokeLater(pendingActionLocalVariableValue);
+        } else {
+            show(fallbackScreenIdentifierParameterValue);
         }
     }
 }

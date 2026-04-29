@@ -2,130 +2,91 @@ package presentation.ControllerViews;
 
 import bussines.managers.LeagueManager;
 import bussines.managers.PlayerManager;
-import bussines.managers.TeamManager;
-import bussines.managers.TeamInfoManager;
 import bussines.objects.League;
 import bussines.objects.Player;
-import bussines.objects.Team;
-import bussines.objects.TeamInfo;
 import presentation.AppNavigator;
 import presentation.Views.StatisticsGraphView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.HierarchyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controlador encargado de gestionar la vista {@link StatisticsGraphView},
- * mostrando los datos estadísticos de las ligas disponibles.
- *
- * Maneja las interacciones del usuario con la interfaz de estadísticas,
- * carga los datos desde la base de datos utilizando {@link LeagueManager},
- * y construye los datos de puntos por equipo para ser mostrados en una gráfica.
- *
- * También permite acceder a la configuración del usuario y cerrar sesión.
- */
+/** Controlador del gráfico de estadísticas. */
 public class StatisticsGraphController implements ActionListener {
     private final StatisticsGraphView viewInterfaceFieldReference;
-    private final AdminMenuController menuControllerHandlerFieldReference;
-    private final List<League> leaguesFieldReference;
-    private final TeamInfoManager teamReferenceManagerServiceFieldReference;
-    private TeamManager realTeamReferenceManagerServiceFieldReference;
-    private PlayerManager playerProfileManagerServiceFieldReference;
-    private LeagueManager leagueReferenceManagerServiceFieldReference;
+    private final PlayerManager playerProfileManagerServiceFieldReference;
+    private final LeagueManager leagueReferenceManagerServiceFieldReference = new LeagueManager();
+    private final AppNavigator navigatorFieldReference;
+    private List<League> leaguesFieldReference = new ArrayList<>();
+    private int currentLeagueIdFieldReference = -1;
+    private String currentLeagueNameFieldReference = "";
+    private Timer chartAutoRefreshTimerFieldReference;
+    private static final int CHART_REFRESH_INTERVAL_MS = 5_000;
 
-    /**
-     * Constructor del controlador.
-     *
-     * @param view             Vista de estadísticas.
-     * @param menuController   Controlador del menú principal.
-     * @param playerManager    Gestor de jugador actual.
-     */
-    public StatisticsGraphController(StatisticsGraphView viewInterfaceParameterValue, AdminMenuController menuControllerHandlerParameterValue, PlayerManager playerProfileManagerServiceParameterValue) {
+    public StatisticsGraphController(StatisticsGraphView viewInterfaceParameterValue,
+                                     PlayerManager playerProfileManagerServiceParameterValue,
+                                     AppNavigator navigatorParameterValue) {
         this.viewInterfaceFieldReference = viewInterfaceParameterValue;
-        this.menuControllerHandlerFieldReference = menuControllerHandlerParameterValue;
         this.playerProfileManagerServiceFieldReference = playerProfileManagerServiceParameterValue;
-        this.leagueReferenceManagerServiceFieldReference = new LeagueManager();
-        this.realTeamReferenceManagerServiceFieldReference =  new TeamManager();
+        this.navigatorFieldReference = navigatorParameterValue;
         this.viewInterfaceFieldReference.registerController(this);
-        if (playerProfileManagerServiceParameterValue.getCurrentIdentifier().equals("admin")) {
-            this.leaguesFieldReference = leagueReferenceManagerServiceFieldReference.getAllLeagues(); // Obtenemos las ligas de la BD
-        }
-        else {
-            Player actualPlayerProfileLocalVariableValue = playerProfileManagerServiceParameterValue.getCurrentPlayer();
-            this.leaguesFieldReference = leagueReferenceManagerServiceFieldReference.getLeaguesByUserTeam(actualPlayerProfileLocalVariableValue.getTeam());
-        }
-        this.teamReferenceManagerServiceFieldReference = new TeamInfoManager();
-
-        viewInterfaceParameterValue.setLeagues(leaguesFieldReference, this);  // Establecemos las ligas en la vista
+        refreshLeaguesList();
+        this.viewInterfaceFieldReference.addHierarchyListener(eventArgumentParameterValue -> {
+            if ((eventArgumentParameterValue.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+                if (viewInterfaceFieldReference.isShowing()) { startChartAutoRefresh(); }
+                else { stopChartAutoRefresh(); }
+            }
+        });
     }
 
-    /**
-     * Maneja los eventos de acción realizados en la vista.
-     *
-     * @param e Evento de acción disparado.
-     */
+    public StatisticsGraphController(StatisticsGraphView viewInterfaceParameterValue,
+                                     MenuController menuControllerHandlerParameterValue,
+                                     PlayerManager playerProfileManagerServiceParameterValue) {
+        this(viewInterfaceParameterValue, playerProfileManagerServiceParameterValue, AppNavigator.getInstance());
+    }
+
+    public void refreshLeaguesList() {
+        if (PlayerManager.ADMIN_IDENTIFIER.equalsIgnoreCase(playerProfileManagerServiceFieldReference.getCurrentIdentifier())) {
+            leaguesFieldReference = leagueReferenceManagerServiceFieldReference.getAllLeagues();
+        } else {
+            Player actualPlayerProfileLocalVariableValue = playerProfileManagerServiceFieldReference.getCurrentPlayer();
+            leaguesFieldReference = actualPlayerProfileLocalVariableValue == null
+                    ? new ArrayList<>()
+                    : leagueReferenceManagerServiceFieldReference.getLeaguesByUserTeam(actualPlayerProfileLocalVariableValue.getTeam());
+        }
+        viewInterfaceFieldReference.setLeagues(leaguesFieldReference, this);
+    }
+
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
-
-        switch (commandLocalVariableValue) {
-            case "BACK":
-                viewInterfaceFieldReference.dispose();
-                break;
-            case "CONFIG":
-                showConfigDialog();
-                break;
-            default:
-                if (commandLocalVariableValue.startsWith("LEAGUE_")) {
-                    int indexLocalVariableValue = Integer.parseInt(commandLocalVariableValue.split("_")[1]);
-                    League selectedLeagueReferenceLocalVariableValue = leaguesFieldReference.get(indexLocalVariableValue);
-                    showLeagueData(selectedLeagueReferenceLocalVariableValue.getId(), selectedLeagueReferenceLocalVariableValue.getName());
-                }
-                break;
+        if ("BACK".equals(commandLocalVariableValue)) {
+            navigatorFieldReference.show(AppNavigator.LEAGUE_DETAIL);
+        } else if ("CONFIG".equals(commandLocalVariableValue)) {
+            showConfigDialog();
+        } else if (commandLocalVariableValue != null && commandLocalVariableValue.startsWith("LEAGUE_")) {
+            int indexLocalVariableValue = Integer.parseInt(commandLocalVariableValue.split("_")[1]);
+            if (indexLocalVariableValue >= 0 && indexLocalVariableValue < leaguesFieldReference.size()) {
+                League selectedLeagueReferenceLocalVariableValue = leaguesFieldReference.get(indexLocalVariableValue);
+                showLeagueData(selectedLeagueReferenceLocalVariableValue.getId(), selectedLeagueReferenceLocalVariableValue.getName());
+            }
         }
     }
 
-    // ID de la liga actualmente seleccionada en el gráfico (para el refresh).
-    private int currentLeagueIdFieldReference = -1;
-    private String currentLeagueNameFieldReference = "";
-
-    // Timer que refresca el gráfico en tiempo real (apartado 2.7.1).
-    private javax.swing.Timer chartAutoRefreshTimerFieldReference;
-    private static final int CHART_REFRESH_INTERVAL_MS = 5_000;
-
-    /**
-     * Muestra los datos reales de una liga: para cada equipo, los puntos
-     * acumulados al final de cada jornada (apartado 2.7.1 del enunciado).
-     */
     public void showLeagueData(int leagueReferenceIdentifierParameterValue,
                                String leagueReferenceDisplayNameParameterValue) {
         currentLeagueIdFieldReference = leagueReferenceIdentifierParameterValue;
         currentLeagueNameFieldReference = leagueReferenceDisplayNameParameterValue;
-
         refreshChartDataFromDatabase();
-
-        // Aseguramos que el auto-refresh está corriendo desde el primer
-        // momento en que el usuario abre los datos de una liga.
         startChartAutoRefresh();
     }
 
-    /**
-     * Recalcula la matriz de puntos por jornada y refresca la vista.
-     * Si todavía no se ha seleccionado liga, no hace nada.
-     */
     private void refreshChartDataFromDatabase() {
-        if (currentLeagueIdFieldReference == -1) {
-            return;
-        }
-
-        bussines.managers.LeagueManager.StandingsTimeline timelineLocalVariableValue =
-                leagueReferenceManagerServiceFieldReference.computeStandingsTimeline(
-                        currentLeagueIdFieldReference
-                );
-
+        if (currentLeagueIdFieldReference == -1) { return; }
+        LeagueManager.StandingsTimeline timelineLocalVariableValue = leagueReferenceManagerServiceFieldReference.computeStandingsTimeline(currentLeagueIdFieldReference);
         viewInterfaceFieldReference.updateChartData(
                 currentLeagueNameFieldReference,
                 timelineLocalVariableValue.getCumulativePoints(),
@@ -135,112 +96,32 @@ public class StatisticsGraphController implements ActionListener {
         );
     }
 
-    /**
-     * Arranca el timer que refresca el gráfico cada N segundos. Se
-     * para automáticamente al cerrar la ventana.
-     */
-    private void startChartAutoRefresh() {
-        if (chartAutoRefreshTimerFieldReference != null
-                && chartAutoRefreshTimerFieldReference.isRunning()) {
-            return;
-        }
-
-        chartAutoRefreshTimerFieldReference = new javax.swing.Timer(
-                CHART_REFRESH_INTERVAL_MS,
-                eventArgumentParameterValueRefresh -> refreshChartDataFromDatabase()
-        );
+    public void startChartAutoRefresh() {
+        if (currentLeagueIdFieldReference == -1) { return; }
+        if (chartAutoRefreshTimerFieldReference != null && chartAutoRefreshTimerFieldReference.isRunning()) { return; }
+        chartAutoRefreshTimerFieldReference = new Timer(CHART_REFRESH_INTERVAL_MS, eventArgumentParameterValue -> refreshChartDataFromDatabase());
         chartAutoRefreshTimerFieldReference.start();
-
-        viewInterfaceFieldReference.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosed(java.awt.event.WindowEvent eventArgumentParameterClosed) {
-                if (chartAutoRefreshTimerFieldReference != null) {
-                    chartAutoRefreshTimerFieldReference.stop();
-                }
-            }
-
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent eventArgumentParameterClosing) {
-                if (chartAutoRefreshTimerFieldReference != null) {
-                    chartAutoRefreshTimerFieldReference.stop();
-                }
-            }
-        });
     }
 
-    /**
-     * Muestra el diálogo de configuración (logout, eliminar cuenta, cambiar contraseña).
-     */
-    public void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(viewInterfaceFieldReference);
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue2 -> {
-            configDialogLocalVariableValue.setVisible(false);
-            handleConfigAction(eventArgumentParameterValue2.getActionCommand());
+    public void stopChartAutoRefresh() {
+        if (chartAutoRefreshTimerFieldReference != null) {
+            chartAutoRefreshTimerFieldReference.stop();
+            chartAutoRefreshTimerFieldReference = null;
+        }
+    }
+
+    private void showConfigDialog() {
+        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
+        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
+            configDialogLocalVariableValue.dispose();
+            if (Rounded.ConfigDialog.LOGOUT.equals(eventArgumentParameterValue.getActionCommand())) {
+                navigatorFieldReference.show(AppNavigator.LOGIN);
+            } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(eventArgumentParameterValue.getActionCommand())) {
+                navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.STATISTICS));
+                navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
+            }
         });
+        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
         configDialogLocalVariableValue.setVisible(true);
     }
-
-    /**
-     * Maneja las acciones seleccionadas en el diálogo de configuración.
-     *
-     * @param action Acción seleccionada (logout, delete, change password).
-     */
-    private void handleConfigAction(String actionParameterValue) { //totalmente inhabilitado
-        switch(actionParameterValue) {
-            case Rounded.ConfigDialog.LOGOUT:
-                //handleLogout();
-                break;
-            case Rounded.ConfigDialog.DELETE_ACCOUNT:
-                //handleDeleteAccount();
-                break;
-            case Rounded.ConfigDialog.CHANGE_PASSWORD:
-                //openChangePasswordView();
-                break;
-        }
-    }
-
-    /**
-     * Cierra sesión y vuelve al menú principal.
-     */
-    private void handleLogout() {
-        Rounded.ConfigDialog.closeInstance();
-        viewInterfaceFieldReference.dispose();
-        menuControllerHandlerFieldReference.handleLogout();
-    }
-
-    /**
-     * Solicita confirmación al usuario para eliminar su cuenta. Si acepta,
-     * muestra un mensaje y cierra la sesión.
-     */
-    private void handleDeleteAccount() {
-        int confirmLocalVariableValue = JOptionPane.showConfirmDialog(
-                viewInterfaceFieldReference,
-                "Are you sure you want to delete your account? This action cannot be undone.",
-                "Confirm Deletion",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
-
-        if (confirmLocalVariableValue == JOptionPane.YES_OPTION) {
-            JOptionPane.showMessageDialog(viewInterfaceFieldReference, "Account deleted successfully");
-            handleLogout();
-        }
-    }
-
-    /**
-     * Abre la vista para cambiar la contraseña a través del navegador,
-     * registrando el retorno a la vista de estadísticas al finalizar.
-     */
-    private void openChangePasswordView() {
-        final StatisticsGraphView previousScreenLocalVariableValue =
-                viewInterfaceFieldReference;
-        AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
-
-        previousScreenLocalVariableValue.setVisible(false);
-        navigatorLocalVariableValue.setChangePasswordReturnAction(() -> {
-            navigatorLocalVariableValue.hideMainWindow();
-            previousScreenLocalVariableValue.setVisible(true);
-        });
-        navigatorLocalVariableValue.show(AppNavigator.CHANGE_PASSWORD);
-    }
-
 }

@@ -314,6 +314,11 @@ public class AdminMenuView extends JPanel {
     }
 
     public void showMessageDialog(String messageParameterValue) {
-        JOptionPane.showMessageDialog(this, messageParameterValue, "Admin Menu", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                messageParameterValue,
+                "Admin Menu",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 }

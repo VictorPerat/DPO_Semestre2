@@ -19,8 +19,8 @@ import java.awt.event.ActionListener;
  *    al {@link AdminMenuView}.
  *  - Si es un jugador, se le redirige al {@link PlayerMenuView}.
  *
- * En ambos casos se oculta el {@link presentation.Views.MainView} para
- * dejar paso al menú legacy correspondiente.
+ * En ambos casos se usa {@link AppNavigator} para mostrar el menú
+ * correspondiente dentro del MainView.
  */
 public class LoginController implements ActionListener {
 
@@ -123,14 +123,7 @@ public class LoginController implements ActionListener {
      * las ligas en las que participa su equipo (apartado 2.9).
      */
     private void openPlayerMenu() {
-        navigatorFieldReference.hideMainWindow();
-
-        PlayerMenuView playerMenuViewInterfaceLocalVariableValue = new PlayerMenuView();
-        new PlayerMenuController(
-                playerMenuViewInterfaceLocalVariableValue,
-                playerProfileManagerServiceFieldReference
-        );
-        playerMenuViewInterfaceLocalVariableValue.setVisible(true);
+        navigatorFieldReference.show(AppNavigator.PLAYER_MENU);
 
         LiveMatchesWidgetService.show(
                 playerProfileManagerServiceFieldReference,

@@ -24,7 +24,7 @@ import java.awt.event.MouseEvent;
  *   - setConfigController(ActionListener)
  *   - constantes WATCH_MATCHES, VIEW_LEAGUES, DELETE_PLAYER, LOGOUT, CONFIG.
  */
-public class PlayerMenuView extends JFrame {
+public class PlayerMenuView extends JPanel {
 
     // Comandos de acción para los botones
     public static final String WATCH_MATCHES = "WATCH_MATCHES";
@@ -61,16 +61,9 @@ public class PlayerMenuView extends JFrame {
             ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
     public PlayerMenuView() {
-        setTitle("League Manager — Player");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1280, 800));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setLocationRelativeTo(null);
-
+        setLayout(new BorderLayout());
         buildCards();
-
-        setContentPane(buildBackgroundPanel());
-        setVisible(true);
+        add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
     /**
@@ -128,8 +121,10 @@ public class PlayerMenuView extends JFrame {
         buttonControlLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         try {
-            String iconPathLocalVariableValue =
-                    ProjectPathResolver.resolveProjectPath("photos/Rueda_Ajustes.png");
+            String iconPathLocalVariableValue = resolveExistingIconPath(
+                    "photos/Rueda_Ajustes.png",
+                    "photos/Rueda Ajustes.png"
+            );
             Image rawIconLocalVariableValue =
                     new ImageIcon(iconPathLocalVariableValue).getImage();
             Image scaledIconLocalVariableValue =
@@ -172,6 +167,19 @@ public class PlayerMenuView extends JFrame {
         } catch (Exception ignoredExceptionParameterValue) {
             return null;
         }
+    }
+
+
+    private String resolveExistingIconPath(String primaryRelativePathParameterValue,
+                                           String fallbackRelativePathParameterValue) {
+        String primaryAbsolutePathLocalVariableValue =
+                ProjectPathResolver.resolveProjectPath(primaryRelativePathParameterValue);
+
+        if (new java.io.File(primaryAbsolutePathLocalVariableValue).exists()) {
+            return primaryAbsolutePathLocalVariableValue;
+        }
+
+        return ProjectPathResolver.resolveProjectPath(fallbackRelativePathParameterValue);
     }
 
     /**
@@ -321,7 +329,12 @@ public class PlayerMenuView extends JFrame {
     }
 
     public void showMessageDialog(String messageParameterValue) {
-        JOptionPane.showMessageDialog(this, messageParameterValue, "Player Menu", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                messageParameterValue,
+                "Player Menu",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 
     public void setConfigController(ActionListener controllerHandlerParameterValue2) {
