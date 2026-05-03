@@ -10,6 +10,7 @@ import presentation.AppNavigator;
 import presentation.LiveMatchesWidgetService;
 import presentation.ControllerViews.*;
 import presentation.Views.*;
+import presentation.AccountSettingsWidgetService;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -121,27 +122,12 @@ public final class LeagueManagerApplication {
         DeletePlayerController deletePlayerControllerHandlerLocalVariableValue = new DeletePlayerController(deletePlayerViewInterfaceLocalVariableValue, adminMenuControllerHandlerLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
         LiveMatchesController liveMatchesControllerHandlerLocalVariableValue = new LiveMatchesController(liveMatchesViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
 
-        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.ADMIN_MENU, () -> {
-            adminMenuControllerHandlerLocalVariableValue.startLiveMatchesPreviewAutoRefresh();
-        });
-
-        navigatorLocalVariableValue.registerOnHideHook(
-                AppNavigator.ADMIN_MENU,
-                adminMenuControllerHandlerLocalVariableValue::stopLiveMatchesPreviewAutoRefresh
-        );
-
-        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.PLAYER_MENU, () -> {
-            playerMenuControllerHandlerLocalVariableValue.startLiveMatchesPreviewAutoRefresh();
-        });
-
-        navigatorLocalVariableValue.registerOnHideHook(
-                AppNavigator.PLAYER_MENU,
-                playerMenuControllerHandlerLocalVariableValue::stopLiveMatchesPreviewAutoRefresh
-        );
 
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.PROFILE, userProfileControllerHandlerLocalVariableValue::refreshCurrentPlayer);
-        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.LOGIN, LiveMatchesWidgetService::hide);
-        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.CHANGE_PASSWORD, changePasswordViewInterfaceLocalVariableValue::clearForm);
+        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.LOGIN, () -> {
+            LiveMatchesWidgetService.hide();
+            AccountSettingsWidgetService.hide();
+        });        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.CHANGE_PASSWORD, changePasswordViewInterfaceLocalVariableValue::clearForm);
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.AVAILABLE_LEAGUES, availableLeaguesControllerHandlerLocalVariableValue::startAutoRefresh);
         navigatorLocalVariableValue.registerOnHideHook(AppNavigator.AVAILABLE_LEAGUES, availableLeaguesControllerHandlerLocalVariableValue::stopAutoRefresh);
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.DELETE_LEAGUE, deleteLeagueControllerHandlerLocalVariableValue::refreshLeagues);
@@ -151,7 +137,6 @@ public final class LeagueManagerApplication {
         navigatorLocalVariableValue.registerOnHideHook(AppNavigator.STATISTICS, statisticsGraphControllerHandlerLocalVariableValue::stopChartAutoRefresh);
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.LIVE_MATCHES, () -> {
             liveMatchesControllerHandlerLocalVariableValue.refreshLiveGames();
-            liveMatchesControllerHandlerLocalVariableValue.startAutoRefresh();
         });
         navigatorLocalVariableValue.registerOnHideHook(AppNavigator.LIVE_MATCHES, liveMatchesControllerHandlerLocalVariableValue::stopAutoRefresh);
 

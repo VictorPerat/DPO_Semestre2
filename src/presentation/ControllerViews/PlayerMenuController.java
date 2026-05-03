@@ -2,12 +2,14 @@ package presentation.ControllerViews;
 
 import bussines.managers.PlayerManager;
 import presentation.AppNavigator;
+import presentation.LiveMatchesWidgetService;
 import presentation.Views.PlayerMenuView;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import presentation.AccountSettingsWidgetService;
 
 /** Controlador del menú de jugador dentro del CardLayout. */
 public class PlayerMenuController implements ActionListener, MenuController, DeletePlayerListener {
@@ -70,6 +72,8 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
     @Override
     public void handleLogout() {
         stopLiveMatchesPreviewAutoRefresh();
+        LiveMatchesWidgetService.hide();
+        AccountSettingsWidgetService.hide();
         playerProfileManagerServiceFieldReference.setCurrentIdentifier(null);
         navigatorFieldReference.show(AppNavigator.LOGIN);
     }

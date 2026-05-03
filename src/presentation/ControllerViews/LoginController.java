@@ -6,7 +6,7 @@ import presentation.LiveMatchesWidgetService;
 import presentation.Views.AdminMenuView;
 import presentation.Views.LoginView;
 import presentation.Views.PlayerMenuView;
-
+import presentation.AccountSettingsWidgetService;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -116,6 +116,10 @@ public class LoginController implements ActionListener {
                 playerProfileManagerServiceFieldReference,
                 true
         );
+
+        AccountSettingsWidgetService.show(
+                playerProfileManagerServiceFieldReference
+        );
     }
 
     /**
@@ -129,6 +133,10 @@ public class LoginController implements ActionListener {
         LiveMatchesWidgetService.show(
                 playerProfileManagerServiceFieldReference,
                 false
+        );
+
+        AccountSettingsWidgetService.show(
+                playerProfileManagerServiceFieldReference
         );
     }
 

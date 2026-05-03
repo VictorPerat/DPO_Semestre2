@@ -8,18 +8,19 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Vista del menú principal del administrador.
  *
- * Estilo tipo mockup:
- * - fondo de campo completo
- * - la barra lateral izquierda ya viene integrada en el fondo
+ * Estilo coherente con LoginView:
+ * - fondo de imagen con overlay
  * - título grande ADMIN MENU
- * - card principal con botones outline
- * - card lateral para live matches
+ * - subrayado azul
+ * - subtítulo
+ * - card central translúcida
+ * - botones redondeados con gradiente / outline
+ *
+ * El widget de Live Matches NO forma parte de esta vista.
+ * Se muestra aparte como widget global siempre visible.
  */
 public class AdminMenuView extends JPanel {
 
@@ -30,9 +31,6 @@ public class AdminMenuView extends JPanel {
     private JButton deleteTeamReferenceButtonFieldReference;
     private JButton logoutButtonFieldReference;
     private JButton deletePlayerProfileButtonFieldReference;
-    private JButton viewInterfaceGamesButtonFieldReference;
-    private JPanel liveMatchesListPanelFieldReference;
-    private JLabel liveMatchesTitleLabelFieldReference;
 
     private AdminMenuController controllerHandlerFieldReference;
 
@@ -48,19 +46,18 @@ public class AdminMenuView extends JPanel {
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
     private static final Color TITLE_WHITE = new Color(245, 247, 250);
     private static final Color SUBTITLE_WHITE = new Color(238, 241, 247);
-    private static final Color CARD_TITLE_COLOR = new Color(28, 35, 51);
+    private static final Color CARD_BORDER = new Color(44, 92, 214);
 
-    private static final Color DANGER_RED = new Color(218, 37, 42);
-    private static final Color DANGER_RED_DARK = new Color(180, 30, 36);
+    private static final Color PRIMARY_GRADIENT_TOP = new Color(64, 116, 226);
+    private static final Color PRIMARY_GRADIENT_BOTTOM = new Color(42, 85, 191);
+
+    private static final Color DANGER_GRADIENT_TOP = new Color(218, 37, 42);
+    private static final Color DANGER_GRADIENT_BOTTOM = new Color(180, 30, 36);
+
+    private static final Color DANGER_TEXT = new Color(200, 45, 50);
 
     private static final String BACKGROUND_IMAGE_PATH =
             ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
-
-    private static final String LIVE_ICON_PRIMARY_PATH =
-            ProjectPathResolver.resolveProjectPath("photos/Television.png");
-
-    private static final String LIVE_ICON_FALLBACK_PATH =
-            ProjectPathResolver.resolveProjectPath("photos/Partidos_Live.png");
 
     public AdminMenuView() {
         setLayout(new BorderLayout());
@@ -69,56 +66,60 @@ public class AdminMenuView extends JPanel {
     }
 
     private void buildButtons() {
-        createLeagueReferenceButtonFieldReference = buildOutlineMenuButton("C R E A T E   L E A G U E");
-        deleteLeagueReferenceButtonFieldReference = buildOutlineMenuButton("D E L E T E   L E A G U E");
-        createTeamReferenceButtonFieldReference = buildOutlineMenuButton("C R E A T E   T E A M");
-        deleteTeamReferenceButtonFieldReference = buildOutlineMenuButton("D E L E T E   T E A M");
-        viewInterfaceLeaguesButtonFieldReference = buildOutlineMenuButton("V I E W   L E A G U E S");
-        deletePlayerProfileButtonFieldReference = buildOutlineMenuButton("D E L E T E   P L A Y E R");
+        createLeagueReferenceButtonFieldReference = buildPrimaryMenuButton("CREATE LEAGUE");
+        createTeamReferenceButtonFieldReference = buildPrimaryMenuButton("CREATE TEAM");
+        viewInterfaceLeaguesButtonFieldReference = buildPrimaryMenuButton("VIEW LEAGUES");
 
-        viewInterfaceGamesButtonFieldReference = new Rounded.RoundedButton("O P E N", 10);
-        Rounded.RoundedButton liveButtonLocalVariableValue =
-                (Rounded.RoundedButton) viewInterfaceGamesButtonFieldReference;
+        deleteLeagueReferenceButtonFieldReference = buildDangerOutlineMenuButton("DELETE LEAGUE");
+        deleteTeamReferenceButtonFieldReference = buildDangerOutlineMenuButton("DELETE TEAM");
+        deletePlayerProfileButtonFieldReference = buildDangerOutlineMenuButton("DELETE PLAYER");
 
-        liveButtonLocalVariableValue.setForeground(Color.WHITE);
-        liveButtonLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 17));
-        liveButtonLocalVariableValue.setBackground(new Color(42, 85, 191));
-        liveButtonLocalVariableValue.setGradientColors(
-                new Color(52, 102, 219),
-                new Color(42, 85, 191)
-        );
-        liveButtonLocalVariableValue.setShadowEnabled(false);
-        liveButtonLocalVariableValue.setPreferredSize(new Dimension(250, 48));
-        liveButtonLocalVariableValue.setMinimumSize(new Dimension(250, 48));
-        liveButtonLocalVariableValue.setMaximumSize(new Dimension(250, 48));
-
-        logoutButtonFieldReference = new Rounded.RoundedButton("L O G O U T", 10);
+        logoutButtonFieldReference = new Rounded.RoundedButton("LOGOUT", 16);
         Rounded.RoundedButton logoutButtonLocalVariableValue =
                 (Rounded.RoundedButton) logoutButtonFieldReference;
 
         logoutButtonLocalVariableValue.setForeground(Color.WHITE);
-        logoutButtonLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 17));
-        logoutButtonLocalVariableValue.setBackground(DANGER_RED);
-        logoutButtonLocalVariableValue.setGradientColors(DANGER_RED, DANGER_RED_DARK);
-        logoutButtonLocalVariableValue.setShadowEnabled(false);
-        logoutButtonLocalVariableValue.setPreferredSize(new Dimension(240, 46));
-        logoutButtonLocalVariableValue.setMinimumSize(new Dimension(240, 46));
-        logoutButtonLocalVariableValue.setMaximumSize(new Dimension(240, 46));
+        logoutButtonLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 24));
+        logoutButtonLocalVariableValue.setPreferredSize(new Dimension(0, 58));
+        logoutButtonLocalVariableValue.setMinimumSize(new Dimension(0, 58));
+        logoutButtonLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 58));
+        logoutButtonLocalVariableValue.setGradientColors(
+                DANGER_GRADIENT_TOP,
+                DANGER_GRADIENT_BOTTOM
+        );
+        logoutButtonLocalVariableValue.setShadowEnabled(true);
     }
 
-    private JButton buildOutlineMenuButton(String labelTextParameterValue) {
+    private JButton buildPrimaryMenuButton(String labelTextParameterValue) {
         Rounded.RoundedButton buttonLocalVariableValue =
-                new Rounded.RoundedButton(labelTextParameterValue, 10);
+                new Rounded.RoundedButton(labelTextParameterValue, 16);
 
-        buttonLocalVariableValue.setForeground(new Color(36, 83, 204));
-        buttonLocalVariableValue.setBackground(new Color(255, 255, 255, 245));
-        buttonLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 15));
-        buttonLocalVariableValue.setOutlineMode(new Color(36, 83, 204), 2);
+        buttonLocalVariableValue.setForeground(Color.WHITE);
+        buttonLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 19));
+        buttonLocalVariableValue.setPreferredSize(new Dimension(260, 58));
+        buttonLocalVariableValue.setMinimumSize(new Dimension(260, 58));
+        buttonLocalVariableValue.setMaximumSize(new Dimension(260, 58));
+        buttonLocalVariableValue.setGradientColors(
+                PRIMARY_GRADIENT_TOP,
+                PRIMARY_GRADIENT_BOTTOM
+        );
+        buttonLocalVariableValue.setShadowEnabled(true);
+
+        return buttonLocalVariableValue;
+    }
+
+    private JButton buildDangerOutlineMenuButton(String labelTextParameterValue) {
+        Rounded.RoundedButton buttonLocalVariableValue =
+                new Rounded.RoundedButton(labelTextParameterValue, 16);
+
+        buttonLocalVariableValue.setForeground(DANGER_TEXT);
+        buttonLocalVariableValue.setBackground(new Color(255, 255, 255, 30));
+        buttonLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 19));
+        buttonLocalVariableValue.setPreferredSize(new Dimension(260, 58));
+        buttonLocalVariableValue.setMinimumSize(new Dimension(260, 58));
+        buttonLocalVariableValue.setMaximumSize(new Dimension(260, 58));
+        buttonLocalVariableValue.setOutlineMode(DANGER_TEXT, 2);
         buttonLocalVariableValue.setShadowEnabled(false);
-
-        buttonLocalVariableValue.setPreferredSize(new Dimension(238, 46));
-        buttonLocalVariableValue.setMinimumSize(new Dimension(238, 46));
-        buttonLocalVariableValue.setMaximumSize(new Dimension(238, 46));
 
         return buttonLocalVariableValue;
     }
@@ -126,6 +127,12 @@ public class AdminMenuView extends JPanel {
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue =
                 new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
+
+        Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidthLocalVariableValue = screenSizeLocalVariableValue.width;
+
+        int horizontalOffsetLocalVariableValue =
+                Math.max(70, (int) (screenWidthLocalVariableValue * 0.05));
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
             @Override
@@ -144,38 +151,31 @@ public class AdminMenuView extends JPanel {
                 Graphics2D g2LocalVariableValue =
                         (Graphics2D) graphicsParameterValue.create();
 
-                g2LocalVariableValue.setColor(new Color(0, 0, 0, 55));
+                g2LocalVariableValue.setColor(new Color(0, 0, 0, 35));
                 g2LocalVariableValue.fillRect(0, 0, getWidth(), getHeight());
 
                 g2LocalVariableValue.dispose();
             }
         };
 
-        backgroundPanelLocalVariableValue.setLayout(new BorderLayout());
-
-        JPanel leftSpacerLocalVariableValue = new JPanel();
-        leftSpacerLocalVariableValue.setOpaque(false);
-        leftSpacerLocalVariableValue.setPreferredSize(new Dimension(130, 0));
-        leftSpacerLocalVariableValue.setMinimumSize(new Dimension(130, 0));
-
-        JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
-        centerWrapperLocalVariableValue.setOpaque(false);
+        backgroundPanelLocalVariableValue.setLayout(new GridBagLayout());
 
         JPanel contentPanelLocalVariableValue = new JPanel();
         contentPanelLocalVariableValue.setOpaque(false);
         contentPanelLocalVariableValue.setLayout(
                 new BoxLayout(contentPanelLocalVariableValue, BoxLayout.Y_AXIS)
         );
+        contentPanelLocalVariableValue.setBorder(new EmptyBorder(0, 0, 175, 0));
 
         JPanel titleBlockLocalVariableValue = buildTitleBlock();
-        JPanel cardsRowLocalVariableValue = buildCardsRow();
+        JPanel menuCardLocalVariableValue = buildMenuCard();
 
         titleBlockLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
-        cardsRowLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        menuCardLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         contentPanelLocalVariableValue.add(titleBlockLocalVariableValue);
-        contentPanelLocalVariableValue.add(Box.createVerticalStrut(30));
-        contentPanelLocalVariableValue.add(cardsRowLocalVariableValue);
+        contentPanelLocalVariableValue.add(Box.createVerticalStrut(34));
+        contentPanelLocalVariableValue.add(menuCardLocalVariableValue);
 
         GridBagConstraints constraintsLocalVariableValue = new GridBagConstraints();
         constraintsLocalVariableValue.gridx = 0;
@@ -183,71 +183,100 @@ public class AdminMenuView extends JPanel {
         constraintsLocalVariableValue.weightx = 1.0;
         constraintsLocalVariableValue.weighty = 1.0;
         constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
-        constraintsLocalVariableValue.insets = new Insets(10, 0, 20, 20);
+        constraintsLocalVariableValue.insets = new Insets(
+                0,
+                horizontalOffsetLocalVariableValue,
+                0,
+                0
+        );
 
-        centerWrapperLocalVariableValue.add(
+        backgroundPanelLocalVariableValue.add(
                 contentPanelLocalVariableValue,
                 constraintsLocalVariableValue
         );
-
-        backgroundPanelLocalVariableValue.add(leftSpacerLocalVariableValue, BorderLayout.WEST);
-        backgroundPanelLocalVariableValue.add(centerWrapperLocalVariableValue, BorderLayout.CENTER);
 
         return backgroundPanelLocalVariableValue;
     }
 
     private JPanel buildTitleBlock() {
+        Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
+
+        int mainTitleSizeLocalVariableValue =
+                Math.max(62, (int) (screenHeightLocalVariableValue * 0.082));
+
+        int subtitleSizeLocalVariableValue =
+                Math.max(24, (int) (screenHeightLocalVariableValue * 0.031));
+
         JPanel titleContainerLocalVariableValue = new JPanel();
         titleContainerLocalVariableValue.setOpaque(false);
         titleContainerLocalVariableValue.setLayout(
                 new BoxLayout(titleContainerLocalVariableValue, BoxLayout.Y_AXIS)
         );
 
-        JPanel titleLineLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        titleLineLocalVariableValue.setOpaque(false);
+        JPanel titleLinePanelLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        titleLinePanelLocalVariableValue.setOpaque(false);
 
         JLabel adminLabelLocalVariableValue = new JLabel("ADMIN ");
         adminLabelLocalVariableValue.setForeground(ACCENT_COLOR);
-        adminLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 74));
+        adminLabelLocalVariableValue.setFont(
+                new Font("Arial", Font.PLAIN, mainTitleSizeLocalVariableValue)
+        );
 
         JLabel menuLabelLocalVariableValue = new JLabel("MENU");
         menuLabelLocalVariableValue.setForeground(TITLE_WHITE);
-        menuLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 74));
+        menuLabelLocalVariableValue.setFont(
+                new Font("Arial", Font.PLAIN, mainTitleSizeLocalVariableValue)
+        );
 
-        titleLineLocalVariableValue.add(adminLabelLocalVariableValue);
-        titleLineLocalVariableValue.add(menuLabelLocalVariableValue);
+        titleLinePanelLocalVariableValue.add(adminLabelLocalVariableValue);
+        titleLinePanelLocalVariableValue.add(menuLabelLocalVariableValue);
 
-        JLabel subtitleLabelLocalVariableValue = new JLabel("Manage the league system");
+        JPanel underlineWrapperLocalVariableValue =
+                new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        underlineWrapperLocalVariableValue.setOpaque(false);
+
+        JPanel underlinePanelLocalVariableValue = new JPanel();
+        underlinePanelLocalVariableValue.setBackground(ACCENT_COLOR);
+        underlinePanelLocalVariableValue.setPreferredSize(new Dimension(190, 6));
+        underlinePanelLocalVariableValue.setMinimumSize(new Dimension(190, 6));
+        underlinePanelLocalVariableValue.setMaximumSize(new Dimension(190, 6));
+
+        underlineWrapperLocalVariableValue.add(underlinePanelLocalVariableValue);
+
+        JLabel subtitleLabelLocalVariableValue =
+                new JLabel("Manage leagues, teams and players", SwingConstants.CENTER);
         subtitleLabelLocalVariableValue.setForeground(SUBTITLE_WHITE);
-        subtitleLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 24));
+        subtitleLabelLocalVariableValue.setFont(
+                new Font("Arial", Font.PLAIN, subtitleSizeLocalVariableValue)
+        );
         subtitleLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
-        subtitleLabelLocalVariableValue.setBorder(new EmptyBorder(10, 0, 0, 0));
+        subtitleLabelLocalVariableValue.setBorder(new EmptyBorder(22, 0, 0, 0));
 
-        titleContainerLocalVariableValue.add(titleLineLocalVariableValue);
+        titleContainerLocalVariableValue.add(titleLinePanelLocalVariableValue);
+        titleContainerLocalVariableValue.add(Box.createVerticalStrut(14));
+        titleContainerLocalVariableValue.add(underlineWrapperLocalVariableValue);
         titleContainerLocalVariableValue.add(subtitleLabelLocalVariableValue);
 
         return titleContainerLocalVariableValue;
     }
 
-    private JPanel buildCardsRow() {
-        JPanel rowLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 0));
-        rowLocalVariableValue.setOpaque(false);
+    private JPanel buildMenuCard() {
+        Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidthLocalVariableValue = screenSizeLocalVariableValue.width;
 
-        rowLocalVariableValue.add(buildMainMenuCard());
+        int cardWidthLocalVariableValue =
+                Math.max(660, Math.min(760, (int) (screenWidthLocalVariableValue * 0.48)));
 
-        return rowLocalVariableValue;
-    }
+        JPanel cardPanelLocalVariableValue = new LoginStyleCardPanel();
+        cardPanelLocalVariableValue.setOpaque(false);
+        cardPanelLocalVariableValue.setLayout(new GridBagLayout());
+        cardPanelLocalVariableValue.setPreferredSize(new Dimension(cardWidthLocalVariableValue, 500));
+        cardPanelLocalVariableValue.setMaximumSize(new Dimension(cardWidthLocalVariableValue, 500));
+        cardPanelLocalVariableValue.setBorder(new EmptyBorder(38, 42, 38, 42));
 
-    private JPanel buildMainMenuCard() {
-        JPanel cardLocalVariableValue = new WhiteCardPanel(false);
-        cardLocalVariableValue.setOpaque(false);
-        cardLocalVariableValue.setLayout(new GridBagLayout());
-        cardLocalVariableValue.setBorder(new EmptyBorder(34, 26, 32, 26));
-        cardLocalVariableValue.setPreferredSize(new Dimension(545, 412));
-        cardLocalVariableValue.setMinimumSize(new Dimension(545, 412));
-        cardLocalVariableValue.setMaximumSize(new Dimension(545, 412));
-
-        JPanel buttonsGridLocalVariableValue = new JPanel(new GridLayout(3, 2, 26, 54));
+        JPanel buttonsGridLocalVariableValue = new JPanel(new GridLayout(3, 2, 24, 24));
         buttonsGridLocalVariableValue.setOpaque(false);
 
         buttonsGridLocalVariableValue.add(createLeagueReferenceButtonFieldReference);
@@ -257,226 +286,73 @@ public class AdminMenuView extends JPanel {
         buttonsGridLocalVariableValue.add(viewInterfaceLeaguesButtonFieldReference);
         buttonsGridLocalVariableValue.add(deletePlayerProfileButtonFieldReference);
 
-        JPanel logoutPanelLocalVariableValue =
-                new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        logoutPanelLocalVariableValue.setOpaque(false);
-        logoutPanelLocalVariableValue.add(logoutButtonFieldReference);
+        JPanel dividerPanelLocalVariableValue = buildDividerPanel();
 
         GridBagConstraints constraintsLocalVariableValue = new GridBagConstraints();
         constraintsLocalVariableValue.gridx = 0;
-        constraintsLocalVariableValue.gridy = 0;
-        constraintsLocalVariableValue.weightx = 1.0;
         constraintsLocalVariableValue.fill = GridBagConstraints.HORIZONTAL;
+        constraintsLocalVariableValue.weightx = 1.0;
 
-        cardLocalVariableValue.add(buttonsGridLocalVariableValue, constraintsLocalVariableValue);
+        constraintsLocalVariableValue.gridy = 0;
+        constraintsLocalVariableValue.insets = new Insets(0, 0, 24, 0);
+        cardPanelLocalVariableValue.add(buttonsGridLocalVariableValue, constraintsLocalVariableValue);
 
         constraintsLocalVariableValue.gridy = 1;
-        constraintsLocalVariableValue.insets = new Insets(54, 0, 0, 0);
-        cardLocalVariableValue.add(logoutPanelLocalVariableValue, constraintsLocalVariableValue);
+        constraintsLocalVariableValue.insets = new Insets(4, 0, 22, 0);
+        cardPanelLocalVariableValue.add(dividerPanelLocalVariableValue, constraintsLocalVariableValue);
 
-        return cardLocalVariableValue;
+        constraintsLocalVariableValue.gridy = 2;
+        constraintsLocalVariableValue.insets = new Insets(0, 100, 0, 100);
+        cardPanelLocalVariableValue.add(logoutButtonFieldReference, constraintsLocalVariableValue);
+
+        return cardPanelLocalVariableValue;
     }
 
-    private JPanel buildLiveMatchesCard() {
-        JPanel cardLocalVariableValue = new WhiteCardPanel(true);
-        cardLocalVariableValue.setOpaque(false);
-        cardLocalVariableValue.setLayout(
-                new BoxLayout(cardLocalVariableValue, BoxLayout.Y_AXIS)
-        );
-        cardLocalVariableValue.setBorder(new EmptyBorder(28, 32, 28, 32));
-        cardLocalVariableValue.setPreferredSize(new Dimension(335, 412));
-        cardLocalVariableValue.setMinimumSize(new Dimension(335, 412));
-        cardLocalVariableValue.setMaximumSize(new Dimension(335, 412));
-
-        JPanel iconPanelLocalVariableValue = buildLiveIconPanel();
-        iconPanelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        liveMatchesTitleLabelFieldReference =
-                new JLabel("LIVE MATCHES", SwingConstants.CENTER);
-        liveMatchesTitleLabelFieldReference.setForeground(CARD_TITLE_COLOR);
-        liveMatchesTitleLabelFieldReference.setFont(new Font("Arial", Font.BOLD, 20));
-        liveMatchesTitleLabelFieldReference.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        liveMatchesListPanelFieldReference = new JPanel();
-        liveMatchesListPanelFieldReference.setOpaque(false);
-        liveMatchesListPanelFieldReference.setLayout(
-                new BoxLayout(liveMatchesListPanelFieldReference, BoxLayout.Y_AXIS)
+    private JPanel buildDividerPanel() {
+        JPanel dividerPanelLocalVariableValue = new JPanel();
+        dividerPanelLocalVariableValue.setOpaque(false);
+        dividerPanelLocalVariableValue.setLayout(
+                new BoxLayout(dividerPanelLocalVariableValue, BoxLayout.X_AXIS)
         );
 
-        JScrollPane liveScrollPaneLocalVariableValue =
-                new JScrollPane(liveMatchesListPanelFieldReference);
-        liveScrollPaneLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
-        liveScrollPaneLocalVariableValue.setOpaque(false);
-        liveScrollPaneLocalVariableValue.getViewport().setOpaque(false);
-        liveScrollPaneLocalVariableValue.setHorizontalScrollBarPolicy(
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
-        );
-        liveScrollPaneLocalVariableValue.setVerticalScrollBarPolicy(
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
-        );
-        liveScrollPaneLocalVariableValue.setPreferredSize(new Dimension(260, 120));
-        liveScrollPaneLocalVariableValue.setMaximumSize(new Dimension(260, 120));
-        liveScrollPaneLocalVariableValue.setMinimumSize(new Dimension(260, 120));
-        liveScrollPaneLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JComponent lineLeftLocalVariableValue = buildDividerLine();
+        JComponent lineRightLocalVariableValue = buildDividerLine();
 
-        viewInterfaceGamesButtonFieldReference.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel adminLabelLocalVariableValue = new JLabel("ADMIN");
+        adminLabelLocalVariableValue.setForeground(new Color(150, 160, 176));
+        adminLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 14));
+        adminLabelLocalVariableValue.setBorder(new EmptyBorder(0, 14, 0, 14));
 
-        cardLocalVariableValue.add(iconPanelLocalVariableValue);
-        cardLocalVariableValue.add(Box.createVerticalStrut(18));
-        cardLocalVariableValue.add(liveMatchesTitleLabelFieldReference);
-        cardLocalVariableValue.add(Box.createVerticalStrut(16));
-        cardLocalVariableValue.add(liveScrollPaneLocalVariableValue);
-        cardLocalVariableValue.add(Box.createVerticalGlue());
-        cardLocalVariableValue.add(viewInterfaceGamesButtonFieldReference);
-        cardLocalVariableValue.add(Box.createVerticalStrut(8));
+        dividerPanelLocalVariableValue.add(lineLeftLocalVariableValue);
+        dividerPanelLocalVariableValue.add(adminLabelLocalVariableValue);
+        dividerPanelLocalVariableValue.add(lineRightLocalVariableValue);
 
-        updateLiveMatches(new ArrayList<>());
-
-        return cardLocalVariableValue;
+        return dividerPanelLocalVariableValue;
     }
 
-    public void updateLiveMatches(List<String[]> liveGamesParameterValue) {
-        if (liveMatchesListPanelFieldReference == null) {
-            return;
-        }
-
-        liveMatchesListPanelFieldReference.removeAll();
-
-        List<String[]> liveGamesLocalVariableValue =
-                liveGamesParameterValue == null ? new ArrayList<>() : liveGamesParameterValue;
-
-        if (liveMatchesTitleLabelFieldReference != null) {
-            liveMatchesTitleLabelFieldReference.setText(
-                    "LIVE MATCHES (" + liveGamesLocalVariableValue.size() + ")"
-            );
-        }
-
-        if (liveGamesLocalVariableValue.isEmpty()) {
-            JLabel emptyLabelLocalVariableValue = new JLabel(
-                    "<html><div style='text-align:center;'>No hay partidos en directo actualmente.</div></html>",
-                    SwingConstants.CENTER
-            );
-            emptyLabelLocalVariableValue.setFont(new Font("Arial", Font.ITALIC, 14));
-            emptyLabelLocalVariableValue.setForeground(new Color(95, 105, 125));
-            emptyLabelLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
-            emptyLabelLocalVariableValue.setBorder(new EmptyBorder(14, 8, 14, 8));
-
-            liveMatchesListPanelFieldReference.add(emptyLabelLocalVariableValue);
-        } else {
-            for (String[] liveGameLocalVariableValue : liveGamesLocalVariableValue) {
-                liveMatchesListPanelFieldReference.add(
-                        buildLiveMatchPreviewRow(liveGameLocalVariableValue)
-                );
-                liveMatchesListPanelFieldReference.add(Box.createVerticalStrut(8));
+    private JComponent buildDividerLine() {
+        return new JComponent() {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(100, 1);
             }
-        }
 
-        liveMatchesListPanelFieldReference.revalidate();
-        liveMatchesListPanelFieldReference.repaint();
-    }
-
-    private JPanel buildLiveMatchPreviewRow(String[] liveGameParameterValue) {
-        JPanel rowPanelLocalVariableValue = new JPanel(new BorderLayout(8, 0));
-        rowPanelLocalVariableValue.setBackground(new Color(245, 247, 252));
-        rowPanelLocalVariableValue.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(215, 225, 240), 1),
-                new EmptyBorder(8, 10, 8, 10)
-        ));
-        rowPanelLocalVariableValue.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-
-        JLabel liveLabelLocalVariableValue = new JLabel("LIVE");
-        liveLabelLocalVariableValue.setForeground(new Color(210, 40, 45));
-        liveLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 11));
-
-        String homeTeamLocalVariableValue =
-                liveGameParameterValue.length > 0 ? liveGameParameterValue[0] : "Home";
-        String awayTeamLocalVariableValue =
-                liveGameParameterValue.length > 1 ? liveGameParameterValue[1] : "Away";
-
-        JLabel matchLabelLocalVariableValue = new JLabel(
-                homeTeamLocalVariableValue + "  VS  " + awayTeamLocalVariableValue,
-                SwingConstants.CENTER
-        );
-        matchLabelLocalVariableValue.setForeground(new Color(28, 35, 51));
-        matchLabelLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 13));
-
-        rowPanelLocalVariableValue.add(liveLabelLocalVariableValue, BorderLayout.WEST);
-        rowPanelLocalVariableValue.add(matchLabelLocalVariableValue, BorderLayout.CENTER);
-
-        return rowPanelLocalVariableValue;
-    }
-
-    private JPanel buildLiveIconPanel() {
-        JPanel iconOuterLocalVariableValue = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 Graphics2D g2LocalVariableValue =
                         (Graphics2D) graphicsParameterValue.create();
 
-                g2LocalVariableValue.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON
-                );
-
-                int sizeLocalVariableValue = Math.min(getWidth(), getHeight()) - 8;
-                int xLocalVariableValue = (getWidth() - sizeLocalVariableValue) / 2;
-                int yLocalVariableValue = (getHeight() - sizeLocalVariableValue) / 2;
-
-                g2LocalVariableValue.setColor(new Color(55, 109, 230, 70));
-                g2LocalVariableValue.fillOval(
-                        xLocalVariableValue,
-                        yLocalVariableValue,
-                        sizeLocalVariableValue,
-                        sizeLocalVariableValue
-                );
-
-                g2LocalVariableValue.setColor(new Color(35, 105, 190));
-                g2LocalVariableValue.fillOval(
-                        xLocalVariableValue + 10,
-                        yLocalVariableValue + 10,
-                        sizeLocalVariableValue - 20,
-                        sizeLocalVariableValue - 20
+                g2LocalVariableValue.setColor(new Color(214, 220, 230));
+                g2LocalVariableValue.fillRect(
+                        0,
+                        getHeight() / 2,
+                        getWidth(),
+                        1
                 );
 
                 g2LocalVariableValue.dispose();
-                super.paintComponent(graphicsParameterValue);
             }
         };
-
-        iconOuterLocalVariableValue.setOpaque(false);
-        iconOuterLocalVariableValue.setPreferredSize(new Dimension(108, 108));
-        iconOuterLocalVariableValue.setMinimumSize(new Dimension(108, 108));
-        iconOuterLocalVariableValue.setMaximumSize(new Dimension(108, 108));
-
-        JLabel iconLabelLocalVariableValue = new JLabel();
-        iconLabelLocalVariableValue.setHorizontalAlignment(SwingConstants.CENTER);
-        iconLabelLocalVariableValue.setVerticalAlignment(SwingConstants.CENTER);
-
-        try {
-            String iconPathLocalVariableValue =
-                    new java.io.File(LIVE_ICON_PRIMARY_PATH).exists()
-                            ? LIVE_ICON_PRIMARY_PATH
-                            : LIVE_ICON_FALLBACK_PATH;
-
-            Image iconImageLocalVariableValue =
-                    new ImageIcon(iconPathLocalVariableValue).getImage();
-
-            Image scaledIconLocalVariableValue =
-                    iconImageLocalVariableValue.getScaledInstance(
-                            64,
-                            64,
-                            Image.SCALE_SMOOTH
-                    );
-
-            iconLabelLocalVariableValue.setIcon(new ImageIcon(scaledIconLocalVariableValue));
-        } catch (Exception ignoredExceptionParameterValue) {
-            iconLabelLocalVariableValue.setText("📺");
-            iconLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 42));
-        }
-
-        iconOuterLocalVariableValue.add(iconLabelLocalVariableValue);
-
-        return iconOuterLocalVariableValue;
     }
 
     public void registerController(ActionListener controllerHandlerParameterValue) {
@@ -500,9 +376,6 @@ public class AdminMenuView extends JPanel {
 
         deletePlayerProfileButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         deletePlayerProfileButtonFieldReference.setActionCommand(DELETE_PLAYER);
-
-        viewInterfaceGamesButtonFieldReference.addActionListener(controllerHandlerParameterValue);
-        viewInterfaceGamesButtonFieldReference.setActionCommand(VIEW_GAMES);
     }
 
     public void registerController(AdminMenuController controllerHandlerParameterValue2) {
@@ -519,13 +392,7 @@ public class AdminMenuView extends JPanel {
         );
     }
 
-    private static class WhiteCardPanel extends JPanel {
-        private final boolean drawBlueBorderFieldReference;
-
-        WhiteCardPanel(boolean drawBlueBorderParameterValue) {
-            this.drawBlueBorderFieldReference = drawBlueBorderParameterValue;
-        }
-
+    private static class LoginStyleCardPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -536,40 +403,36 @@ public class AdminMenuView extends JPanel {
                     RenderingHints.VALUE_ANTIALIAS_ON
             );
 
-            int radiusLocalVariableValue = 10;
-
-            g2LocalVariableValue.setColor(new Color(8, 20, 46, 45));
+            g2LocalVariableValue.setColor(new Color(8, 20, 46, 55));
             g2LocalVariableValue.fillRoundRect(
-                    6,
-                    8,
-                    getWidth() - 12,
-                    getHeight() - 8,
-                    radiusLocalVariableValue,
-                    radiusLocalVariableValue
+                    10,
+                    14,
+                    getWidth() - 20,
+                    getHeight() - 18,
+                    30,
+                    30
             );
 
-            g2LocalVariableValue.setColor(new Color(255, 255, 255, 250));
+            g2LocalVariableValue.setColor(new Color(255, 255, 255, 238));
             g2LocalVariableValue.fillRoundRect(
                     0,
                     0,
                     getWidth() - 1,
-                    getHeight() - 1,
-                    radiusLocalVariableValue,
-                    radiusLocalVariableValue
+                    getHeight() - 12,
+                    28,
+                    28
             );
 
-            if (drawBlueBorderFieldReference) {
-                g2LocalVariableValue.setColor(ACCENT_COLOR);
-                g2LocalVariableValue.setStroke(new BasicStroke(2f));
-                g2LocalVariableValue.drawRoundRect(
-                        0,
-                        0,
-                        getWidth() - 1,
-                        getHeight() - 1,
-                        radiusLocalVariableValue,
-                        radiusLocalVariableValue
-                );
-            }
+            g2LocalVariableValue.setColor(CARD_BORDER);
+            g2LocalVariableValue.setStroke(new BasicStroke(2f));
+            g2LocalVariableValue.drawRoundRect(
+                    0,
+                    0,
+                    getWidth() - 1,
+                    getHeight() - 12,
+                    28,
+                    28
+            );
 
             g2LocalVariableValue.dispose();
             super.paintComponent(graphicsParameterValue);

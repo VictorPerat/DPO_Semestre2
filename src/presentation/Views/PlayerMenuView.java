@@ -36,7 +36,6 @@ public class PlayerMenuView extends JPanel {
     public static final String CONFIG = "CONFIG";
 
     // Cards principales de la vista
-    private MenuCardPanel watchMatchesCardFieldReference;
     private MenuCardPanel viewLeaguesCardFieldReference;
     private MenuCardPanel deleteAccountCardFieldReference;
     private MenuCardPanel logoutCardFieldReference;
@@ -73,14 +72,6 @@ public class PlayerMenuView extends JPanel {
      * desde la carpeta photos/.
      */
     private void buildCards() {
-        watchMatchesCardFieldReference = new MenuCardPanel(
-                "LIVE MATCHES",
-                "Watch live matches and enjoy real-time action",
-                CARD_BLUE,
-                WATCH_MATCHES
-        );
-        watchMatchesCardFieldReference.setIcon(loadCardIcon("photos/Partidos_Live.png"));
-
         viewLeaguesCardFieldReference = new MenuCardPanel(
                 "LEAGUES",
                 "Browse and explore the leagues you take part in",
@@ -154,52 +145,9 @@ public class PlayerMenuView extends JPanel {
     }
 
     public void updateLiveMatches(List<String[]> liveGamesParameterValue) {
-        List<String[]> liveGamesLocalVariableValue =
-                liveGamesParameterValue == null ? new ArrayList<>() : liveGamesParameterValue;
-
-        if (liveGamesLocalVariableValue.isEmpty()) {
-            watchMatchesCardFieldReference.setDescriptionHtml(
-                    "No hay partidos en directo actualmente."
-            );
-            return;
-        }
-
-        StringBuilder htmlBuilderLocalVariableValue = new StringBuilder();
-
-        int maxRowsLocalVariableValue = Math.min(3, liveGamesLocalVariableValue.size());
-
-        for (int indexCounterLocalVariableValue = 0;
-             indexCounterLocalVariableValue < maxRowsLocalVariableValue;
-             indexCounterLocalVariableValue++) {
-
-            String[] matchLocalVariableValue = liveGamesLocalVariableValue.get(indexCounterLocalVariableValue);
-
-            String homeLocalVariableValue =
-                    matchLocalVariableValue.length > 0 ? matchLocalVariableValue[0] : "Home";
-            String awayLocalVariableValue =
-                    matchLocalVariableValue.length > 1 ? matchLocalVariableValue[1] : "Away";
-
-            htmlBuilderLocalVariableValue
-                    .append("<b>LIVE</b> ")
-                    .append(homeLocalVariableValue)
-                    .append(" vs ")
-                    .append(awayLocalVariableValue);
-
-            if (indexCounterLocalVariableValue < maxRowsLocalVariableValue - 1) {
-                htmlBuilderLocalVariableValue.append("<br>");
-            }
-        }
-
-        if (liveGamesLocalVariableValue.size() > maxRowsLocalVariableValue) {
-            htmlBuilderLocalVariableValue
-                    .append("<br>+")
-                    .append(liveGamesLocalVariableValue.size() - maxRowsLocalVariableValue)
-                    .append(" more");
-        }
-
-        watchMatchesCardFieldReference.setDescriptionHtml(htmlBuilderLocalVariableValue.toString());
+        // Ya no se muestra preview de Live Matches dentro del menú.
+        // El widget global inferior se encarga de mostrar los partidos en directo.
     }
-
 
 
     /**
@@ -273,7 +221,7 @@ public class PlayerMenuView extends JPanel {
         contentPanelLocalVariableValue.setLayout(
                 new BoxLayout(contentPanelLocalVariableValue, BoxLayout.Y_AXIS)
         );
-        contentPanelLocalVariableValue.setBorder(new EmptyBorder(0, 60, 40, 60));
+        contentPanelLocalVariableValue.setBorder(new EmptyBorder(0, 60, 165, 60));
 
         JPanel titleBlockLocalVariableValue = buildTitleBlock();
         JPanel cardsRowLocalVariableValue = buildCardsRow();
@@ -363,17 +311,17 @@ public class PlayerMenuView extends JPanel {
      * Delete Account, Logout. Cada una con su color de acento.
      */
     private JPanel buildCardsRow() {
-        JPanel rowLocalVariableValue = new JPanel(new GridLayout(1, 4, 35, 0));
+        JPanel rowLocalVariableValue = new JPanel(new GridLayout(1, 3, 35, 0));
         rowLocalVariableValue.setOpaque(false);
-        rowLocalVariableValue.add(watchMatchesCardFieldReference);
+
         rowLocalVariableValue.add(viewLeaguesCardFieldReference);
         rowLocalVariableValue.add(deleteAccountCardFieldReference);
         rowLocalVariableValue.add(logoutCardFieldReference);
+
         return rowLocalVariableValue;
     }
 
     public void registerController(ActionListener controllerHandlerParameterValue) {
-        watchMatchesCardFieldReference.setActionListener(controllerHandlerParameterValue);
         viewLeaguesCardFieldReference.setActionListener(controllerHandlerParameterValue);
         deleteAccountCardFieldReference.setActionListener(controllerHandlerParameterValue);
         logoutCardFieldReference.setActionListener(controllerHandlerParameterValue);
@@ -398,7 +346,7 @@ public class PlayerMenuView extends JPanel {
      * código del menú.
      */
     public void setWatchMatchesIcon(Icon iconParameterValue) {
-        watchMatchesCardFieldReference.setIcon(iconParameterValue);
+        // La card de Live Matches ya no existe en el Player Menu.
     }
     public void setViewLeaguesIcon(Icon iconParameterValue) {
         viewLeaguesCardFieldReference.setIcon(iconParameterValue);

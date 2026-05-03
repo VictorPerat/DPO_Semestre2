@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Widget global de partidos en directo.
  *
- * Se coloca en la parte inferior de la ventana principal y se mantiene
+ * Se coloca debajo de la zona principal de los menús y se mantiene
  * visible para cumplir el apartado 2.9 del enunciado.
  */
 public class LiveMatchesWidget extends JFrame {
@@ -30,9 +30,12 @@ public class LiveMatchesWidget extends JFrame {
     private static final Color LIVE_RED = new Color(218, 37, 42);
     private static final Color BORDER_COLOR = new Color(210, 222, 240);
 
-    private static final int WIDGET_HEIGHT = 122;
-    private static final int HORIZONTAL_MARGIN = 80;
-    private static final int BOTTOM_MARGIN = 22;
+    private static final int WIDGET_HEIGHT = 112;
+    private static final int HORIZONTAL_MARGIN = 48;
+    private static final int MAX_WIDGET_WIDTH = 1120;
+    private static final int MIN_WIDGET_WIDTH = 760;
+    private static final int LEFT_BACKGROUND_MENU_OFFSET = 160;
+    private static final double MENU_WIDGET_VERTICAL_RATIO = 0.72;
 
     private static final String LIVE_ICON_PRIMARY_PATH =
             ProjectPathResolver.resolveProjectPath("photos/Television.png");
@@ -42,9 +45,11 @@ public class LiveMatchesWidget extends JFrame {
 
     private final JPanel matchesContainerFieldReference;
     private final JLabel countLabelFieldReference = new JLabel("0 matches");
+
     private ActionListener openLiveMatchesListenerFieldReference;
 
     private Window lastAnchorWindowFieldReference;
+    private int lastExtraVerticalOffsetFieldReference = 0;
 
     public LiveMatchesWidget() {
         setUndecorated(true);
@@ -81,7 +86,9 @@ public class LiveMatchesWidget extends JFrame {
 
         rootPanelLocalVariableValue.add(titlePanelLocalVariableValue, BorderLayout.WEST);
         rootPanelLocalVariableValue.add(scrollPaneLocalVariableValue, BorderLayout.CENTER);
+
         enableOpenLiveMatchesOnClick(rootPanelLocalVariableValue);
+        enableOpenLiveMatchesOnClick(titlePanelLocalVariableValue);
 
         setContentPane(rootPanelLocalVariableValue);
         setSize(900, WIDGET_HEIGHT);
@@ -157,41 +164,82 @@ public class LiveMatchesWidget extends JFrame {
         return titlePanelLocalVariableValue;
     }
 
+    /**
+     * Compatibilidad con LiveMatchesWidgetService.
+     */
     public void positionBottomAttachedTo(Window anchorWindowParameterValue) {
+        positionBelowMenuAttachedTo(anchorWindowParameterValue, 0);
+    }
+
+    /**
+     * Compatibilidad con LiveMatchesWidgetService.
+     */
+    public void positionBottomAttachedTo(Window anchorWindowParameterValue,
+                                         int extraVerticalOffsetParameterValue) {
+        positionBelowMenuAttachedTo(
+                anchorWindowParameterValue,
+                extraVerticalOffsetParameterValue
+        );
+    }
+
+    public void positionBelowMenuAttachedTo(Window anchorWindowParameterValue) {
+        positionBelowMenuAttachedTo(anchorWindowParameterValue, 0);
+    }
+
+    public void positionBelowMenuAttachedTo(Window anchorWindowParameterValue,
+                                            int extraVerticalOffsetParameterValue) {
         this.lastAnchorWindowFieldReference = anchorWindowParameterValue;
+        this.lastExtraVerticalOffsetFieldReference = extraVerticalOffsetParameterValue;
+
+        Rectangle boundsLocalVariableValue;
 
         if (anchorWindowParameterValue == null) {
-            Rectangle screenBoundsLocalVariableValue =
+            boundsLocalVariableValue =
                     GraphicsEnvironment.getLocalGraphicsEnvironment()
                             .getMaximumWindowBounds();
-
-            int widthLocalVariableValue = screenBoundsLocalVariableValue.width - (HORIZONTAL_MARGIN * 2);
-            setSize(widthLocalVariableValue, WIDGET_HEIGHT);
-
-            setLocation(
-                    screenBoundsLocalVariableValue.x + HORIZONTAL_MARGIN,
-                    screenBoundsLocalVariableValue.y
-                            + screenBoundsLocalVariableValue.height
-                            - WIDGET_HEIGHT
-                            - BOTTOM_MARGIN
-            );
-            return;
+        } else {
+            boundsLocalVariableValue = anchorWindowParameterValue.getBounds();
         }
 
-        int widthLocalVariableValue =
-                Math.max(760, anchorWindowParameterValue.getWidth() - (HORIZONTAL_MARGIN * 2));
+        int contentStartXLocalVariableValue =
+                boundsLocalVariableValue.x + LEFT_BACKGROUND_MENU_OFFSET;
 
-        setSize(widthLocalVariableValue, WIDGET_HEIGHT);
+        int contentWidthLocalVariableValue =
+                boundsLocalVariableValue.width - LEFT_BACKGROUND_MENU_OFFSET;
+
+        int widgetWidthLocalVariableValue = Math.min(
+                MAX_WIDGET_WIDTH,
+                Math.max(
+                        MIN_WIDGET_WIDTH,
+                        contentWidthLocalVariableValue - (HORIZONTAL_MARGIN * 2)
+                )
+        );
+
+        widgetWidthLocalVariableValue = Math.min(
+                widgetWidthLocalVariableValue,
+                contentWidthLocalVariableValue - 30
+        );
+
+        setSize(widgetWidthLocalVariableValue, WIDGET_HEIGHT);
 
         int xLocalVariableValue =
-                anchorWindowParameterValue.getX()
-                        + (anchorWindowParameterValue.getWidth() - widthLocalVariableValue) / 2;
+                contentStartXLocalVariableValue
+                        + (contentWidthLocalVariableValue - widgetWidthLocalVariableValue) / 2;
 
         int yLocalVariableValue =
-                anchorWindowParameterValue.getY()
-                        + anchorWindowParameterValue.getHeight()
+                boundsLocalVariableValue.y
+                        + (int) (boundsLocalVariableValue.height * MENU_WIDGET_VERTICAL_RATIO)
+                        + extraVerticalOffsetParameterValue;
+
+        int maxYLocalVariableValue =
+                boundsLocalVariableValue.y
+                        + boundsLocalVariableValue.height
                         - WIDGET_HEIGHT
-                        - BOTTOM_MARGIN;
+                        - 18;
+
+        if (yLocalVariableValue > maxYLocalVariableValue) {
+            yLocalVariableValue = maxYLocalVariableValue;
+        }
 
         setLocation(xLocalVariableValue, yLocalVariableValue);
     }
@@ -208,7 +256,9 @@ public class LiveMatchesWidget extends JFrame {
                     snapshotsParameterValue == null ? 0 : snapshotsParameterValue.size();
 
             countLabelFieldReference.setText(
-                    countLocalVariableValue == 1 ? "1 match in progress" : countLocalVariableValue + " matches in progress"
+                    countLocalVariableValue == 1
+                            ? "1 match in progress"
+                            : countLocalVariableValue + " matches in progress"
             );
 
             if (snapshotsParameterValue == null || snapshotsParameterValue.isEmpty()) {
@@ -230,7 +280,10 @@ public class LiveMatchesWidget extends JFrame {
             matchesContainerFieldReference.repaint();
 
             if (lastAnchorWindowFieldReference != null) {
-                positionBottomAttachedTo(lastAnchorWindowFieldReference);
+                positionBelowMenuAttachedTo(
+                        lastAnchorWindowFieldReference,
+                        lastExtraVerticalOffsetFieldReference
+                );
             }
         };
 
@@ -259,13 +312,6 @@ public class LiveMatchesWidget extends JFrame {
                 fireOpenLiveMatches();
             }
         });
-
-        if (componentParameterValue instanceof Container) {
-            for (Component childComponentLocalVariableValue
-                    : ((Container) componentParameterValue).getComponents()) {
-                enableOpenLiveMatchesOnClick(childComponentLocalVariableValue);
-            }
-        }
     }
 
     private JPanel buildEmptyState() {

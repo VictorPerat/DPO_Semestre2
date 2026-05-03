@@ -31,9 +31,11 @@ public class AppNavigator {
     public static final String DB_ERROR = "DB_ERROR";
 
     private static AppNavigator instanceFieldReference;
+
     private final MainView mainViewInterfaceFieldReference;
     private final Map<String, Runnable> onShowHooksFieldReference = new HashMap<>();
     private final Map<String, Runnable> onHideHooksFieldReference = new HashMap<>();
+
     private Runnable changePasswordReturnActionFieldReference;
     private Runnable returnActionFieldReference;
     private String currentScreenIdentifierFieldReference;
@@ -43,50 +45,76 @@ public class AppNavigator {
         instanceFieldReference = this;
     }
 
-    public static AppNavigator getInstance() { return instanceFieldReference; }
+    public static AppNavigator getInstance() {
+        return instanceFieldReference;
+    }
 
     public void show(String screenIdentifierParameterValue) {
         if (currentScreenIdentifierFieldReference != null
                 && !currentScreenIdentifierFieldReference.equals(screenIdentifierParameterValue)) {
-            Runnable hideHookLocalVariableValue = onHideHooksFieldReference.get(currentScreenIdentifierFieldReference);
+
+            Runnable hideHookLocalVariableValue =
+                    onHideHooksFieldReference.get(currentScreenIdentifierFieldReference);
+
             if (hideHookLocalVariableValue != null) {
                 hideHookLocalVariableValue.run();
             }
         }
 
         currentScreenIdentifierFieldReference = screenIdentifierParameterValue;
+
         mainViewInterfaceFieldReference.showScreen(screenIdentifierParameterValue);
+
         if (!mainViewInterfaceFieldReference.isVisible()) {
             mainViewInterfaceFieldReference.setVisible(true);
         }
+
         mainViewInterfaceFieldReference.toFront();
         mainViewInterfaceFieldReference.requestFocus();
 
-        Runnable hookLocalVariableValue = onShowHooksFieldReference.get(screenIdentifierParameterValue);
+        Runnable hookLocalVariableValue =
+                onShowHooksFieldReference.get(screenIdentifierParameterValue);
+
         if (hookLocalVariableValue != null) {
             hookLocalVariableValue.run();
         }
+
+        // Recoloca el widget de Live Matches según la pantalla actual.
+        LiveMatchesWidgetService.refreshPosition();
     }
 
-    public void registerOnShowHook(String screenIdentifierParameterValue, Runnable hookParameterValue) {
+    public void registerOnShowHook(String screenIdentifierParameterValue,
+                                   Runnable hookParameterValue) {
         onShowHooksFieldReference.put(screenIdentifierParameterValue, hookParameterValue);
     }
 
-    public void registerOnHideHook(String screenIdentifierParameterValue, Runnable hookParameterValue) {
+    public void registerOnHideHook(String screenIdentifierParameterValue,
+                                   Runnable hookParameterValue) {
         onHideHooksFieldReference.put(screenIdentifierParameterValue, hookParameterValue);
     }
 
-    public MainView getMainView() { return mainViewInterfaceFieldReference; }
+    public MainView getMainView() {
+        return mainViewInterfaceFieldReference;
+    }
 
-    public void hideMainWindow() { mainViewInterfaceFieldReference.setVisible(false); }
+    public void hideMainWindow() {
+        mainViewInterfaceFieldReference.setVisible(false);
+    }
+
+    public String getCurrentScreenIdentifier() {
+        return currentScreenIdentifierFieldReference;
+    }
 
     public void setChangePasswordReturnAction(Runnable returnActionParameterValue) {
         this.changePasswordReturnActionFieldReference = returnActionParameterValue;
     }
 
     public void finishChangePasswordFlow() {
-        Runnable pendingActionLocalVariableValue = this.changePasswordReturnActionFieldReference;
+        Runnable pendingActionLocalVariableValue =
+                this.changePasswordReturnActionFieldReference;
+
         this.changePasswordReturnActionFieldReference = null;
+
         if (pendingActionLocalVariableValue != null) {
             SwingUtilities.invokeLater(pendingActionLocalVariableValue);
         } else {
@@ -99,8 +127,11 @@ public class AppNavigator {
     }
 
     public void runReturnActionOrShow(String fallbackScreenIdentifierParameterValue) {
-        Runnable pendingActionLocalVariableValue = this.returnActionFieldReference;
+        Runnable pendingActionLocalVariableValue =
+                this.returnActionFieldReference;
+
         this.returnActionFieldReference = null;
+
         if (pendingActionLocalVariableValue != null) {
             SwingUtilities.invokeLater(pendingActionLocalVariableValue);
         } else {
