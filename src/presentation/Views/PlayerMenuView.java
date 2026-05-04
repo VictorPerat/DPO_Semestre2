@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,8 +22,7 @@ import java.util.List;
  * La API pública (constantes y métodos) permanece intacta:
  *   - registerController(ActionListener)
  *   - showMessageDialog(String)
- *   - setConfigController(ActionListener)
- *   - constantes WATCH_MATCHES, VIEW_LEAGUES, DELETE_PLAYER, LOGOUT, CONFIG.
+ *   - constantes WATCH_MATCHES, VIEW_LEAGUES, DELETE_PLAYER, LOGOUT.
  */
 public class PlayerMenuView extends JPanel {
 
@@ -33,15 +31,11 @@ public class PlayerMenuView extends JPanel {
     public static final String VIEW_LEAGUES = "VIEW_LEAGUES";
     public static final String DELETE_PLAYER = "DELETE_PLAYER";
     public static final String LOGOUT = "LOGOUT";
-    public static final String CONFIG = "CONFIG";
 
     // Cards principales de la vista
     private MenuCardPanel viewLeaguesCardFieldReference;
     private MenuCardPanel deleteAccountCardFieldReference;
     private MenuCardPanel logoutCardFieldReference;
-
-    private JButton configButtonFieldReference;
-    private ActionListener configControllerHandlerFieldReference;
 
     // Paleta de los títulos / textos (heredada de Login/SignUp).
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
@@ -95,53 +89,6 @@ public class PlayerMenuView extends JPanel {
                 LOGOUT
         );
         logoutCardFieldReference.setIcon(loadCardIcon("photos/Salir_Meu_Principal.png"));
-
-        configButtonFieldReference = buildConfigButton();
-    }
-
-    /**
-     * Construye el botón de configuración con la imagen
-     * "Rueda Ajustes.png" en lugar del icono por defecto del
-     * HeaderButtonHelper, y sin el fondo redondeado para que se vea
-     * directamente la rueda dentada.
-     */
-    private JButton buildConfigButton() {
-        JButton buttonControlLocalVariableValue = new JButton();
-        buttonControlLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
-        buttonControlLocalVariableValue.setContentAreaFilled(false);
-        buttonControlLocalVariableValue.setFocusPainted(false);
-        buttonControlLocalVariableValue.setOpaque(false);
-        buttonControlLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        try {
-            String iconPathLocalVariableValue = resolveExistingIconPath(
-                    "photos/Rueda_Ajustes.png",
-                    "photos/Rueda Ajustes.png"
-            );
-            Image rawIconLocalVariableValue =
-                    new ImageIcon(iconPathLocalVariableValue).getImage();
-            Image scaledIconLocalVariableValue =
-                    rawIconLocalVariableValue.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
-            buttonControlLocalVariableValue.setIcon(new ImageIcon(scaledIconLocalVariableValue));
-
-            buttonControlLocalVariableValue.setPreferredSize(new Dimension(170, 170));
-            buttonControlLocalVariableValue.setMinimumSize(new Dimension(170, 170));
-            buttonControlLocalVariableValue.setMaximumSize(new Dimension(170, 170));
-        } catch (Exception ignoredExceptionParameterValue) {
-            // Si la imagen no se puede cargar, queda un botón vacío.
-        }
-
-        buttonControlLocalVariableValue.addActionListener(
-                eventArgumentParameterValue -> {
-                    if (configControllerHandlerFieldReference != null) {
-                        configControllerHandlerFieldReference.actionPerformed(
-                                new ActionEvent(this, ActionEvent.ACTION_PERFORMED, CONFIG)
-                        );
-                    }
-                }
-        );
-
-        return buttonControlLocalVariableValue;
     }
 
     public void updateLiveMatches(List<String[]> liveGamesParameterValue) {
@@ -169,18 +116,6 @@ public class PlayerMenuView extends JPanel {
     }
 
 
-    private String resolveExistingIconPath(String primaryRelativePathParameterValue,
-                                           String fallbackRelativePathParameterValue) {
-        String primaryAbsolutePathLocalVariableValue =
-                ProjectPathResolver.resolveProjectPath(primaryRelativePathParameterValue);
-
-        if (new java.io.File(primaryAbsolutePathLocalVariableValue).exists()) {
-            return primaryAbsolutePathLocalVariableValue;
-        }
-
-        return ProjectPathResolver.resolveProjectPath(fallbackRelativePathParameterValue);
-    }
-
     /**
      * Panel de fondo que pinta la imagen + overlay y centra el bloque
      * de título y la fila de cards.
@@ -205,12 +140,6 @@ public class PlayerMenuView extends JPanel {
         };
 
         backgroundPanelLocalVariableValue.setLayout(new BorderLayout());
-
-        // Barra inferior con el botón de configuración abajo a la izquierda
-        JPanel bottomBarLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 10));
-        bottomBarLocalVariableValue.setOpaque(false);
-        bottomBarLocalVariableValue.setBorder(new EmptyBorder(0, 20, 20, 0));
-        bottomBarLocalVariableValue.add(configButtonFieldReference);
 
         // Centro: bloque de título + fila de cards, todo centrado
         JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
@@ -243,7 +172,6 @@ public class PlayerMenuView extends JPanel {
         centerWrapperLocalVariableValue.add(contentPanelLocalVariableValue, constraintsLocalVariableValue);
 
         backgroundPanelLocalVariableValue.add(centerWrapperLocalVariableValue, BorderLayout.CENTER);
-        backgroundPanelLocalVariableValue.add(bottomBarLocalVariableValue, BorderLayout.SOUTH);
 
         return backgroundPanelLocalVariableValue;
     }
@@ -334,10 +262,6 @@ public class PlayerMenuView extends JPanel {
                 "Player Menu",
                 JOptionPane.WARNING_MESSAGE
         );
-    }
-
-    public void setConfigController(ActionListener controllerHandlerParameterValue2) {
-        this.configControllerHandlerFieldReference = controllerHandlerParameterValue2;
     }
 
     /**

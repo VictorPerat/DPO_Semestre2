@@ -27,7 +27,6 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
         this.playerProfileManagerServiceFieldReference = playerProfileManagerServiceParameterValue;
         this.navigatorFieldReference = navigatorParameterValue;
         this.playerProfileMenuScreenInterfaceFieldReference.registerController(this);
-        this.playerProfileMenuScreenInterfaceFieldReference.setConfigController(this);
         refreshLiveMatchesPreview();
     }
 
@@ -93,9 +92,6 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
                 break;
             case PlayerMenuView.LOGOUT:
                 handleLogout();
-                break;
-            case PlayerMenuView.CONFIG:
-                showConfigDialog();
                 break;
             default:
                 break;

@@ -3,7 +3,6 @@ package presentation.Views;
 import shared.ProjectPathResolver;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
@@ -12,13 +11,12 @@ public class AccountSettingsWidget extends JFrame {
     public static final String CHANGE_PASSWORD = "CHANGE_PASSWORD";
     public static final String LOGOUT = "LOGOUT";
 
-    private static final int WIDGET_SIZE = 78;
+    private static final int WIDGET_SIZE = 90;
     private static final int LEFT_OFFSET = 50;
     private static final int BOTTOM_OFFSET = 62;
 
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
     private static final Color DARK_BLUE = new Color(22, 49, 72);
-    private static final Color WHITE_BACKGROUND = new Color(255, 255, 255, 245);
 
     private static final String SETTINGS_ICON_PRIMARY_PATH =
             ProjectPathResolver.resolveProjectPath("photos/Rueda_Ajustes.png");
@@ -37,10 +35,8 @@ public class AccountSettingsWidget extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBackground(new Color(0, 0, 0, 0));
 
-        JPanel rootPanelLocalVariableValue = new RoundedSettingsPanel();
-        rootPanelLocalVariableValue.setLayout(new GridBagLayout());
+        JPanel rootPanelLocalVariableValue = new JPanel(new GridBagLayout());
         rootPanelLocalVariableValue.setOpaque(false);
-        rootPanelLocalVariableValue.setBorder(new EmptyBorder(8, 8, 8, 8));
 
         settingsButtonFieldReference = buildSettingsButton();
         rootPanelLocalVariableValue.add(settingsButtonFieldReference);
@@ -68,8 +64,8 @@ public class AccountSettingsWidget extends JFrame {
 
             Image scaledImageLocalVariableValue =
                     rawImageLocalVariableValue.getScaledInstance(
-                            52,
-                            52,
+                            72,
+                            72,
                             Image.SCALE_SMOOTH
                     );
 
@@ -158,53 +154,4 @@ public class AccountSettingsWidget extends JFrame {
         return itemLocalVariableValue;
     }
 
-    private static class RoundedSettingsPanel extends JPanel {
-        @Override
-        protected void paintComponent(Graphics graphicsParameterValue) {
-            Graphics2D g2LocalVariableValue =
-                    (Graphics2D) graphicsParameterValue.create();
-
-            g2LocalVariableValue.setRenderingHint(
-                    RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON
-            );
-
-            int sizeLocalVariableValue =
-                    Math.min(getWidth(), getHeight()) - 8;
-
-            int xLocalVariableValue =
-                    (getWidth() - sizeLocalVariableValue) / 2;
-
-            int yLocalVariableValue =
-                    (getHeight() - sizeLocalVariableValue) / 2;
-
-            g2LocalVariableValue.setColor(new Color(8, 20, 46, 80));
-            g2LocalVariableValue.fillOval(
-                    xLocalVariableValue + 4,
-                    yLocalVariableValue + 6,
-                    sizeLocalVariableValue,
-                    sizeLocalVariableValue
-            );
-
-            g2LocalVariableValue.setColor(WHITE_BACKGROUND);
-            g2LocalVariableValue.fillOval(
-                    xLocalVariableValue,
-                    yLocalVariableValue,
-                    sizeLocalVariableValue,
-                    sizeLocalVariableValue
-            );
-
-            g2LocalVariableValue.setColor(ACCENT_COLOR);
-            g2LocalVariableValue.setStroke(new BasicStroke(2.5f));
-            g2LocalVariableValue.drawOval(
-                    xLocalVariableValue,
-                    yLocalVariableValue,
-                    sizeLocalVariableValue,
-                    sizeLocalVariableValue
-            );
-
-            g2LocalVariableValue.dispose();
-            super.paintComponent(graphicsParameterValue);
-        }
-    }
 }
