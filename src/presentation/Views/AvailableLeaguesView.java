@@ -3,7 +3,6 @@ package presentation.Views;
 import bussines.objects.League;
 import bussines.objects.LeagueListEntry;
 import presentation.ControllerViews.AvailableLeaguesController;
-import presentation.ControllerViews.MenuController;
 import shared.ProjectPathResolver;
 
 import javax.swing.*;
@@ -15,7 +14,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-/** Vista JPanel con listado de ligas disponibles. */
+
+/**
+ * Representa la vista de las ligas disponibles.
+ */
 public class AvailableLeaguesView extends JPanel {
 
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
@@ -36,38 +38,43 @@ public class AvailableLeaguesView extends JPanel {
 
     private static final String LEAGUES_ICON_PATH =
             ProjectPathResolver.resolveProjectPath("photos/Leagues.png");
-
-    private ActionListener configControllerHandlerFieldReference;
     private ActionListener backControllerHandlerFieldReference;
-    private MenuController menuControllerHandlerFieldReference;
 
     private JPanel leaguesListPanelFieldReference;
 
     private Rounded.RoundedButton backButtonFieldReference;
-    private JButton configButtonFieldReference;
 
+
+    /**
+     * Crea una instancia de los disponibles ligas.
+     */
     public AvailableLeaguesView() {
         setLayout(new BorderLayout());
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
-    public void setConfigController(ActionListener configControllerHandlerParameterValue) {
-        this.configControllerHandlerFieldReference = configControllerHandlerParameterValue;
-    }
 
+    /**
+     * Actualiza el vuelta.
+     *
+     * @param listenerParameterValue listener que se registra.
+     */
     public void setBackButtonListener(ActionListener listenerParameterValue) {
         this.backControllerHandlerFieldReference = listenerParameterValue;
     }
 
-    public void setMenuController(MenuController controllerHandlerParameterValue) {
-        this.menuControllerHandlerFieldReference = controllerHandlerParameterValue;
-    }
 
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue =
                 new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -83,7 +90,7 @@ public class AvailableLeaguesView extends JPanel {
 
                 Graphics2D g2LocalVariableValue =
                         (Graphics2D) graphicsParameterValue.create();
-                g2LocalVariableValue.setColor(new Color(0, 0, 0, 55));
+                g2LocalVariableValue.setColor(new Color(0, 0, 0, 35));
                 g2LocalVariableValue.fillRect(0, 0, getWidth(), getHeight());
                 g2LocalVariableValue.dispose();
             }
@@ -92,18 +99,23 @@ public class AvailableLeaguesView extends JPanel {
         backgroundPanelLocalVariableValue.setLayout(new BorderLayout());
         backgroundPanelLocalVariableValue.add(buildTopBar(), BorderLayout.NORTH);
         backgroundPanelLocalVariableValue.add(buildCenterContent(), BorderLayout.CENTER);
-        backgroundPanelLocalVariableValue.add(buildBottomBar(), BorderLayout.SOUTH);
 
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTopBar() {
         JPanel topBarLocalVariableValue = new JPanel(new BorderLayout());
         topBarLocalVariableValue.setOpaque(false);
         topBarLocalVariableValue.setBorder(new EmptyBorder(28, 40, 0, 40));
 
         JPanel rightPanelLocalVariableValue =
-                new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+                new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         rightPanelLocalVariableValue.setOpaque(false);
 
         backButtonFieldReference = new Rounded.RoundedButton("← BACK", 18);
@@ -119,74 +131,21 @@ public class AvailableLeaguesView extends JPanel {
                 backControllerHandlerFieldReference.actionPerformed(
                         new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "BACK")
                 );
-            } else if (menuControllerHandlerFieldReference != null) {
-                menuControllerHandlerFieldReference.showMenu();
             }
         });
 
         rightPanelLocalVariableValue.add(backButtonFieldReference);
-        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.EAST);
+        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.WEST);
 
         return topBarLocalVariableValue;
     }
 
-    private JPanel buildBottomBar() {
-        JPanel bottomBarLocalVariableValue =
-                new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 8));
-        bottomBarLocalVariableValue.setOpaque(false);
-        bottomBarLocalVariableValue.setBorder(new EmptyBorder(0, 20, 18, 0));
 
-        configButtonFieldReference = buildConfigButton();
-        bottomBarLocalVariableValue.add(configButtonFieldReference);
-
-        return bottomBarLocalVariableValue;
-    }
-
-    private JButton buildConfigButton() {
-        JButton buttonControlLocalVariableValue = new JButton();
-        buttonControlLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
-        buttonControlLocalVariableValue.setContentAreaFilled(false);
-        buttonControlLocalVariableValue.setFocusPainted(false);
-        buttonControlLocalVariableValue.setOpaque(false);
-        buttonControlLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        try {
-            String iconPathLocalVariableValue = resolveExistingIconPath(
-                    "photos/Rueda_Ajustes.png",
-                    "photos/Rueda Ajustes.png"
-            );
-
-            Image rawIconLocalVariableValue =
-                    new ImageIcon(iconPathLocalVariableValue).getImage();
-
-            Image scaledIconLocalVariableValue =
-                    rawIconLocalVariableValue.getScaledInstance(
-                            82,
-                            82,
-                            Image.SCALE_SMOOTH
-                    );
-
-            buttonControlLocalVariableValue.setIcon(
-                    new ImageIcon(scaledIconLocalVariableValue)
-            );
-            buttonControlLocalVariableValue.setPreferredSize(new Dimension(120, 120));
-        } catch (Exception ignoredExceptionParameterValue) {
-            buttonControlLocalVariableValue.setText("⚙");
-            buttonControlLocalVariableValue.setForeground(Color.WHITE);
-            buttonControlLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 32));
-        }
-
-        buttonControlLocalVariableValue.addActionListener(eventArgumentParameterValue -> {
-            if (configControllerHandlerFieldReference != null) {
-                configControllerHandlerFieldReference.actionPerformed(
-                        new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CONFIG")
-                );
-            }
-        });
-
-        return buttonControlLocalVariableValue;
-    }
-
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildCenterContent() {
         JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
         centerWrapperLocalVariableValue.setOpaque(false);
@@ -215,6 +174,8 @@ public class AvailableLeaguesView extends JPanel {
         constraintsLocalVariableValue.weighty = 1.0;
         constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
 
+        constraintsLocalVariableValue.insets = new Insets(0, 0, 0, 310);
+
         centerWrapperLocalVariableValue.add(
                 contentPanelLocalVariableValue,
                 constraintsLocalVariableValue
@@ -223,6 +184,12 @@ public class AvailableLeaguesView extends JPanel {
         return centerWrapperLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -289,6 +256,12 @@ public class AvailableLeaguesView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye los ligas.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildLeaguesCard() {
         JPanel cardLocalVariableValue = new RoundedCardPanel();
         cardLocalVariableValue.setOpaque(false);
@@ -331,6 +304,12 @@ public class AvailableLeaguesView extends JPanel {
         return cardLocalVariableValue;
     }
 
+
+    /**
+     * Construye los ligas.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildLeaguesIconPanel() {
         JPanel iconPanelLocalVariableValue = new JPanel(new GridBagLayout());
         iconPanelLocalVariableValue.setOpaque(false);
@@ -367,6 +346,12 @@ public class AvailableLeaguesView extends JPanel {
         return iconPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTableHeader() {
         JPanel headerPanelLocalVariableValue = new JPanel(new GridLayout(1, 3));
         headerPanelLocalVariableValue.setOpaque(false);
@@ -388,6 +373,12 @@ public class AvailableLeaguesView extends JPanel {
         return headerPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea los ligas.
+     *
+     * @return elemento creado por el metodo.
+     */
     private JScrollPane createLeaguesScrollPane() {
         leaguesListPanelFieldReference = new JPanel();
         leaguesListPanelFieldReference.setLayout(
@@ -418,6 +409,14 @@ public class AvailableLeaguesView extends JPanel {
         return scrollPaneLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param entriesParameterValue dato de entrada de la operacion.
+     * @param isAdminParameterValue administrador que usa la operacion.
+     * @param listenerParameterValue listener que se registra.
+     */
     public void displayLeagues(List<LeagueListEntry> entriesParameterValue,
                                boolean isAdminParameterValue,
                                ActionListener listenerParameterValue) {
@@ -456,6 +455,14 @@ public class AvailableLeaguesView extends JPanel {
         leaguesListPanelFieldReference.repaint();
     }
 
+
+    /**
+     * Crea el liga.
+     *
+     * @param entryParameterValue dato de entrada de la operacion.
+     * @param listenerParameterValue listener que se registra.
+     * @return elemento creado por el metodo.
+     */
     private JPanel createLeagueRow(LeagueListEntry entryParameterValue,
                                    ActionListener listenerParameterValue) {
         League leagueReferenceLocalVariableValue = entryParameterValue.getLeague();
@@ -492,6 +499,7 @@ public class AvailableLeaguesView extends JPanel {
         rowPanelLocalVariableValue.add(statusLabelLocalVariableValue);
 
         rowPanelLocalVariableValue.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseClicked(MouseEvent eventArgumentParameterValue) {
                 if (listenerParameterValue instanceof AvailableLeaguesController) {
@@ -512,6 +520,15 @@ public class AvailableLeaguesView extends JPanel {
         return rowPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea el contenido.
+     *
+     * @param textParameterValue texto que usa la operacion.
+     * @param styleParameterValue dato de entrada de la operacion.
+     * @param colorParameterValue dato de entrada de la operacion.
+     * @return elemento creado por el metodo.
+     */
     private JLabel createRowLabel(String textParameterValue,
                                   int styleParameterValue,
                                   Color colorParameterValue) {
@@ -522,6 +539,13 @@ public class AvailableLeaguesView extends JPanel {
         return labelLocalVariableValue;
     }
 
+
+    /**
+     * Crea el contenido.
+     *
+     * @param statusParameterValue dato de entrada de la operacion.
+     * @return elemento creado por el metodo.
+     */
     private JLabel createStatusLabel(String statusParameterValue) {
         JLabel labelLocalVariableValue =
                 new JLabel(statusParameterValue, SwingConstants.CENTER);
@@ -542,22 +566,12 @@ public class AvailableLeaguesView extends JPanel {
         return labelLocalVariableValue;
     }
 
-    private String resolveExistingIconPath(String primaryRelativePathParameterValue,
-                                           String fallbackRelativePathParameterValue) {
-        String primaryAbsolutePathLocalVariableValue =
-                ProjectPathResolver.resolveProjectPath(primaryRelativePathParameterValue);
 
-        if (new java.io.File(primaryAbsolutePathLocalVariableValue).exists()) {
-            return primaryAbsolutePathLocalVariableValue;
-        }
-
-        return ProjectPathResolver.resolveProjectPath(fallbackRelativePathParameterValue);
-    }
-
-    public void setAdminFunctionsVisible(boolean visibleParameterValue) {
-        // Se mantiene por compatibilidad con controllers antiguos.
-    }
-
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -567,7 +581,18 @@ public class AvailableLeaguesView extends JPanel {
         );
     }
 
+
+    /**
+     * Agrupa la logica de esta parte de la aplicacion.
+     */
     private static class RoundedCardPanel extends JPanel {
+
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -618,16 +643,26 @@ public class AvailableLeaguesView extends JPanel {
         }
     }
 
+
+    /**
+     * Agrupa la logica de el liga.
+     */
     private static class LeagueRowPanel extends JPanel {
         private boolean hoverFieldReference = false;
 
+
+        /**
+         * Crea una instancia de el liga.
+         */
         LeagueRowPanel() {
             addMouseListener(new MouseAdapter() {
+
                 @Override
                 public void mouseEntered(MouseEvent eventArgumentParameterValue) {
                     hoverFieldReference = true;
                     repaint();
                 }
+
 
                 @Override
                 public void mouseExited(MouseEvent eventArgumentParameterValue) {
@@ -637,6 +672,12 @@ public class AvailableLeaguesView extends JPanel {
             });
         }
 
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -685,3 +726,5 @@ public class AvailableLeaguesView extends JPanel {
         }
     }
 }
+
+

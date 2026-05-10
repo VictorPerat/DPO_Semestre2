@@ -2,24 +2,26 @@ package bussines.managers;
 
 import persistance.ConfigJsonDao;
 
+
 /**
- * Esta clase se encarga de leer y dar acceso a la configuración de la aplicación.
+ * Gestiona las operaciones de la configuracion.
  */
 public class ConfigManager {
 
-    // Referencia al DAO que lee el archivo config.Json
+
     private static ConfigJsonDao configJsonDataAccessObjectFieldReference;
 
-    // Constructor que inicializa el lector de configuración
+
+    /**
+     * Crea una instancia de el configuracion.
+     */
     public ConfigManager() {
         ensureInitialized();
     }
 
+
     /**
-     * Inicializa el DAO de configuración la primera vez que se necesita.
-     * Garantiza que cualquier llamada a los getters estáticos devuelva
-     * datos válidos aunque nadie haya creado un {@link ConfigManager}
-     * todavía.
+     * Gestiona esta operacion.
      */
     private static synchronized void ensureInitialized() {
         if (configJsonDataAccessObjectFieldReference == null) {
@@ -27,45 +29,108 @@ public class ConfigManager {
         }
     }
 
-    // Devuelve el puerto de la base de datos
+
+    /**
+     * Devuelve los base de datos.
+     *
+     * @return los base de datos.
+     */
     public static String getDatabasePort() {
         ensureInitialized();
         return configJsonDataAccessObjectFieldReference.getDatabasePort();
     }
 
-    // Devuelve la IP de la base de datos
+
+    /**
+     * Devuelve los base de datos.
+     *
+     * @return los base de datos.
+     */
     public static String getDatabaseIP() {
         ensureInitialized();
         return configJsonDataAccessObjectFieldReference.getDatabaseIP();
     }
 
-    // Devuelve el nombre de la base de datos
+
+    /**
+     * Devuelve el base de datos nombre.
+     *
+     * @return el base de datos nombre.
+     */
     public static String getDatabaseName() {
         ensureInitialized();
         return configJsonDataAccessObjectFieldReference.getDatabaseName();
     }
 
-    // Devuelve el usuario de acceso a la base de datos
+
+    /**
+     * Devuelve el base de datos usuario.
+     *
+     * @return el base de datos usuario.
+     */
     public static String getDatabaseUser() {
         ensureInitialized();
         return configJsonDataAccessObjectFieldReference.getDatabaseUser();
     }
 
-    // Devuelve la contraseña de la base de datos
+
+    /**
+     * Devuelve el base de datos contrasena.
+     *
+     * @return el base de datos contrasena.
+     */
     public static String getDatabasePassword() {
         ensureInitialized();
         return configJsonDataAccessObjectFieldReference.getDatabasePassword();
     }
 
-    // Devuelve la contraseña del administrador
+
+    /**
+     * Devuelve el administrador contrasena.
+     *
+     * @return el administrador contrasena.
+     */
     public static String getAdminPassword() {
         ensureInitialized();
         return configJsonDataAccessObjectFieldReference.getAdminPassword();
     }
 
-    // Devuelve la duración configurada de los partidos
+
+    /**
+     * Actualiza el administrador contrasena.
+     *
+     * @param newAdminPasswordParameterValue administrador contrasena.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
+    public static boolean updateAdminPassword(
+            String newAdminPasswordParameterValue) {
+        ensureInitialized();
+        return configJsonDataAccessObjectFieldReference.updateAdminPassword(
+                newAdminPasswordParameterValue
+        );
+    }
+
+
+    /**
+     * Devuelve el administrador identificador.
+     *
+     * @return el administrador identificador.
+     */
+    public static String getAdminIdentifier() {
+        ensureInitialized();
+        return configJsonDataAccessObjectFieldReference.getAdminIdentifier();
+    }
+
+
+    /**
+     * Devuelve el partido.
+     *
+     * @return el partido.
+     */
     public static int getDurationMatch() {
         ensureInitialized();
         return configJsonDataAccessObjectFieldReference.getDurationMatch();
     }
 }
+
+

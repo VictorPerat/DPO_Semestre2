@@ -9,28 +9,33 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
+
 /**
- * Esta clase se encarga de revisar si hay partidos que ya tienen que empezar.
+ * Agrupa la logica de el partido.
  */
 public class MatchRunner implements Runnable {
 
-    // Manager de partidos
+
     private GameManager gameEntityManagerServiceFieldReference;
 
-    // Id de la liga que se está controlando
+
     private int leagueReferenceIdentifierFieldReference;
 
-    // Tiempo entre revisiones
+
     private long intervalFieldReference;
 
-    // Indica si hay partidos en juego
 
-    // Configuración general del sistema
     private ConfigManager configFieldReference;
 
-    // Manager de equipos
 
-    // Constructor que guarda la información necesaria
+    /**
+     * Crea una instancia de el partido.
+     *
+     * @param gameEntityManagerServiceParameterValue partido que usa la operacion.
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @param intervalParameterValue dato de entrada de la operacion.
+     * @param configParameterValue configuracion que usa la operacion.
+     */
     public MatchRunner(GameManager gameEntityManagerServiceParameterValue,
                        int leagueReferenceIdentifierParameterValue,
                        long intervalParameterValue,
@@ -42,7 +47,10 @@ public class MatchRunner implements Runnable {
         this.configFieldReference = configParameterValue;
     }
 
-    // Método que se ejecuta cuando se lanza el hilo
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void run() {
         while (true) {
             revisarPartits();
@@ -50,14 +58,17 @@ public class MatchRunner implements Runnable {
             try {
                 Thread.sleep(intervalFieldReference);
             } catch (InterruptedException eventArgumentExceptionParameter) {
-                eventArgumentExceptionParameter.printStackTrace();
+                shared.DaoErrorHandler.log("MatchRunner", eventArgumentExceptionParameter);
                 Thread.currentThread().interrupt();
                 break;
             }
         }
     }
 
-    // Revisa los partidos de la liga y comprueba si alguno debe empezar
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void revisarPartits() {
         LocalDateTime ahoraLocalVariableValue =
                 LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
@@ -88,9 +99,7 @@ public class MatchRunner implements Runnable {
                 continue;
             }
 
-            // Si la BD ya marcaba el partido como iniciado (por ejemplo
-            // tras cargar un seed demo), se reconstruye su simulación
-            // una sola vez para poblar el scoreboard y el widget global.
+
             if (partidoLocalVariableValue.isComençat()) {
                 if (!LiveMatchesRegistry.getInstance().isRegistered(
                         identifierPartidoLocalVariableValue)) {
@@ -114,7 +123,7 @@ public class MatchRunner implements Runnable {
             boolean aunNoHaTerminadoLocalVariableValue =
                     ahoraLocalVariableValue.isBefore(finPartidoLocalVariableValue);
 
-            // Si el partido todavía no ha empezado pero ya toca jugarlo, se marca como iniciado
+
             if (noHaEmpezadoLocalVariableValue
                     && haLlegadoHoraInicioLocalVariableValue
                     && aunNoHaTerminadoLocalVariableValue) {
@@ -137,14 +146,22 @@ public class MatchRunner implements Runnable {
         }
     }
 
+
+    /**
+     * Crea el directo partido.
+     *
+     * @param gameEntityParameterValue partido que usa la operacion.
+     * @param gameEntityIdentifierParameterValue partido identificador.
+     */
     private void createLiveMatchController(Game gameEntityParameterValue,
                                            int gameEntityIdentifierParameterValue) {
         new LiveMatchController(
                 gameEntityParameterValue,
-                configFieldReference,
                 gameEntityManagerServiceFieldReference,
                 gameEntityIdentifierParameterValue,
                 leagueReferenceIdentifierFieldReference
         );
     }
 }
+
+

@@ -1,6 +1,7 @@
 package persistance;
 
 import bussines.managers.ConfigManager;
+import shared.DaoErrorHandler;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,43 +9,57 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
 /**
- * Esta clase se encarga de gestionar la conexión con la base de datos.
+ * Gestiona la conexion de la base de datos.
  */
 public class DatabaseConnector {
 
-    // Instancia única de la clase
+
     private static DatabaseConnector instanceFieldReference = null;
 
-    // Conexión compartida con la base de datos
+
     private Connection connFieldReference;
 
-    // Bandera para imprimir el mensaje de éxito solo una vez
+
     private static boolean firstConnectionLoggedFieldReference = false;
 
-    // Manager que lee la configuración del proyecto
+
     private final ConfigManager configManagerServiceFieldReference;
 
-    // Constructor privado para aplicar el patrón singleton
+
+    /**
+     * Crea una instancia de los base de datos.
+     */
     private DatabaseConnector() {
         this.configManagerServiceFieldReference = new ConfigManager();
     }
 
-    // Devuelve la única instancia de la clase
+
+    /**
+     * Devuelve el instancia.
+     *
+     * @return el instancia.
+     */
     public static synchronized DatabaseConnector getInstance() {
 
-        // Si no existe, se crea
+
         if (instanceFieldReference == null) {
             instanceFieldReference = new DatabaseConnector();
 
-            // Después intenta conectarse a la base de datos
+
             instanceFieldReference.connect();
         }
 
         return instanceFieldReference;
     }
 
-    // Construye la URL de conexión con los datos del config
+
+    /**
+     * Construye el url.
+     *
+     * @return resultado de la operacion.
+     */
     private String buildUrl() {
 
         String ipLocalVariableValue = configManagerServiceFieldReference.getDatabaseIP();
@@ -56,11 +71,14 @@ public class DatabaseConnector {
                 "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     }
 
-    // Intenta abrir la conexión con la base de datos
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void connect() {
         try {
 
-            // Si ya hay una conexión abierta, no hace nada
+
             if (connFieldReference != null && !connFieldReference.isClosed()) {
                 return;
             }
@@ -74,8 +92,7 @@ public class DatabaseConnector {
                     userPasswordLocalVariableValue
             );
 
-            // Solo se notifica la primera vez que se establece conexión
-            // para no inundar la consola con cada reconexión.
+
             if (!firstConnectionLoggedFieldReference) {
                 System.out.println("Conexión exitosa a la base de datos.");
                 firstConnectionLoggedFieldReference = true;
@@ -87,24 +104,30 @@ public class DatabaseConnector {
         }
     }
 
+
     /**
-     * Devuelve la conexión actual.
+     * Devuelve el conexion.
+     *
+     * @return el conexion.
      */
     public Connection getConnection() {
         try {
-            // Si no hay conexión o se cerró, vuelve a conectar
+
             if (connFieldReference == null || connFieldReference.isClosed()) {
                 connect();
             }
         } catch (SQLException eventArgumentExceptionParameter2) {
-            eventArgumentExceptionParameter2.printStackTrace();
+            DaoErrorHandler.log("DatabaseConnector.getConnection", eventArgumentExceptionParameter2);
         }
 
         return connFieldReference;
     }
 
+
     /**
-     * Comprueba si la conexión está disponible.
+     * Indica el estado actual.
+     *
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
      */
     public boolean isConnectionAvailable() {
         try {
@@ -114,31 +137,39 @@ public class DatabaseConnector {
         }
     }
 
-    /**
-     * Aplica migraciones de esquema mínimas si todavía no se han
-     * aplicado. Se llama una vez al arrancar la aplicación. Si la
-     * columna o tabla ya existe el ALTER falla silenciosamente.
-     */
-    public void ensureSchema() {
-        runSilentDdl("ALTER TABLE games ADD COLUMN winner_name VARCHAR(100) NULL DEFAULT NULL");
-    }
 
     /**
-     * Ejecuta una sentencia DDL (ALTER, CREATE…) ignorando errores.
-     * Útil para migraciones idempotentes que pueden fallar si ya están
-     * aplicadas.
+     * Gestiona esta operacion.
+     */
+    public void ensureSchema() {
+
+        runSilentDdl("ALTER TABLE games ADD COLUMN winner_name VARCHAR(100) NULL DEFAULT NULL");
+
+
+        runSilentDdl("ALTER TABLE players DROP INDEX username");
+        runSilentDdl("ALTER TABLE players DROP COLUMN username");
+    }
+
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param ddlStatementParameterValue dato de entrada de la operacion.
      */
     private void runSilentDdl(String ddlStatementParameterValue) {
         try (Connection ddlConnectionLocalVariableValue = createConnection();
              Statement ddlStatementLocalVariableValue = ddlConnectionLocalVariableValue.createStatement()) {
             ddlStatementLocalVariableValue.executeUpdate(ddlStatementParameterValue);
         } catch (SQLException ignoredExceptionParameterValue) {
-            // Si la columna/tabla ya existe, ignoramos el error.
+
         }
     }
 
+
     /**
-     * Crea una conexión nueva pensada para usar con try-with-resources.
+     * Crea el conexion.
+     *
+     * @return elemento creado por el metodo.
      */
     public Connection createConnection() throws SQLException {
         String userIdentifierLocalVariableValue = configManagerServiceFieldReference.getDatabaseUser();
@@ -151,7 +182,12 @@ public class DatabaseConnector {
         );
     }
 
-    // Ejecuta una consulta de inserción
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param queryParameterValue consulta que se ejecuta.
+     */
     public void insertQuery(String queryParameterValue) {
         try (Statement statementLocalVariableValue = getConnection().createStatement()) {
             statementLocalVariableValue.executeUpdate(queryParameterValue);
@@ -161,7 +197,12 @@ public class DatabaseConnector {
         }
     }
 
-    // Ejecuta una consulta de borrado
+
+    /**
+     * Elimina el consulta.
+     *
+     * @param queryParameterValue2 consulta que usa la operacion.
+     */
     public void deleteQuery(String queryParameterValue2) {
         try (Statement statementLocalVariableValue = getConnection().createStatement()) {
             statementLocalVariableValue.executeUpdate(queryParameterValue2);
@@ -171,7 +212,12 @@ public class DatabaseConnector {
         }
     }
 
-    // Ejecuta una consulta de actualización
+
+    /**
+     * Actualiza el consulta.
+     *
+     * @param queryParameterValue3 consulta que usa la operacion.
+     */
     public void updateQuery(String queryParameterValue3) {
         try (Statement statementLocalVariableValue = getConnection().createStatement()) {
             statementLocalVariableValue.executeUpdate(queryParameterValue3);
@@ -183,7 +229,13 @@ public class DatabaseConnector {
         }
     }
 
-    // Ejecuta una consulta select y devuelve el resultado
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param queryParameterValue4 consulta que usa la operacion.
+     * @return resultado de la operacion.
+     */
     public ResultSet selectQuery(String queryParameterValue4) {
         try {
             Statement statementLocalVariableValue = getConnection().createStatement();
@@ -195,7 +247,10 @@ public class DatabaseConnector {
         }
     }
 
-    // Cierra la conexión con la base de datos
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void disconnect() {
         try {
             if (connFieldReference != null && !connFieldReference.isClosed()) {

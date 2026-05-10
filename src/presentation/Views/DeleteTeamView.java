@@ -13,7 +13,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-/** Vista para borrar equipos como JPanel. */
+
+/**
+ * Representa la vista del equipo.
+ */
 public class DeleteTeamView extends JPanel {
 
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
@@ -37,7 +40,7 @@ public class DeleteTeamView extends JPanel {
     private static final String TEAM_ICON_FALLBACK_PATH =
             ProjectPathResolver.resolveProjectPath("photos/football.png");
 
-    private ActionListener configControllerHandlerFieldReference;
+    private ActionListener controllerHandlerFieldReference;
 
     private final ArrayList<JCheckBox> teamReferenceCheckboxesFieldReference = new ArrayList<>();
     private ArrayList<Team> loadedTeamsFieldReference = new ArrayList<>();
@@ -48,34 +51,60 @@ public class DeleteTeamView extends JPanel {
 
     private Rounded.RoundedButton backButtonFieldReference;
     private Rounded.RoundedButton deleteButtonFieldReference;
-    private JButton configButtonFieldReference;
 
+
+    /**
+     * Crea una instancia de el equipo.
+     */
     public DeleteTeamView() {
         setLayout(new BorderLayout());
         loadedTeamsFieldReference = teamReferenceManagerServiceFieldReference.getAllTeams();
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
-    public void setConfigController(ActionListener controllerHandlerParameterValue) {
-        this.configControllerHandlerFieldReference = controllerHandlerParameterValue;
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
+    public void setController(ActionListener controllerHandlerParameterValue) {
+        this.controllerHandlerFieldReference = controllerHandlerParameterValue;
     }
 
+
+    /**
+     * Carga los equipos.
+     *
+     * @param teamsParameterValue equipos que usa la operacion.
+     */
     public void loadTeams(ArrayList<Team> teamsParameterValue) {
         loadedTeamsFieldReference =
                 teamsParameterValue == null ? new ArrayList<>() : teamsParameterValue;
         populateTeamsList();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void refreshTeamsList() {
         loadedTeamsFieldReference = teamReferenceManagerServiceFieldReference.getAllTeams();
         populateTeamsList();
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue =
                 new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -91,7 +120,7 @@ public class DeleteTeamView extends JPanel {
 
                 Graphics2D g2LocalVariableValue =
                         (Graphics2D) graphicsParameterValue.create();
-                g2LocalVariableValue.setColor(new Color(0, 0, 0, 55));
+                g2LocalVariableValue.setColor(new Color(0, 0, 0, 35));
                 g2LocalVariableValue.fillRect(0, 0, getWidth(), getHeight());
                 g2LocalVariableValue.dispose();
             }
@@ -100,21 +129,27 @@ public class DeleteTeamView extends JPanel {
         backgroundPanelLocalVariableValue.setLayout(new BorderLayout());
         backgroundPanelLocalVariableValue.add(buildTopBar(), BorderLayout.NORTH);
         backgroundPanelLocalVariableValue.add(buildCenterContent(), BorderLayout.CENTER);
-        backgroundPanelLocalVariableValue.add(buildBottomBar(), BorderLayout.SOUTH);
+
 
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTopBar() {
         JPanel topBarLocalVariableValue = new JPanel(new BorderLayout());
         topBarLocalVariableValue.setOpaque(false);
         topBarLocalVariableValue.setBorder(new EmptyBorder(28, 40, 0, 40));
 
         JPanel rightPanelLocalVariableValue =
-                new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+                new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         rightPanelLocalVariableValue.setOpaque(false);
 
-        backButtonFieldReference = new Rounded.RoundedButton("← BACK", 18);
+        backButtonFieldReference = new Rounded.RoundedButton("< BACK", 18);
         backButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 15));
         backButtonFieldReference.setForeground(ACCENT_COLOR);
         backButtonFieldReference.setBackground(new Color(255, 255, 255, 230));
@@ -127,64 +162,17 @@ public class DeleteTeamView extends JPanel {
         );
 
         rightPanelLocalVariableValue.add(backButtonFieldReference);
-        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.EAST);
+        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.WEST);
 
         return topBarLocalVariableValue;
     }
 
-    private JPanel buildBottomBar() {
-        JPanel bottomBarLocalVariableValue =
-                new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 8));
-        bottomBarLocalVariableValue.setOpaque(false);
-        bottomBarLocalVariableValue.setBorder(new EmptyBorder(0, 20, 18, 0));
 
-        configButtonFieldReference = buildConfigButton();
-        bottomBarLocalVariableValue.add(configButtonFieldReference);
-
-        return bottomBarLocalVariableValue;
-    }
-
-    private JButton buildConfigButton() {
-        JButton buttonControlLocalVariableValue = new JButton();
-        buttonControlLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
-        buttonControlLocalVariableValue.setContentAreaFilled(false);
-        buttonControlLocalVariableValue.setFocusPainted(false);
-        buttonControlLocalVariableValue.setOpaque(false);
-        buttonControlLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        try {
-            String iconPathLocalVariableValue = resolveExistingIconPath(
-                    "photos/Rueda_Ajustes.png",
-                    "photos/Rueda Ajustes.png"
-            );
-
-            Image rawIconLocalVariableValue =
-                    new ImageIcon(iconPathLocalVariableValue).getImage();
-
-            Image scaledIconLocalVariableValue =
-                    rawIconLocalVariableValue.getScaledInstance(
-                            82,
-                            82,
-                            Image.SCALE_SMOOTH
-                    );
-
-            buttonControlLocalVariableValue.setIcon(
-                    new ImageIcon(scaledIconLocalVariableValue)
-            );
-            buttonControlLocalVariableValue.setPreferredSize(new Dimension(120, 120));
-        } catch (Exception ignoredExceptionParameterValue) {
-            buttonControlLocalVariableValue.setText("⚙");
-            buttonControlLocalVariableValue.setForeground(Color.WHITE);
-            buttonControlLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 32));
-        }
-
-        buttonControlLocalVariableValue.addActionListener(
-                eventArgumentParameterValue -> fireCommand("CONFIG")
-        );
-
-        return buttonControlLocalVariableValue;
-    }
-
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildCenterContent() {
         JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
         centerWrapperLocalVariableValue.setOpaque(false);
@@ -213,6 +201,8 @@ public class DeleteTeamView extends JPanel {
         constraintsLocalVariableValue.weighty = 1.0;
         constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
 
+        constraintsLocalVariableValue.insets = new Insets(0, 0, 0, 310);
+
         centerWrapperLocalVariableValue.add(
                 contentPanelLocalVariableValue,
                 constraintsLocalVariableValue
@@ -221,6 +211,12 @@ public class DeleteTeamView extends JPanel {
         return centerWrapperLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -287,6 +283,12 @@ public class DeleteTeamView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildDeleteCard() {
         JPanel cardLocalVariableValue = new RoundedCardPanel();
         cardLocalVariableValue.setOpaque(false);
@@ -348,6 +350,12 @@ public class DeleteTeamView extends JPanel {
         return cardLocalVariableValue;
     }
 
+
+    /**
+     * Construye el equipo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTeamIconPanel() {
         JPanel iconPanelLocalVariableValue = new JPanel(new GridBagLayout());
         iconPanelLocalVariableValue.setOpaque(false);
@@ -380,7 +388,7 @@ public class DeleteTeamView extends JPanel {
                     new ImageIcon(scaledIconLocalVariableValue)
             );
         } catch (Exception ignoredExceptionParameterValue) {
-            iconLabelLocalVariableValue.setText("⚽");
+            iconLabelLocalVariableValue.setText("ÃƒÂ¢Ã…Â¡Ã‚Â½");
             iconLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 62));
         }
 
@@ -389,6 +397,12 @@ public class DeleteTeamView extends JPanel {
         return iconPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea los equipos.
+     *
+     * @return elemento creado por el metodo.
+     */
     private JScrollPane createTeamsPanel() {
         teamsListPanelFieldReference = new JPanel();
         teamsListPanelFieldReference.setLayout(
@@ -420,6 +434,10 @@ public class DeleteTeamView extends JPanel {
         return scrollPaneLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void populateTeamsList() {
         if (teamsListPanelFieldReference == null) {
             return;
@@ -454,6 +472,12 @@ public class DeleteTeamView extends JPanel {
         teamsListPanelFieldReference.repaint();
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildListHeader() {
         JPanel headerPanelLocalVariableValue = new JPanel(new GridLayout(1, 3));
         headerPanelLocalVariableValue.setOpaque(false);
@@ -475,6 +499,13 @@ public class DeleteTeamView extends JPanel {
         return headerPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea el equipo.
+     *
+     * @param teamReferenceParameterValue equipo asociado.
+     * @return elemento creado por el metodo.
+     */
     private JPanel createTeamRow(Team teamReferenceParameterValue) {
         JPanel rowPanelLocalVariableValue = new SelectableRowPanel();
         rowPanelLocalVariableValue.setLayout(new GridLayout(1, 3));
@@ -509,6 +540,7 @@ public class DeleteTeamView extends JPanel {
         rowPanelLocalVariableValue.add(idLabelLocalVariableValue);
 
         rowPanelLocalVariableValue.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseClicked(MouseEvent eventArgumentParameterValue) {
                 checkBoxLocalVariableValue.setSelected(
@@ -520,6 +552,15 @@ public class DeleteTeamView extends JPanel {
         return rowPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea el contenido.
+     *
+     * @param textParameterValue texto que usa la operacion.
+     * @param styleParameterValue dato de entrada de la operacion.
+     * @param colorParameterValue dato de entrada de la operacion.
+     * @return elemento creado por el metodo.
+     */
     private JLabel createRowLabel(String textParameterValue,
                                   int styleParameterValue,
                                   Color colorParameterValue) {
@@ -531,9 +572,15 @@ public class DeleteTeamView extends JPanel {
         return labelLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param commandParameterValue dato de entrada de la operacion.
+     */
     private void fireCommand(String commandParameterValue) {
-        if (configControllerHandlerFieldReference != null) {
-            configControllerHandlerFieldReference.actionPerformed(
+        if (controllerHandlerFieldReference != null) {
+            controllerHandlerFieldReference.actionPerformed(
                     new ActionEvent(
                             this,
                             ActionEvent.ACTION_PERFORMED,
@@ -543,6 +590,12 @@ public class DeleteTeamView extends JPanel {
         }
     }
 
+
+    /**
+     * Devuelve los equipos.
+     *
+     * @return los equipos.
+     */
     public ArrayList<String> getSelectedTeams() {
         ArrayList<String> selectedLocalVariableValue = new ArrayList<>();
 
@@ -561,6 +614,13 @@ public class DeleteTeamView extends JPanel {
         return selectedLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param countParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     public int confirmDeleteTeams(int countParameterValue) {
         return JOptionPane.showConfirmDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -572,6 +632,12 @@ public class DeleteTeamView extends JPanel {
         );
     }
 
+
+    /**
+     * Muestra el resultado.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showDeletionResult(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -581,6 +647,12 @@ public class DeleteTeamView extends JPanel {
         );
     }
 
+
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -590,6 +662,14 @@ public class DeleteTeamView extends JPanel {
         );
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param primaryRelativePathParameterValue ruta que usa la operacion.
+     * @param fallbackRelativePathParameterValue ruta que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private String resolveExistingIconPath(String primaryRelativePathParameterValue,
                                            String fallbackRelativePathParameterValue) {
         String primaryAbsolutePathLocalVariableValue =
@@ -602,7 +682,18 @@ public class DeleteTeamView extends JPanel {
         return ProjectPathResolver.resolveProjectPath(fallbackRelativePathParameterValue);
     }
 
+
+    /**
+     * Agrupa la logica de esta parte de la aplicacion.
+     */
     private static class RoundedCardPanel extends JPanel {
+
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -653,16 +744,26 @@ public class DeleteTeamView extends JPanel {
         }
     }
 
+
+    /**
+     * Agrupa la logica de esta parte de la aplicacion.
+     */
     private static class SelectableRowPanel extends JPanel {
         private boolean hoverFieldReference = false;
 
+
+        /**
+         * Crea una instancia de selectablerowpanel.
+         */
         SelectableRowPanel() {
             addMouseListener(new MouseAdapter() {
+
                 @Override
                 public void mouseEntered(MouseEvent eventArgumentParameterValue) {
                     hoverFieldReference = true;
                     repaint();
                 }
+
 
                 @Override
                 public void mouseExited(MouseEvent eventArgumentParameterValue) {
@@ -672,6 +773,12 @@ public class DeleteTeamView extends JPanel {
             });
         }
 
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -720,3 +827,5 @@ public class DeleteTeamView extends JPanel {
         }
     }
 }
+
+

@@ -3,18 +3,27 @@ package Rounded;
 import javax.swing.*;
 import java.awt.*;
 
-// Campo de texto redondeado con placeholder y borde personalizado
+
+/**
+ * Agrupa la logica de el texto.
+ */
 public class RoundedTextField extends JTextField {
 
-    // Radio usado para redondear el campo
+
     private final int radiusFieldReference;
 
-    // Texto guia y colores del borde normal y enfocado
+
     private String placeholderFieldReference = "";
     private Color borderColorFieldReference = new Color(212, 219, 230);
     private Color focusBorderColorFieldReference = new Color(52, 102, 219);
 
-    // Configura el campo para que se pinte manualmente
+
+    /**
+     * Crea una instancia de el texto.
+     *
+     * @param columnsParameterValue dato de entrada de la operacion.
+     * @param radiusParameterValue dato de entrada de la operacion.
+     */
     public RoundedTextField(int columnsParameterValue, int radiusParameterValue) {
         super(columnsParameterValue);
         this.radiusFieldReference = radiusParameterValue;
@@ -25,25 +34,45 @@ public class RoundedTextField extends JTextField {
         setCaretColor(new Color(54, 66, 87));
     }
 
-    // Actualiza el texto guia cuando el campo esta vacio
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param placeholderParameterValue dato de entrada de la operacion.
+     */
     public void setPlaceholder(String placeholderParameterValue) {
         this.placeholderFieldReference = placeholderParameterValue;
         repaint();
     }
 
-    // Cambia el color del borde en reposo
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param borderColorParameterValue dato de entrada de la operacion.
+     */
     public void setBorderColor(Color borderColorParameterValue) {
         this.borderColorFieldReference = borderColorParameterValue;
         repaint();
     }
 
-    // Cambia el color del borde cuando el campo tiene foco
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param focusBorderColorParameterValue dato de entrada de la operacion.
+     */
     public void setFocusBorderColor(Color focusBorderColorParameterValue) {
         this.focusBorderColorFieldReference = focusBorderColorParameterValue;
         repaint();
     }
 
-    // Dibuja el fondo redondeado y el placeholder cuando procede
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param graphicsParameterValue dato de entrada de la operacion.
+     */
     @Override
     protected void paintComponent(Graphics graphicsParameterValue) {
         Graphics2D g2LocalVariableValue =
@@ -67,7 +96,7 @@ public class RoundedTextField extends JTextField {
 
         super.paintComponent(graphicsParameterValue);
 
-        // Si no hay texto ni foco, mostramos el placeholder
+
         if (getText().isEmpty()
                 && !isFocusOwner()
                 && placeholderFieldReference != null
@@ -99,7 +128,12 @@ public class RoundedTextField extends JTextField {
         }
     }
 
-    // Dibuja el borde usando un color distinto si el campo esta enfocado
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param graphicsParameterValue dato de entrada de la operacion.
+     */
     @Override
     protected void paintBorder(Graphics graphicsParameterValue) {
         Graphics2D g2LocalVariableValue =
@@ -125,3 +159,5 @@ public class RoundedTextField extends JTextField {
         g2LocalVariableValue.dispose();
     }
 }
+
+

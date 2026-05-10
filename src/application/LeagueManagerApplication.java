@@ -15,10 +15,22 @@ import presentation.AccountSettingsWidgetService;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+
+/**
+ * Configura el arranque de la aplicacion.
+ */
 public final class LeagueManagerApplication {
 
+
+    /**
+     * Crea una instancia de el liga.
+     */
     private LeagueManagerApplication() { }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public static void launch() {
         ConfigManager configManagerServiceLocalVariableValue = new ConfigManager();
 
@@ -34,25 +46,50 @@ public final class LeagueManagerApplication {
         SwingUtilities.invokeLater(LeagueManagerApplication::initializeApplication);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param configParameterValue configuracion que usa la operacion.
+     */
     private static void startMatchSimulation(ConfigManager configParameterValue) {
         GameManager gameEntityManagerServiceLocalVariableValue = new GameManager();
         LeagueManager leagueReferenceManagerServiceLocalVariableValue = new LeagueManager();
         MatchSimulationScheduler.start(gameEntityManagerServiceLocalVariableValue, leagueReferenceManagerServiceLocalVariableValue, configParameterValue);
     }
 
+
+    /**
+     * Indica el estado actual.
+     *
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     private static boolean isDatabaseAvailable() {
         DatabaseConnector sqlConnectorLocalVariableValue = DatabaseConnector.getInstance();
         return sqlConnectorLocalVariableValue.isConnectionAvailable();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private static void configureLookAndFeel() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception eventArgumentExceptionParameterValue) {
-            eventArgumentExceptionParameterValue.printStackTrace();
+
+
+            shared.DaoErrorHandler.log(
+                    "LeagueManagerApplication.configureLookAndFeel",
+                    eventArgumentExceptionParameterValue
+            );
         }
     }
 
+
+    /**
+     * Muestra el base de datos error.
+     */
     private static void showDatabaseErrorOnly() {
         MainView mainViewInterfaceLocalVariableValue = new MainView();
         AppNavigator navigatorLocalVariableValue = new AppNavigator(mainViewInterfaceLocalVariableValue);
@@ -62,6 +99,10 @@ public final class LeagueManagerApplication {
         mainViewInterfaceLocalVariableValue.setVisible(true);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private static void initializeApplication() {
         PlayerManager playerProfileManagerServiceLocalVariableValue = new PlayerManager();
         MainView mainViewInterfaceLocalVariableValue = new MainView();
@@ -93,7 +134,7 @@ public final class LeagueManagerApplication {
         new ChangePasswordController(changePasswordViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
 
         AdminMenuController adminMenuControllerHandlerLocalVariableValue = new AdminMenuController(adminMenuViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
-        PlayerMenuController playerMenuControllerHandlerLocalVariableValue = new PlayerMenuController(playerMenuViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
+        new PlayerMenuController(playerMenuViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
 
         CalendarController calendarControllerHandlerLocalVariableValue = new CalendarController(calendarViewInterfaceLocalVariableValue, navigatorLocalVariableValue);
         TeamDetailController teamDetailControllerHandlerLocalVariableValue = new TeamDetailController(teamDetailViewInterfaceLocalVariableValue, navigatorLocalVariableValue);
@@ -164,3 +205,5 @@ public final class LeagueManagerApplication {
         mainViewInterfaceLocalVariableValue.setVisible(true);
     }
 }
+
+

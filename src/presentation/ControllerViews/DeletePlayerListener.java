@@ -1,14 +1,28 @@
 package presentation.ControllerViews;
 
-// Interfaz con las acciones que necesita la pantalla de borrar jugadores
+
+/**
+ * Define el contrato del jugador.
+ */
 public interface DeletePlayerListener {
 
-    // Se ejecuta cuando ya se han eliminado los jugadores seleccionados
+
+    /**
+     * Gestiona esta operacion.
+     */
     void onPlayersDeleted();
 
-    // Cierra la sesion del usuario actual
+
+    /**
+     * Gestiona esta operacion.
+     */
     void handleLogout();
 
-    // Devuelve al usuario al menu correspondiente
+
+    /**
+     * Gestiona esta operacion.
+     */
     void returnToMenu();
 }
+
+

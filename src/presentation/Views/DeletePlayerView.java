@@ -13,9 +13,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-/** Vista para borrar jugadores como JPanel. */
+
+/**
+ * Representa la vista del jugador.
+ */
 public class DeletePlayerView extends JPanel {
 
+    /**
+     * Guarda los jugadores.
+     */
     public final String DELETE_PLAYERS_BUTTON = "DELETE_PLAYERS";
 
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
@@ -46,34 +52,60 @@ public class DeletePlayerView extends JPanel {
 
     private Rounded.RoundedButton backButtonFieldReference;
     private Rounded.RoundedButton deleteButtonFieldReference;
-    private JButton configButtonFieldReference;
 
+
+    /**
+     * Crea una instancia de el jugador.
+     */
     public DeletePlayerView() {
         setLayout(new BorderLayout());
         loadedPlayersFieldReference = playerProfileManagerServiceFieldReference.getPlayers();
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void setController(ActionListener controllerHandlerParameterValue) {
         this.controllerHandlerFieldReference = controllerHandlerParameterValue;
     }
 
+
+    /**
+     * Carga los jugadores.
+     *
+     * @param playersParameterValue jugadores que usa la operacion.
+     */
     public void loadPlayers(ArrayList<Player> playersParameterValue) {
         loadedPlayersFieldReference =
                 playersParameterValue == null ? new ArrayList<>() : playersParameterValue;
         populatePlayersList();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void refreshPlayersList() {
         loadedPlayersFieldReference = playerProfileManagerServiceFieldReference.getPlayers();
         populatePlayersList();
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue =
                 new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -89,7 +121,7 @@ public class DeletePlayerView extends JPanel {
 
                 Graphics2D g2LocalVariableValue =
                         (Graphics2D) graphicsParameterValue.create();
-                g2LocalVariableValue.setColor(new Color(0, 0, 0, 55));
+                g2LocalVariableValue.setColor(new Color(0, 0, 0, 35));
                 g2LocalVariableValue.fillRect(0, 0, getWidth(), getHeight());
                 g2LocalVariableValue.dispose();
             }
@@ -98,21 +130,27 @@ public class DeletePlayerView extends JPanel {
         backgroundPanelLocalVariableValue.setLayout(new BorderLayout());
         backgroundPanelLocalVariableValue.add(buildTopBar(), BorderLayout.NORTH);
         backgroundPanelLocalVariableValue.add(buildCenterContent(), BorderLayout.CENTER);
-        backgroundPanelLocalVariableValue.add(buildBottomBar(), BorderLayout.SOUTH);
+
 
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTopBar() {
         JPanel topBarLocalVariableValue = new JPanel(new BorderLayout());
         topBarLocalVariableValue.setOpaque(false);
         topBarLocalVariableValue.setBorder(new EmptyBorder(28, 40, 0, 40));
 
         JPanel rightPanelLocalVariableValue =
-                new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+                new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         rightPanelLocalVariableValue.setOpaque(false);
 
-        backButtonFieldReference = new Rounded.RoundedButton("← BACK", 18);
+        backButtonFieldReference = new Rounded.RoundedButton("< BACK", 18);
         backButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 15));
         backButtonFieldReference.setForeground(ACCENT_COLOR);
         backButtonFieldReference.setBackground(new Color(255, 255, 255, 230));
@@ -125,64 +163,17 @@ public class DeletePlayerView extends JPanel {
         );
 
         rightPanelLocalVariableValue.add(backButtonFieldReference);
-        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.EAST);
+        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.WEST);
 
         return topBarLocalVariableValue;
     }
 
-    private JPanel buildBottomBar() {
-        JPanel bottomBarLocalVariableValue =
-                new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 8));
-        bottomBarLocalVariableValue.setOpaque(false);
-        bottomBarLocalVariableValue.setBorder(new EmptyBorder(0, 20, 18, 0));
 
-        configButtonFieldReference = buildConfigButton();
-        bottomBarLocalVariableValue.add(configButtonFieldReference);
-
-        return bottomBarLocalVariableValue;
-    }
-
-    private JButton buildConfigButton() {
-        JButton buttonControlLocalVariableValue = new JButton();
-        buttonControlLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
-        buttonControlLocalVariableValue.setContentAreaFilled(false);
-        buttonControlLocalVariableValue.setFocusPainted(false);
-        buttonControlLocalVariableValue.setOpaque(false);
-        buttonControlLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        try {
-            String iconPathLocalVariableValue = resolveExistingIconPath(
-                    "photos/Rueda_Ajustes.png",
-                    "photos/Rueda Ajustes.png"
-            );
-
-            Image rawIconLocalVariableValue =
-                    new ImageIcon(iconPathLocalVariableValue).getImage();
-
-            Image scaledIconLocalVariableValue =
-                    rawIconLocalVariableValue.getScaledInstance(
-                            82,
-                            82,
-                            Image.SCALE_SMOOTH
-                    );
-
-            buttonControlLocalVariableValue.setIcon(
-                    new ImageIcon(scaledIconLocalVariableValue)
-            );
-            buttonControlLocalVariableValue.setPreferredSize(new Dimension(120, 120));
-        } catch (Exception ignoredExceptionParameterValue) {
-            buttonControlLocalVariableValue.setText("⚙");
-            buttonControlLocalVariableValue.setForeground(Color.WHITE);
-            buttonControlLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 32));
-        }
-
-        buttonControlLocalVariableValue.addActionListener(
-                eventArgumentParameterValue -> fireCommand("CONFIG")
-        );
-
-        return buttonControlLocalVariableValue;
-    }
-
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildCenterContent() {
         JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
         centerWrapperLocalVariableValue.setOpaque(false);
@@ -211,6 +202,8 @@ public class DeletePlayerView extends JPanel {
         constraintsLocalVariableValue.weighty = 1.0;
         constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
 
+        constraintsLocalVariableValue.insets = new Insets(0, 0, 0, 310);
+
         centerWrapperLocalVariableValue.add(
                 contentPanelLocalVariableValue,
                 constraintsLocalVariableValue
@@ -219,6 +212,12 @@ public class DeletePlayerView extends JPanel {
         return centerWrapperLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -285,6 +284,12 @@ public class DeletePlayerView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildDeleteCard() {
         JPanel cardLocalVariableValue = new RoundedCardPanel();
         cardLocalVariableValue.setOpaque(false);
@@ -346,6 +351,12 @@ public class DeletePlayerView extends JPanel {
         return cardLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildDeleteIconPanel() {
         JPanel iconPanelLocalVariableValue = new JPanel(new GridBagLayout());
         iconPanelLocalVariableValue.setOpaque(false);
@@ -373,7 +384,7 @@ public class DeletePlayerView extends JPanel {
                     new ImageIcon(scaledIconLocalVariableValue)
             );
         } catch (Exception ignoredExceptionParameterValue) {
-            iconLabelLocalVariableValue.setText("🗑");
+            iconLabelLocalVariableValue.setText("ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬Ëœ");
             iconLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 62));
         }
 
@@ -382,6 +393,12 @@ public class DeletePlayerView extends JPanel {
         return iconPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea los jugadores.
+     *
+     * @return elemento creado por el metodo.
+     */
     private JScrollPane createPlayersScrollPane() {
         playersListPanelFieldReference = new JPanel();
         playersListPanelFieldReference.setLayout(
@@ -413,6 +430,10 @@ public class DeletePlayerView extends JPanel {
         return scrollPaneLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void populatePlayersList() {
         if (playersListPanelFieldReference == null) {
             return;
@@ -449,6 +470,12 @@ public class DeletePlayerView extends JPanel {
         playersListPanelFieldReference.repaint();
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildListHeader() {
         JPanel headerPanelLocalVariableValue = new JPanel(new GridLayout(1, 4));
         headerPanelLocalVariableValue.setOpaque(false);
@@ -470,6 +497,13 @@ public class DeletePlayerView extends JPanel {
         return headerPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea el jugador.
+     *
+     * @param playerProfileParameterValue jugador perfil.
+     * @return elemento creado por el metodo.
+     */
     private JPanel createPlayerRow(Player playerProfileParameterValue) {
         JPanel rowPanelLocalVariableValue = new SelectableRowPanel();
         rowPanelLocalVariableValue.setLayout(new GridLayout(1, 4));
@@ -511,6 +545,7 @@ public class DeletePlayerView extends JPanel {
         rowPanelLocalVariableValue.add(teamLabelLocalVariableValue);
 
         rowPanelLocalVariableValue.addMouseListener(new MouseAdapter() {
+
             @Override
             public void mouseClicked(MouseEvent eventArgumentParameterValue) {
                 checkBoxLocalVariableValue.setSelected(
@@ -522,6 +557,15 @@ public class DeletePlayerView extends JPanel {
         return rowPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea el contenido.
+     *
+     * @param textParameterValue texto que usa la operacion.
+     * @param styleParameterValue dato de entrada de la operacion.
+     * @param colorParameterValue dato de entrada de la operacion.
+     * @return elemento creado por el metodo.
+     */
     private JLabel createRowLabel(String textParameterValue,
                                   int styleParameterValue,
                                   Color colorParameterValue) {
@@ -533,6 +577,12 @@ public class DeletePlayerView extends JPanel {
         return labelLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param commandParameterValue dato de entrada de la operacion.
+     */
     private void fireCommand(String commandParameterValue) {
         if (controllerHandlerFieldReference != null) {
             controllerHandlerFieldReference.actionPerformed(
@@ -545,6 +595,12 @@ public class DeletePlayerView extends JPanel {
         }
     }
 
+
+    /**
+     * Devuelve los jugadores.
+     *
+     * @return los jugadores.
+     */
     public ArrayList<Player> getSelectedPlayers() {
         ArrayList<Player> selectedLocalVariableValue = new ArrayList<>();
 
@@ -566,6 +622,13 @@ public class DeletePlayerView extends JPanel {
         return selectedLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param numberPlayersParameterValue numero jugadores.
+     * @return resultado de la operacion.
+     */
     public int confirmDeletePlayers(int numberPlayersParameterValue) {
         return JOptionPane.showConfirmDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -577,6 +640,12 @@ public class DeletePlayerView extends JPanel {
         );
     }
 
+
+    /**
+     * Muestra el resultado.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showDeletionResult(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -586,6 +655,12 @@ public class DeletePlayerView extends JPanel {
         );
     }
 
+
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -595,6 +670,14 @@ public class DeletePlayerView extends JPanel {
         );
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param primaryRelativePathParameterValue ruta que usa la operacion.
+     * @param fallbackRelativePathParameterValue ruta que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private String resolveExistingIconPath(String primaryRelativePathParameterValue,
                                            String fallbackRelativePathParameterValue) {
         String primaryAbsolutePathLocalVariableValue =
@@ -607,7 +690,18 @@ public class DeletePlayerView extends JPanel {
         return ProjectPathResolver.resolveProjectPath(fallbackRelativePathParameterValue);
     }
 
+
+    /**
+     * Agrupa la logica de esta parte de la aplicacion.
+     */
     private static class RoundedCardPanel extends JPanel {
+
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -658,16 +752,26 @@ public class DeletePlayerView extends JPanel {
         }
     }
 
+
+    /**
+     * Agrupa la logica de esta parte de la aplicacion.
+     */
     private static class SelectableRowPanel extends JPanel {
         private boolean hoverFieldReference = false;
 
+
+        /**
+         * Crea una instancia de selectablerowpanel.
+         */
         SelectableRowPanel() {
             addMouseListener(new MouseAdapter() {
+
                 @Override
                 public void mouseEntered(MouseEvent eventArgumentParameterValue) {
                     hoverFieldReference = true;
                     repaint();
                 }
+
 
                 @Override
                 public void mouseExited(MouseEvent eventArgumentParameterValue) {
@@ -677,6 +781,12 @@ public class DeletePlayerView extends JPanel {
             });
         }
 
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -725,3 +835,5 @@ public class DeletePlayerView extends JPanel {
         }
     }
 }
+
+

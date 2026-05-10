@@ -3,22 +3,19 @@ package presentation.Views;
 import javax.swing.*;
 import java.awt.*;
 
+
 /**
- * Ventana principal única de la aplicación.
- *
- * Sustituye al patrón anterior de "cada pantalla = un JFrame distinto".
- * Aquí mantenemos un solo JFrame que vive durante toda la sesión y un
- * CardLayout interno donde registramos las vistas (LoginView, SignUpView,
- * UserProfileView, ChangePasswordView, ...) como tarjetas.
- *
- * La navegación entre pantallas la realiza {@link presentation.AppNavigator},
- * que pide a este MainView que muestre la tarjeta correspondiente.
+ * Representa la vista del principal.
  */
 public class MainView extends JFrame {
 
     private final CardLayout cardLayoutManagerFieldReference;
     private final JPanel cardsContainerPanelFieldReference;
 
+
+    /**
+     * Crea una instancia de el principal.
+     */
     public MainView() {
         setTitle("Player App");
         setMinimumSize(new Dimension(1280, 800));
@@ -32,18 +29,22 @@ public class MainView extends JFrame {
         setContentPane(cardsContainerPanelFieldReference);
     }
 
+
     /**
-     * Registra una pantalla en el contenedor de tarjetas.
+     * Gestiona esta operacion.
      *
-     * @param screenIdentifierParameterValue Identificador único (ej. "LOGIN", "PROFILE", ...).
-     * @param screenPanelParameterValue      Panel de la pantalla a añadir.
+     * @param screenIdentifierParameterValue identificador de la pantalla.
+     * @param screenPanelParameterValue pantalla que usa la operacion.
      */
     public void addScreen(String screenIdentifierParameterValue, JPanel screenPanelParameterValue) {
         cardsContainerPanelFieldReference.add(screenPanelParameterValue, screenIdentifierParameterValue);
     }
 
+
     /**
-     * Muestra la pantalla con el identificador indicado.
+     * Muestra el pantalla.
+     *
+     * @param screenIdentifierParameterValue identificador de la pantalla.
      */
     public void showScreen(String screenIdentifierParameterValue) {
         cardLayoutManagerFieldReference.show(cardsContainerPanelFieldReference, screenIdentifierParameterValue);
@@ -51,3 +52,5 @@ public class MainView extends JFrame {
         cardsContainerPanelFieldReference.repaint();
     }
 }
+
+

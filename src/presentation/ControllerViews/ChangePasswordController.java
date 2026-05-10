@@ -7,12 +7,9 @@ import presentation.Views.ChangePasswordView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 /**
- * Controlador del cambio de contraseña.
- *
- * Refactorizado: usa {@link AppNavigator} para volver al perfil (o a la
- * acción de retorno registrada por una pantalla legacy). Ya no recibe
- * un JFrame "anterior" ni hace dispose() / setVisible(true) sobre él.
+ * Coordina la pantalla del cambio contrasena.
  */
 public class ChangePasswordController implements ActionListener {
 
@@ -20,6 +17,14 @@ public class ChangePasswordController implements ActionListener {
     private final PlayerManager playerProfileManagerServiceFieldReference;
     private final AppNavigator navigatorFieldReference;
 
+
+    /**
+     * Crea una instancia de el cambio contrasena.
+     *
+     * @param viewInterfaceParameterValue vista que usa la operacion.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public ChangePasswordController(
             ChangePasswordView viewInterfaceParameterValue,
             PlayerManager playerProfileManagerServiceParameterValue,
@@ -30,6 +35,12 @@ public class ChangePasswordController implements ActionListener {
         this.viewInterfaceFieldReference.registerController(this);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String actionCommandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -44,6 +55,10 @@ public class ChangePasswordController implements ActionListener {
         }
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handlePasswordChange() {
         String currentPassLocalVariableValue = viewInterfaceFieldReference.getActualPassword();
         String newPassLocalVariableValue = viewInterfaceFieldReference.getNewPassword();
@@ -90,18 +105,22 @@ public class ChangePasswordController implements ActionListener {
         }
     }
 
+
     /**
-     * Limpia el formulario y delega en el navegador para volver:
-     * - Si una pantalla legacy registró una acción de retorno, esa
-     *   acción se ejecuta (típicamente: ocultar MainView y volver al
-     *   JFrame del menú legacy).
-     * - Si no, vuelve por defecto al PROFILE.
+     * Indica el estado actual.
      */
     private void cancelAndReturn() {
         viewInterfaceFieldReference.clearForm();
         navigatorFieldReference.finishChangePasswordFlow();
     }
 
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param userPasswordParameterValue contrasena del usuario.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     private boolean isValidPassword(String userPasswordParameterValue) {
         return userPasswordParameterValue.length() >= 8 &&
                 userPasswordParameterValue.matches(".*[A-Z].*") &&
@@ -109,7 +128,16 @@ public class ChangePasswordController implements ActionListener {
                 userPasswordParameterValue.matches(".*[0-9].*");
     }
 
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param textParameterValue texto que usa la operacion.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     private boolean isNullOrBlank(String textParameterValue) {
         return textParameterValue == null || textParameterValue.trim().isEmpty();
     }
 }
+
+

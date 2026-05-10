@@ -1,5 +1,6 @@
 package presentation.ControllerViews;
 
+import bussines.managers.ConfigManager;
 import bussines.managers.PlayerManager;
 import presentation.AppNavigator;
 import presentation.LiveMatchesWidgetService;
@@ -11,17 +12,9 @@ import presentation.AccountSettingsWidgetService;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 /**
- * Controlador del login.
- *
- * Tras un login correcto:
- *  - Si el usuario es el administrador (apartado 2.2 del enunciado:
- *    el literal "admin" + la contraseña de config.json), se le redirige
- *    al {@link AdminMenuView}.
- *  - Si es un jugador, se le redirige al {@link PlayerMenuView}.
- *
- * En ambos casos se usa {@link AppNavigator} para mostrar el menú
- * correspondiente dentro del MainView.
+ * Coordina la pantalla del inicio de sesion.
  */
 public class LoginController implements ActionListener {
 
@@ -29,6 +22,14 @@ public class LoginController implements ActionListener {
     private final PlayerManager playerProfileManagerServiceFieldReference;
     private final AppNavigator navigatorFieldReference;
 
+
+    /**
+     * Crea una instancia de el inicio de sesion.
+     *
+     * @param loginViewInterfaceParameterValue inicio de sesion vista.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public LoginController(
             LoginView loginViewInterfaceParameterValue,
             PlayerManager playerProfileManagerServiceParameterValue,
@@ -39,6 +40,12 @@ public class LoginController implements ActionListener {
         this.loginViewInterfaceFieldReference.registerController(this);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -53,6 +60,10 @@ public class LoginController implements ActionListener {
         }
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleLogin() {
         String userIdentifierLocalVariableValue = loginViewInterfaceFieldReference.getEmailText().trim();
         String userPasswordLocalVariableValue = loginViewInterfaceFieldReference.getPasswordText();
@@ -61,9 +72,8 @@ public class LoginController implements ActionListener {
             return;
         }
 
-        // Caso 1: el usuario intenta entrar como admin
-        // (literal "admin" según el apartado 2.2 del enunciado).
-        if ("admin".equalsIgnoreCase(userIdentifierLocalVariableValue)) {
+
+        if (ConfigManager.getAdminIdentifier().equalsIgnoreCase(userIdentifierLocalVariableValue)) {
             boolean isAdminCorrectLocalVariableValue =
                     playerProfileManagerServiceFieldReference.isAdmin(
                             userIdentifierLocalVariableValue,
@@ -83,7 +93,7 @@ public class LoginController implements ActionListener {
             return;
         }
 
-        // Caso 2: jugador normal contra base de datos.
+
         if (!playerProfileManagerServiceFieldReference.playerExists(userIdentifierLocalVariableValue)) {
             loginViewInterfaceFieldReference.showMessageDialog("This user does not exist");
             return;
@@ -104,10 +114,9 @@ public class LoginController implements ActionListener {
         openPlayerMenu();
     }
 
+
     /**
-     * Oculta el MainView y abre el menú legacy del administrador.
-     * Arranca también el widget global de partidos en directo
-     * (apartado 2.9), que el admin verá en todas las pantallas.
+     * Abre el administrador menu.
      */
     private void openAdminMenu() {
         navigatorFieldReference.show(AppNavigator.ADMIN_MENU);
@@ -122,10 +131,9 @@ public class LoginController implements ActionListener {
         );
     }
 
+
     /**
-     * Oculta el MainView y abre el menú legacy del jugador.
-     * Arranca también el widget de partidos en directo, filtrado por
-     * las ligas en las que participa su equipo (apartado 2.9).
+     * Abre el jugador menu.
      */
     private void openPlayerMenu() {
         navigatorFieldReference.show(AppNavigator.PLAYER_MENU);
@@ -140,14 +148,23 @@ public class LoginController implements ActionListener {
         );
     }
 
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param userIdentifierParameterValue identificador del usuario.
+     * @param userPasswordParameterValue contrasena del usuario.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     private boolean isValidAccessInput(String userIdentifierParameterValue, String userPasswordParameterValue) {
         if (userIdentifierParameterValue.isEmpty() || userPasswordParameterValue.isEmpty()) {
-            loginViewInterfaceFieldReference.showMessageDialog("Username and password are required.");
+            loginViewInterfaceFieldReference.showMessageDialog("DNI/email and password are required.");
             return false;
         }
 
         boolean isAdminAttemptLocalVariableValue =
-                "admin".equalsIgnoreCase(userIdentifierParameterValue);
+                ConfigManager.getAdminIdentifier().equalsIgnoreCase(userIdentifierParameterValue);
+
 
         if (!isValidDni(userIdentifierParameterValue)
                 && !isValidEmail(userIdentifierParameterValue)
@@ -156,8 +173,7 @@ public class LoginController implements ActionListener {
             return false;
         }
 
-        // La contraseña del admin la fija config.json, así que no
-        // aplicamos la restricción de longitud mínima en ese caso.
+
         if (!isAdminAttemptLocalVariableValue && userPasswordParameterValue.length() < 8) {
             loginViewInterfaceFieldReference.showMessageDialog("Password must be at least 8 characters long.");
             return false;
@@ -166,11 +182,27 @@ public class LoginController implements ActionListener {
         return true;
     }
 
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param nationalIdentityDocumentParameterValue documento de identidad del jugador.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     private boolean isValidDni(String nationalIdentityDocumentParameterValue) {
         return nationalIdentityDocumentParameterValue.matches("^\\d{8}[A-Z]$");
     }
 
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param emailAddressParameterValue direccion de email.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     private boolean isValidEmail(String emailAddressParameterValue) {
         return emailAddressParameterValue.matches("^[^@]+@[^@]+\\.[^@]+$");
     }
 }
+
+

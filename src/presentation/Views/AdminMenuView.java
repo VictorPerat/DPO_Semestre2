@@ -1,6 +1,5 @@
 package presentation.Views;
 
-import presentation.ControllerViews.AdminMenuController;
 import shared.ProjectPathResolver;
 
 import javax.swing.*;
@@ -8,19 +7,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+
 /**
- * Vista del menú principal del administrador.
- *
- * Estilo coherente con LoginView:
- * - fondo de imagen con overlay
- * - título grande ADMIN MENU
- * - subrayado azul
- * - subtítulo
- * - card central translúcida
- * - botones redondeados con gradiente / outline
- *
- * El widget de Live Matches NO forma parte de esta vista.
- * Se muestra aparte como widget global siempre visible.
+ * Representa la vista del administrador menu.
  */
 public class AdminMenuView extends JPanel {
 
@@ -32,15 +21,37 @@ public class AdminMenuView extends JPanel {
     private JButton logoutButtonFieldReference;
     private JButton deletePlayerProfileButtonFieldReference;
 
-    private AdminMenuController controllerHandlerFieldReference;
-
+    /**
+     * Constante para el liga.
+     */
     public static final String CREATE_LEAGUE = "CREATE_LEAGUE";
+    /**
+     * Constante para el liga.
+     */
     public static final String DELETE_LEAGUE = "DELETE_LEAGUE";
+    /**
+     * Constante para los vista ligas.
+     */
     public static final String VIEW_LEAGUES = "VIEW_LEAGUES";
+    /**
+     * Constante para el equipo.
+     */
     public static final String CREATE_TEAM = "CREATE_TEAM";
+    /**
+     * Constante para el equipo.
+     */
     public static final String DELETE_TEAM = "DELETE_TEAM";
+    /**
+     * Constante para el valor.
+     */
     public static final String LOGOUT = "LOGOUT";
+    /**
+     * Constante para el jugador.
+     */
     public static final String DELETE_PLAYER = "DELETE_PLAYER";
+    /**
+     * Constante para los vista partidos.
+     */
     public static final String VIEW_GAMES = "VIEW_GAMES";
 
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
@@ -59,12 +70,20 @@ public class AdminMenuView extends JPanel {
     private static final String BACKGROUND_IMAGE_PATH =
             ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
+
+    /**
+     * Crea una instancia de el administrador menu.
+     */
     public AdminMenuView() {
         setLayout(new BorderLayout());
         buildButtons();
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
+
+    /**
+     * Construye el contenido.
+     */
     private void buildButtons() {
         createLeagueReferenceButtonFieldReference = buildPrimaryMenuButton("CREATE LEAGUE");
         createTeamReferenceButtonFieldReference = buildPrimaryMenuButton("CREATE TEAM");
@@ -90,6 +109,13 @@ public class AdminMenuView extends JPanel {
         logoutButtonLocalVariableValue.setShadowEnabled(true);
     }
 
+
+    /**
+     * Construye el menu.
+     *
+     * @param labelTextParameterValue texto que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private JButton buildPrimaryMenuButton(String labelTextParameterValue) {
         Rounded.RoundedButton buttonLocalVariableValue =
                 new Rounded.RoundedButton(labelTextParameterValue, 16);
@@ -108,6 +134,13 @@ public class AdminMenuView extends JPanel {
         return buttonLocalVariableValue;
     }
 
+
+    /**
+     * Construye el menu.
+     *
+     * @param labelTextParameterValue texto que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private JButton buildDangerOutlineMenuButton(String labelTextParameterValue) {
         Rounded.RoundedButton buttonLocalVariableValue =
                 new Rounded.RoundedButton(labelTextParameterValue, 16);
@@ -124,6 +157,12 @@ public class AdminMenuView extends JPanel {
         return buttonLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue =
                 new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
@@ -135,6 +174,7 @@ public class AdminMenuView extends JPanel {
                 Math.max(70, (int) (screenWidthLocalVariableValue * 0.05));
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -187,7 +227,7 @@ public class AdminMenuView extends JPanel {
                 0,
                 horizontalOffsetLocalVariableValue,
                 0,
-                0
+                310
         );
 
         backgroundPanelLocalVariableValue.add(
@@ -198,6 +238,12 @@ public class AdminMenuView extends JPanel {
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -262,6 +308,12 @@ public class AdminMenuView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye el menu.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildMenuCard() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidthLocalVariableValue = screenSizeLocalVariableValue.width;
@@ -308,6 +360,12 @@ public class AdminMenuView extends JPanel {
         return cardPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildDividerPanel() {
         JPanel dividerPanelLocalVariableValue = new JPanel();
         dividerPanelLocalVariableValue.setOpaque(false);
@@ -330,12 +388,20 @@ public class AdminMenuView extends JPanel {
         return dividerPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JComponent buildDividerLine() {
         return new JComponent() {
+
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(100, 1);
             }
+
 
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
@@ -355,6 +421,12 @@ public class AdminMenuView extends JPanel {
         };
     }
 
+
+    /**
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void registerController(ActionListener controllerHandlerParameterValue) {
         createLeagueReferenceButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         createLeagueReferenceButtonFieldReference.setActionCommand(CREATE_LEAGUE);
@@ -378,11 +450,12 @@ public class AdminMenuView extends JPanel {
         deletePlayerProfileButtonFieldReference.setActionCommand(DELETE_PLAYER);
     }
 
-    public void registerController(AdminMenuController controllerHandlerParameterValue2) {
-        this.controllerHandlerFieldReference = controllerHandlerParameterValue2;
-        registerController((ActionListener) controllerHandlerParameterValue2);
-    }
 
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -392,7 +465,18 @@ public class AdminMenuView extends JPanel {
         );
     }
 
+
+    /**
+     * Agrupa la logica de el inicio de sesion.
+     */
     private static class LoginStyleCardPanel extends JPanel {
+
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -439,3 +523,5 @@ public class AdminMenuView extends JPanel {
         }
     }
 }
+
+

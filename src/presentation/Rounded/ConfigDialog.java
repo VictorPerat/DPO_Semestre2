@@ -1,5 +1,7 @@
 package Rounded;
 
+import presentation.UserRole;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,41 +9,49 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import presentation.ControllerViews.MenuController;
 
 /**
- * Dialog personalizado para la configuración de cuenta de usuario.
- * Incluye botones para cerrar sesión, eliminar cuenta y cambiar contraseña.
- * Se implementa como un singleton.
+ * Representa el dialogo de la configuracion.
  */
 public class ConfigDialog extends JDialog {
-    // Botones principales del dialogo de cuenta
+
     private JButton logoutButtonFieldReference;
     private JButton deleteAccountButtonFieldReference;
     private JButton changeUserPasswordButtonFieldReference;
+    private Component deleteAccountSpacerFieldReference;
 
-    // Listener del boton de volver y controlador del menu propietario
+
     private ActionListener backControllerHandlerFieldReference;
-    private MenuController menuControllerHandlerFieldReference;
 
+    /**
+     * Constante para el valor.
+     */
     public static final String LOGOUT = "LOGOUT";
+    /**
+     * Constante para el cuenta.
+     */
     public static final String DELETE_ACCOUNT = "DELETE_ACCOUNT";
+    /**
+     * Constante para el cambio contrasena.
+     */
     public static final String CHANGE_PASSWORD = "CHANGE_PASSWORD";
 
-    // Colores usados en la interfaz
+
     private static final Color DARK_BLUE = new Color(0, 30, 60);
     private static final Color LIGHT_BLUE = new Color(195, 216, 236);
     private static final Color DARK_RED = new Color(180, 40, 40);
     private static final Color BRIGHT_RED = new Color(220, 60, 60);
     private static final Color TEXT_COLOR = Color.WHITE;
 
-    /** Instancia única (singleton) del diálogo */
+
     private static Rounded.ConfigDialog instanceFieldReference;
 
+
     /**
-     * Devuelve la instancia única del diálogo, creándola si no existe.
-     * @param parent la ventana padre del diálogo
-     * @return la instancia de {@code ConfigDialog}
+     * Devuelve el instancia.
+     *
+     * @param parentParameterValue dato de entrada de la operacion.
+     * @return el instancia.
      */
     public static Rounded.ConfigDialog getInstance(JFrame parentParameterValue) {
         if (instanceFieldReference == null) {
@@ -51,17 +61,11 @@ public class ConfigDialog extends JDialog {
         return instanceFieldReference;
     }
 
-    /**
-     * Establece el controlador del menú asociado.
-     * @param controller instancia de {@code MenuController}
-     */
-    public void setMenuController(MenuController controllerHandlerParameterValue) {
-        this.menuControllerHandlerFieldReference = controllerHandlerParameterValue;
-    }
 
     /**
-     * Constructor privado para inicializar el diálogo con el padre dado.
-     * @param parent la ventana padre
+     * Crea una instancia de el configuracion.
+     *
+     * @param parentParameterValue2 dato de entrada de la operacion.
      */
     public ConfigDialog(JFrame parentParameterValue2) {
         super(parentParameterValue2, "Settings", true);
@@ -69,8 +73,9 @@ public class ConfigDialog extends JDialog {
         setLocationRelativeTo(parentParameterValue2);
     }
 
+
     /**
-     * Inicializa los componentes gráficos del diálogo.
+     * Gestiona esta operacion.
      */
     private void initializeUI() {
         setSize(800, 500);
@@ -79,10 +84,10 @@ public class ConfigDialog extends JDialog {
         getContentPane().setBackground(LIGHT_BLUE);
         setLayout(new BorderLayout());
 
-        // Panel de encabezado con botón atrás
+
         add(createHeaderPanel(), BorderLayout.NORTH);
 
-        // Panel principal de opciones
+
         JPanel mainPanelLocalVariableValue = new JPanel();
         mainPanelLocalVariableValue.setLayout(new BoxLayout(mainPanelLocalVariableValue, BoxLayout.Y_AXIS));
         mainPanelLocalVariableValue.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
@@ -101,7 +106,8 @@ public class ConfigDialog extends JDialog {
 
         deleteAccountButtonFieldReference = createMenuButton("Delete Account", DARK_RED);
         mainPanelLocalVariableValue.add(deleteAccountButtonFieldReference);
-        mainPanelLocalVariableValue.add(Box.createRigidArea(new Dimension(0, 20)));
+        deleteAccountSpacerFieldReference = Box.createRigidArea(new Dimension(0, 20));
+        mainPanelLocalVariableValue.add(deleteAccountSpacerFieldReference);
 
         logoutButtonFieldReference = createMenuButton("Logout", new Color(100, 100, 120));
         mainPanelLocalVariableValue.add(logoutButtonFieldReference);
@@ -109,14 +115,17 @@ public class ConfigDialog extends JDialog {
         add(mainPanelLocalVariableValue, BorderLayout.CENTER);
     }
 
+
     /**
-     * Crea un botón personalizado con estilo redondeado y efectos hover.
-     * @param text texto a mostrar en el botón
-     * @param bgColor color de fondo por defecto del botón
-     * @return un botón estilizado con efectos visuales personalizados
+     * Crea el menu.
+     *
+     * @param textParameterValue texto que usa la operacion.
+     * @param bgColorParameterValue dato de entrada de la operacion.
+     * @return elemento creado por el metodo.
      */
     private JButton createMenuButton(String textParameterValue, Color bgColorParameterValue) {
         JButton buttonLocalVariableValue = new JButton(textParameterValue) {
+
             @Override
             protected void paintComponent(Graphics gParameterValue) {
                 Graphics2D g2LocalVariableValue = (Graphics2D) gParameterValue.create();
@@ -127,16 +136,18 @@ public class ConfigDialog extends JDialog {
                 super.paintComponent(gParameterValue);
             }
 
+
             @Override
             protected void paintBorder(Graphics gParameterValue2) {
-                // Sin borde
+
             }
+
 
             @Override
             public void paint(Graphics gParameterValue3) {
                 super.paint(gParameterValue3);
                 if (isFocusPainted() && hasFocus()) {
-                    // No se pinta nada adicional al enfocar
+
                 }
             }
         };
@@ -150,8 +161,9 @@ public class ConfigDialog extends JDialog {
         buttonLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonLocalVariableValue.setMaximumSize(new Dimension(300, 50));
 
-        // Efecto de hover para cambiar el cursor y color de fondo
+
         buttonLocalVariableValue.addMouseListener(new MouseAdapter() {
+
             public void mouseEntered(MouseEvent evtParameterValue) {
                 buttonLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 if (bgColorParameterValue == DARK_RED) {
@@ -160,6 +172,7 @@ public class ConfigDialog extends JDialog {
                     buttonLocalVariableValue.setBackground(bgColorParameterValue.brighter());
                 }
             }
+
             public void mouseExited(MouseEvent evtParameterValue2) {
                 buttonLocalVariableValue.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 buttonLocalVariableValue.setBackground(bgColorParameterValue);
@@ -169,31 +182,51 @@ public class ConfigDialog extends JDialog {
         return buttonLocalVariableValue;
     }
 
+
     /**
-     * Registra un controlador de eventos para manejar acciones de los botones.
-     * @param controller el {@code ActionListener} que manejará los eventos de los botones
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue2 dato de entrada de la operacion.
      */
     public void registerController(ActionListener controllerHandlerParameterValue2) {
-        logoutButtonFieldReference.setActionCommand(LOGOUT);
-        logoutButtonFieldReference.addActionListener(controllerHandlerParameterValue2);
-
-        deleteAccountButtonFieldReference.setActionCommand(DELETE_ACCOUNT);
-        deleteAccountButtonFieldReference.addActionListener(controllerHandlerParameterValue2);
-
-        changeUserPasswordButtonFieldReference.setActionCommand(CHANGE_PASSWORD);
-        changeUserPasswordButtonFieldReference.addActionListener(controllerHandlerParameterValue2);
+        registerAction(logoutButtonFieldReference, LOGOUT, controllerHandlerParameterValue2);
+        registerAction(deleteAccountButtonFieldReference, DELETE_ACCOUNT, controllerHandlerParameterValue2);
+        registerAction(changeUserPasswordButtonFieldReference, CHANGE_PASSWORD, controllerHandlerParameterValue2);
     }
 
+
     /**
-     * Oculta el diálogo sin eliminar la instancia.
+     * Gestiona esta operacion.
+     *
+     * @param roleParameterValue rol que usa la operacion.
+     */
+    public void configureForRole(UserRole roleParameterValue) {
+        boolean shouldShowDeleteAccountLocalVariableValue =
+                roleParameterValue == UserRole.PLAYER;
+
+        deleteAccountButtonFieldReference.setVisible(
+                shouldShowDeleteAccountLocalVariableValue
+        );
+        deleteAccountSpacerFieldReference.setVisible(
+                shouldShowDeleteAccountLocalVariableValue
+        );
+
+        revalidate();
+        repaint();
+    }
+
+
+    /**
+     * Gestiona esta operacion.
      */
     @Override
     public void dispose() {
         super.setVisible(false);
     }
 
+
     /**
-     * Cierra y elimina la instancia única del diálogo.
+     * Cierra el instancia.
      */
     public static void closeInstance() {
         if (instanceFieldReference != null) {
@@ -202,9 +235,11 @@ public class ConfigDialog extends JDialog {
         }
     }
 
+
     /**
-     * Crea el panel del encabezado con el botón de "volver" y título.
-     * @return el panel configurado con estilo y funcionalidad
+     * Crea el contenido.
+     *
+     * @return elemento creado por el metodo.
      */
     private JPanel createHeaderPanel() {
         JPanel panelLocalVariableValue = new JPanel(new BorderLayout());
@@ -215,22 +250,45 @@ public class ConfigDialog extends JDialog {
             if (backControllerHandlerFieldReference != null) {
                 backControllerHandlerFieldReference.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "BACK"));
             } else {
-                dispose(); // comportamiento por defecto si no hay controlador
+                dispose();
             }
         });
 
         panelLocalVariableValue.add(backButtonLocalVariableValue, BorderLayout.WEST);
 
 
-
         return panelLocalVariableValue;
     }
 
+
     /**
-     * Establece el listener para el botón de volver.
-     * @param listener el {@code ActionListener} que manejará la acción de volver
+     * Actualiza el vuelta.
+     *
+     * @param listenerParameterValue listener que se registra.
      */
     public void setBackButtonListener(ActionListener listenerParameterValue) {
         this.backControllerHandlerFieldReference = listenerParameterValue;
     }
+
+
+    /**
+     * Registra la accion.
+     *
+     * @param buttonParameterValue dato de entrada de la operacion.
+     * @param actionCommandParameterValue accion que usa la operacion.
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
+    private void registerAction(JButton buttonParameterValue,
+                                String actionCommandParameterValue,
+                                ActionListener controllerHandlerParameterValue) {
+        for (ActionListener existingListenerLocalVariableValue
+                : buttonParameterValue.getActionListeners()) {
+            buttonParameterValue.removeActionListener(existingListenerLocalVariableValue);
+        }
+
+        buttonParameterValue.setActionCommand(actionCommandParameterValue);
+        buttonParameterValue.addActionListener(controllerHandlerParameterValue);
+    }
 }
+
+

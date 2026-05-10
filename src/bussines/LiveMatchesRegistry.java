@@ -4,29 +4,60 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 /**
- * Registro en memoria de los partidos que se están simulando ahora
- * mismo. Permite localizar el controlador asociado a un gameId para
- * abortar la simulación cuando el admin borra una liga (apartado 2.10)
- * o un equipo (apartado 2.11) del enunciado.
- *
- * El controlador concreto (LiveMatchController) implementa
- * {@link AbortableMatch} para evitar que esta clase, que vive en la
- * capa de negocio, dependa de la capa de presentación.
+ * Agrupa la logica de los directo partidos.
  */
 public final class LiveMatchesRegistry {
 
+
     /**
-     * Contrato mínimo para que un controlador de partido se pueda
-     * abortar desde fuera. Permite invertir la dependencia: la capa
-     * de negocio solo conoce esta interfaz, no la clase concreta.
+     * Define el contrato del partido.
      */
     public interface AbortableMatch {
+
+
+        /**
+         * Devuelve el partido.
+         *
+         * @return el partido.
+         */
         int getGameId();
+
+
+        /**
+         * Devuelve el liga.
+         *
+         * @return el liga.
+         */
         int getLeagueId();
+
+
+        /**
+         * Devuelve el equipo nombre.
+         *
+         * @return el equipo nombre.
+         */
         String getHomeTeamName();
+
+
+        /**
+         * Devuelve el equipo nombre.
+         *
+         * @return el equipo nombre.
+         */
         String getAwayTeamName();
+
+
+        /**
+         * Muestra el partido ventana.
+         */
         void showMatchWindow();
+
+
+        /**
+         * Gestiona esta operacion.
+         */
         void abortMatch();
     }
 
@@ -35,36 +66,62 @@ public final class LiveMatchesRegistry {
     private final ConcurrentHashMap<Integer, AbortableMatch> activeMatchesFieldReference =
             new ConcurrentHashMap<>();
 
+
+    /**
+     * Crea una instancia de los directo partidos.
+     */
     private LiveMatchesRegistry() {
     }
 
+
+    /**
+     * Devuelve el instancia.
+     *
+     * @return el instancia.
+     */
     public static LiveMatchesRegistry getInstance() {
         return INSTANCE;
     }
 
-    /** Registra un partido en curso (al iniciarse la simulación). */
+
+    /**
+     * Registra la accion.
+     *
+     * @param matchParameterValue partido que usa la operacion.
+     */
     public void register(AbortableMatch matchParameterValue) {
         if (matchParameterValue != null) {
             activeMatchesFieldReference.put(matchParameterValue.getGameId(), matchParameterValue);
         }
     }
 
-    /** Quita un partido del registro (al acabar normalmente). */
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param gameIdParameterValue partido que usa la operacion.
+     */
     public void unregister(int gameIdParameterValue) {
         activeMatchesFieldReference.remove(gameIdParameterValue);
     }
 
-    /** Indica si ya existe una simulación activa para ese partido. */
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param gameIdParameterValue partido que usa la operacion.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean isRegistered(int gameIdParameterValue) {
         return activeMatchesFieldReference.containsKey(gameIdParameterValue);
     }
 
+
     /**
-     * Intenta mostrar la ventana asociada al partido en curso.
+     * Muestra el partido ventana.
      *
-     * @return true si el partido estaba registrado y se pudo delegar la
-     *         apertura de su ventana; false si no existe simulación
-     *         activa para ese gameId.
+     * @param gameIdParameterValue partido que usa la operacion.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
      */
     public boolean showMatchWindow(int gameIdParameterValue) {
         AbortableMatch matchLocalVariableValue =
@@ -78,9 +135,11 @@ public final class LiveMatchesRegistry {
         return true;
     }
 
+
     /**
-     * Aborta todos los partidos en curso de una liga concreta. Útil
-     * antes de borrar una liga (apartado 2.10).
+     * Gestiona esta operacion.
+     *
+     * @param leagueIdParameterValue liga que usa la operacion.
      */
     public void abortMatchesByLeague(int leagueIdParameterValue) {
         List<AbortableMatch> toAbortLocalVariableValue = new ArrayList<>();
@@ -92,9 +151,11 @@ public final class LiveMatchesRegistry {
         abortAll(toAbortLocalVariableValue);
     }
 
+
     /**
-     * Aborta todos los partidos en curso en los que participa un equipo
-     * concreto. Útil antes de borrar un equipo (apartado 2.11).
+     * Gestiona esta operacion.
+     *
+     * @param teamNameParameterValue nombre del equipo.
      */
     public void abortMatchesByTeam(String teamNameParameterValue) {
         if (teamNameParameterValue == null) {
@@ -110,15 +171,23 @@ public final class LiveMatchesRegistry {
         abortAll(toAbortLocalVariableValue);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param matchesParameterValue partidos que usa la operacion.
+     */
     private void abortAll(List<AbortableMatch> matchesParameterValue) {
         for (AbortableMatch matchLocalVariableValue : matchesParameterValue) {
             try {
                 matchLocalVariableValue.abortMatch();
             } catch (Exception eventArgumentExceptionParameterValue) {
-                eventArgumentExceptionParameterValue.printStackTrace();
+                shared.DaoErrorHandler.log("LiveMatchesRegistry.abortAll", eventArgumentExceptionParameterValue);
             } finally {
                 activeMatchesFieldReference.remove(matchLocalVariableValue.getGameId());
             }
         }
     }
 }
+
+

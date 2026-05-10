@@ -1,18 +1,25 @@
 package persistance;
 
 import bussines.objects.League;
+import shared.DaoErrorHandler;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+
 /**
- * Esta clase se encarga de acceder a los datos de las ligas en la base de datos.
+ * Gestiona el acceso a datos del liga.
  */
 public class LeagueDao {
 
-    // Devuelve todas las ligas guardadas
+
+    /**
+     * Devuelve los ligas.
+     *
+     * @return los ligas.
+     */
     public ArrayList<League> getAllLeagues() {
         ArrayList<League> leaguesLocalVariableValue = new ArrayList<>();
         String queryLocalVariableValue = "SELECT id, name, start_datetime FROM leagues ORDER BY id";
@@ -36,13 +43,19 @@ public class LeagueDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("LeagueDao", eventArgumentExceptionParameter);
         }
 
         return leaguesLocalVariableValue;
     }
 
-    // Devuelve las ligas en las que participa un equipo
+
+    /**
+     * Devuelve el ligas usuario equipo.
+     *
+     * @param teamReferenceDisplayNameParameterValue nombre del equipo.
+     * @return el ligas usuario equipo.
+     */
     public ArrayList<League> getLeaguesByUserTeam(String teamReferenceDisplayNameParameterValue) {
         ArrayList<League> leaguesLocalVariableValue = new ArrayList<>();
 
@@ -76,13 +89,19 @@ public class LeagueDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("LeagueDao", eventArgumentExceptionParameter);
         }
 
         return leaguesLocalVariableValue;
     }
 
-    // Borra una liga usando su nombre
+
+    /**
+     * Elimina el liga nombre.
+     *
+     * @param leagueReferenceDisplayNameParameterValue nombre de la liga.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean deleteLeagueByName(String leagueReferenceDisplayNameParameterValue) {
         String queryLocalVariableValue = "DELETE FROM leagues WHERE name = ?";
 
@@ -95,12 +114,21 @@ public class LeagueDao {
             return preparedStatementLocalVariableValue.executeUpdate() > 0;
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("LeagueDao", eventArgumentExceptionParameter);
             return false;
         }
     }
 
-    // Inserta un partido nuevo dentro de una liga
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param localTeamReferenceParameterValue equipo que usa la operacion.
+     * @param awayTeamReferenceParameterValue equipo que usa la operacion.
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @param jornadaParameterValue dato de entrada de la operacion.
+     * @param timeParameterValue dato de entrada de la operacion.
+     */
     public void insertGame(String localTeamReferenceParameterValue,
                            String awayTeamReferenceParameterValue,
                            int leagueReferenceIdentifierParameterValue,
@@ -136,11 +164,16 @@ public class LeagueDao {
             preparedStatementLocalVariableValue.executeUpdate();
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("LeagueDao", eventArgumentExceptionParameter);
         }
     }
 
-    // Crea una nueva liga y añade sus equipos participantes
+
+    /**
+     * Crea el liga.
+     *
+     * @param leagueReferenceParameterValue liga que usa la operacion.
+     */
     public void createLeague(League leagueReferenceParameterValue) {
         String insertLeagueQueryLocalVariableValue =
                 "INSERT INTO leagues (name, start_datetime) VALUES (?, ?)";
@@ -202,11 +235,17 @@ public class LeagueDao {
             connectionLocalVariableValue.setAutoCommit(true);
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("LeagueDao", eventArgumentExceptionParameter);
         }
     }
 
-    // Devuelve el id de la liga en la que juega un equipo
+
+    /**
+     * Devuelve el liga equipo.
+     *
+     * @param teamReferenceDisplayNameParameterValue2 nombre del equipo.
+     * @return el liga equipo.
+     */
     public int getLeagueIdByTeam(String teamReferenceDisplayNameParameterValue2) {
         String queryLocalVariableValue =
                 "SELECT l.id FROM leagues l " +
@@ -228,13 +267,19 @@ public class LeagueDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("LeagueDao", eventArgumentExceptionParameter);
         }
 
         return -1;
     }
 
-    // Devuelve el id de una liga a partir de su nombre
+
+    /**
+     * Devuelve el liga nombre.
+     *
+     * @param leagueReferenceDisplayName2ParameterValue nombre de la liga.
+     * @return el liga nombre.
+     */
     public int getLeagueIdByName(String leagueReferenceDisplayName2ParameterValue) {
         String queryLocalVariableValue = "SELECT id FROM leagues WHERE name = ?";
 
@@ -252,13 +297,20 @@ public class LeagueDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("LeagueDao", eventArgumentExceptionParameter);
         }
 
         return -1;
     }
 
-    // Busca el id de un equipo usando su nombre
+
+    /**
+     * Devuelve el equipo nombre.
+     *
+     * @param connectionParameterValue conexion que usa la operacion.
+     * @param teamReferenceDisplayNameParameterValue nombre del equipo.
+     * @return el equipo nombre.
+     */
     private int getTeamIdByName(Connection connectionParameterValue,
                                 String teamReferenceDisplayNameParameterValue) throws SQLException {
 
@@ -279,7 +331,14 @@ public class LeagueDao {
         return -1;
     }
 
-    // Devuelve los nombres de los equipos de una liga
+
+    /**
+     * Devuelve el equipo liga.
+     *
+     * @param connectionParameterValue conexion que usa la operacion.
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @return el equipo liga.
+     */
     private ArrayList<String> getTeamNamesByLeagueId(Connection connectionParameterValue,
                                                      int leagueReferenceIdentifierParameterValue) throws SQLException {
 
@@ -303,7 +362,13 @@ public class LeagueDao {
         return teamNamesLocalVariableValue;
     }
 
-    // Convierte una fecha en texto a un Timestamp
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param dateParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private Timestamp parseTimestamp(String dateParameterValue) {
         try {
             return Timestamp.valueOf(

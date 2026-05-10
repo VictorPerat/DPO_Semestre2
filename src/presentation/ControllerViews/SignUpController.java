@@ -9,13 +9,13 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
+
 
 /**
- * Controlador del registro.
- *
- * Refactorizado: usa {@link AppNavigator} para volver al login. Ya no
- * crea ni destruye ventanas.
+ * Coordina la pantalla de esta parte de la aplicacion.
  */
 public class SignUpController implements ActionListener {
 
@@ -23,6 +23,14 @@ public class SignUpController implements ActionListener {
     private final PlayerManager playerProfileManagerServiceFieldReference;
     private final AppNavigator navigatorFieldReference;
 
+
+    /**
+     * Crea una instancia de signupcontroller.
+     *
+     * @param signUpViewInterfaceParameterValue vista que usa la operacion.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public SignUpController(
             SignUpView signUpViewInterfaceParameterValue,
             PlayerManager playerProfileManagerServiceParameterValue,
@@ -33,6 +41,12 @@ public class SignUpController implements ActionListener {
         this.signUpViewInterfaceFieldReference.registerController(this);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -47,6 +61,10 @@ public class SignUpController implements ActionListener {
         }
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleRegister() {
         String nationalIdentityDocumentLocalVariableValue = signUpViewInterfaceFieldReference.getDni().trim();
         String displayNameLocalVariableValue = signUpViewInterfaceFieldReference.getName().trim();
@@ -55,8 +73,10 @@ public class SignUpController implements ActionListener {
         String teamReferenceLocalVariableValue = signUpViewInterfaceFieldReference.getTeam().trim();
         String phoneNumberLocalVariableValue = signUpViewInterfaceFieldReference.getPhone().trim();
 
-        if (nationalIdentityDocumentLocalVariableValue.isEmpty() || displayNameLocalVariableValue.isEmpty() || emailAddressLocalVariableValue.isEmpty()
-                || jerseyNumberLocalVariableValue.isEmpty() || teamReferenceLocalVariableValue.isEmpty() || phoneNumberLocalVariableValue.isEmpty()) {
+        if (nationalIdentityDocumentLocalVariableValue.isEmpty()
+                || displayNameLocalVariableValue.isEmpty() || emailAddressLocalVariableValue.isEmpty()
+                || jerseyNumberLocalVariableValue.isEmpty() || teamReferenceLocalVariableValue.isEmpty()
+                || phoneNumberLocalVariableValue.isEmpty()) {
             signUpViewInterfaceFieldReference.showMessageDialog("All fields are required.");
             return;
         }
@@ -107,6 +127,13 @@ public class SignUpController implements ActionListener {
         backToLogin();
     }
 
+
+    /**
+     * Muestra el contrasena dialogo.
+     *
+     * @param generatedPasswordParameterValue contrasena que usa la operacion.
+     * @param nationalIdentityDocumentParameterValue documento de identidad del jugador.
+     */
     private void showCopyablePasswordDialog(String generatedPasswordParameterValue, String nationalIdentityDocumentParameterValue) {
         JTextArea textAreaLocalVariableValue = new JTextArea(
                 "Registration completed successfully!\n\n" +
@@ -140,18 +167,70 @@ public class SignUpController implements ActionListener {
         );
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void backToLogin() {
         signUpViewInterfaceFieldReference.clearForm();
         navigatorFieldReference.show(AppNavigator.LOGIN);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param lengthParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private String generateRandomPassword(int lengthParameterValue) {
-        String charsLocalVariableValue = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sbLocalVariableValue = new StringBuilder();
-        Random rndLocalVariableValue = new Random();
-        for (int indexCounterLocalVariableValue = 0; indexCounterLocalVariableValue < lengthParameterValue; indexCounterLocalVariableValue++) {
-            sbLocalVariableValue.append(charsLocalVariableValue.charAt(rndLocalVariableValue.nextInt(charsLocalVariableValue.length())));
+        int effectiveLengthLocalVariableValue = Math.max(lengthParameterValue, 8);
+
+        String lowercaseCharsLocalVariableValue = "abcdefghijklmnopqrstuvwxyz";
+        String uppercaseCharsLocalVariableValue = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String digitCharsLocalVariableValue = "0123456789";
+        String allCharsLocalVariableValue =
+                lowercaseCharsLocalVariableValue
+                + uppercaseCharsLocalVariableValue
+                + digitCharsLocalVariableValue;
+
+        SecureRandom secureRandomLocalVariableValue = new SecureRandom();
+        ArrayList<Character> passwordCharsLocalVariableValue = new ArrayList<>();
+
+
+        passwordCharsLocalVariableValue.add(
+                lowercaseCharsLocalVariableValue.charAt(
+                        secureRandomLocalVariableValue.nextInt(
+                                lowercaseCharsLocalVariableValue.length())));
+        passwordCharsLocalVariableValue.add(
+                uppercaseCharsLocalVariableValue.charAt(
+                        secureRandomLocalVariableValue.nextInt(
+                                uppercaseCharsLocalVariableValue.length())));
+        passwordCharsLocalVariableValue.add(
+                digitCharsLocalVariableValue.charAt(
+                        secureRandomLocalVariableValue.nextInt(
+                                digitCharsLocalVariableValue.length())));
+
+
+        for (int indexCounterLocalVariableValue = 3;
+             indexCounterLocalVariableValue < effectiveLengthLocalVariableValue;
+             indexCounterLocalVariableValue++) {
+            passwordCharsLocalVariableValue.add(
+                    allCharsLocalVariableValue.charAt(
+                            secureRandomLocalVariableValue.nextInt(
+                                    allCharsLocalVariableValue.length())));
         }
+
+
+        Collections.shuffle(passwordCharsLocalVariableValue, secureRandomLocalVariableValue);
+
+        StringBuilder sbLocalVariableValue = new StringBuilder();
+        for (char charValueLocalVariableValue : passwordCharsLocalVariableValue) {
+            sbLocalVariableValue.append(charValueLocalVariableValue);
+        }
+
         return sbLocalVariableValue.toString();
     }
 }
+
+

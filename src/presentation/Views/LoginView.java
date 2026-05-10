@@ -7,12 +7,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+
 /**
- * Vista gráfica de la pantalla de inicio de sesión.
- *
- * Refactorizada: ahora es un JPanel que se registra como tarjeta dentro
- * de {@link MainView}. Ya no gestiona ventana propia (sin setTitle, setSize,
- * setVisible, EXIT_ON_CLOSE, ...).
+ * Representa la vista del inicio de sesion.
  */
 public class LoginView extends JPanel {
 
@@ -21,7 +18,13 @@ public class LoginView extends JPanel {
     private JButton accessButtonFieldReference;
     private JButton signUpButtonFieldReference;
 
+    /**
+     * Constante para el valor.
+     */
     public static final String ACCESS_BUTTON = "ACCESS_BUTTON";
+    /**
+     * Constante para el valor.
+     */
     public static final String SIGN_UP_BUTTON = "SIGN_UP_BUTTON";
 
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
@@ -34,14 +37,18 @@ public class LoginView extends JPanel {
     private static final String BACKGROUND_IMAGE_PATH =
             ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
+
+    /**
+     * Crea una instancia de el inicio de sesion.
+     */
     public LoginView() {
         setLayout(new BorderLayout());
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
+
     /**
-     * Limpia los campos del formulario. Útil al volver a la pantalla
-     * de login (logout, registro completado, etc.).
+     * Gestiona esta operacion.
      */
     public void clearForm() {
         if (emailAddressFieldFieldReference != null) {
@@ -52,6 +59,12 @@ public class LoginView extends JPanel {
         }
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue = new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
@@ -60,6 +73,7 @@ public class LoginView extends JPanel {
         int horizontalOffsetLocalVariableValue = Math.max(70, (int) (screenWidthLocalVariableValue * 0.05));
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -109,6 +123,12 @@ public class LoginView extends JPanel {
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -159,6 +179,12 @@ public class LoginView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye el inicio de sesion.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildLoginCard() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidthLocalVariableValue = screenSizeLocalVariableValue.width;
@@ -166,6 +192,7 @@ public class LoginView extends JPanel {
         int cardWidthLocalVariableValue = Math.max(540, Math.min(620, (int) (screenWidthLocalVariableValue * 0.40)));
 
         JPanel cardPanelLocalVariableValue = new JPanel(new GridBagLayout()) {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 Graphics2D g2LocalVariableValue = (Graphics2D) graphicsParameterValue.create();
@@ -197,8 +224,8 @@ public class LoginView extends JPanel {
         constraintsLocalVariableValue.weightx = 1.0;
         constraintsLocalVariableValue.insets = new Insets(10, 0, 10, 0);
 
-        JLabel userIdentifierLabelLocalVariableValue = buildFieldLabel("USUARIO (EMAIL)");
-        emailAddressFieldFieldReference = buildTextField("example@email.com");
+        JLabel userIdentifierLabelLocalVariableValue = buildFieldLabel("DNI OR EMAIL");
+        emailAddressFieldFieldReference = buildTextField("12345678A or example@email.com");
 
         JLabel passLabelLocalVariableValue = buildFieldLabel("CONTRASEÑA");
         userPasswordFieldFieldReference = buildPasswordField("••••••••");
@@ -269,6 +296,13 @@ public class LoginView extends JPanel {
         return cardPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @param textParameterValue texto que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private JLabel buildFieldLabel(String textParameterValue) {
         JLabel labelLocalVariableValue = new JLabel(textParameterValue);
         labelLocalVariableValue.setForeground(LABEL_COLOR);
@@ -276,6 +310,13 @@ public class LoginView extends JPanel {
         return labelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el texto.
+     *
+     * @param placeholderParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private JTextField buildTextField(String placeholderParameterValue) {
         Rounded.RoundedTextField textFieldLocalVariableValue =
                 new Rounded.RoundedTextField(20, 14);
@@ -292,6 +333,13 @@ public class LoginView extends JPanel {
         return textFieldLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contrasena.
+     *
+     * @param placeholderParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private JPasswordField buildPasswordField(String placeholderParameterValue) {
         Rounded.RoundedPasswordField passwordFieldLocalVariableValue =
                 new Rounded.RoundedPasswordField(20, 14);
@@ -308,6 +356,12 @@ public class LoginView extends JPanel {
         return passwordFieldLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildDividerPanel() {
         JPanel dividerPanelLocalVariableValue = new JPanel();
         dividerPanelLocalVariableValue.setOpaque(false);
@@ -328,12 +382,20 @@ public class LoginView extends JPanel {
         return dividerPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JComponent buildDividerLine() {
         return new JComponent() {
+
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(100, 1);
             }
+
 
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
@@ -345,19 +407,43 @@ public class LoginView extends JPanel {
         };
     }
 
+
+    /**
+     * Devuelve el email texto.
+     *
+     * @return el email texto.
+     */
     public String getEmailText() {
         return emailAddressFieldFieldReference.getText();
     }
 
+
+    /**
+     * Devuelve el contrasena texto.
+     *
+     * @return el contrasena texto.
+     */
     public String getPasswordText() {
         return new String(userPasswordFieldFieldReference.getPassword());
     }
 
+
+    /**
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void registerController(ActionListener controllerHandlerParameterValue) {
         accessButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         signUpButtonFieldReference.addActionListener(controllerHandlerParameterValue);
     }
 
+
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -367,3 +453,5 @@ public class LoginView extends JPanel {
         );
     }
 }
+
+

@@ -1,14 +1,28 @@
 package presentation.ControllerViews;
 
-// Interfaz con las acciones concretas de navegacion para ligas
+
+/**
+ * Define el contrato de los liga vista acciones.
+ */
 public interface LeagueViewActions extends MenuController {
 
-    // Abre la pantalla que lista las ligas disponibles
+
+    /**
+     * Gestiona esta operacion.
+     */
     void handleViewLeagues();
 
-    // Abre el flujo para crear una nueva liga
+
+    /**
+     * Gestiona esta operacion.
+     */
     void handleCreateLeague();
 
-    // Abre la pantalla para borrar una liga
+
+    /**
+     * Gestiona esta operacion.
+     */
     void handleDeleteLeague();
 }
+
+

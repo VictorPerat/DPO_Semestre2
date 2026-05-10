@@ -1,5 +1,6 @@
 package presentation.ControllerViews;
 
+import bussines.managers.ConfigManager;
 import bussines.managers.LeagueManager;
 import bussines.managers.PlayerManager;
 import bussines.objects.League;
@@ -14,7 +15,10 @@ import java.awt.event.HierarchyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Controlador del gráfico de estadísticas. */
+
+/**
+ * Coordina la pantalla del estadisticas grafica.
+ */
 public class StatisticsGraphController implements ActionListener {
     private final StatisticsGraphView viewInterfaceFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
@@ -26,6 +30,14 @@ public class StatisticsGraphController implements ActionListener {
     private Timer chartAutoRefreshTimerFieldReference;
     private static final int CHART_REFRESH_INTERVAL_MS = 5_000;
 
+
+    /**
+     * Crea una instancia de el estadisticas grafica.
+     *
+     * @param viewInterfaceParameterValue vista que usa la operacion.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public StatisticsGraphController(StatisticsGraphView viewInterfaceParameterValue,
                                      PlayerManager playerProfileManagerServiceParameterValue,
                                      AppNavigator navigatorParameterValue) {
@@ -42,14 +54,12 @@ public class StatisticsGraphController implements ActionListener {
         });
     }
 
-    public StatisticsGraphController(StatisticsGraphView viewInterfaceParameterValue,
-                                     MenuController menuControllerHandlerParameterValue,
-                                     PlayerManager playerProfileManagerServiceParameterValue) {
-        this(viewInterfaceParameterValue, playerProfileManagerServiceParameterValue, AppNavigator.getInstance());
-    }
 
+    /**
+     * Gestiona esta operacion.
+     */
     public void refreshLeaguesList() {
-        if (PlayerManager.ADMIN_IDENTIFIER.equalsIgnoreCase(playerProfileManagerServiceFieldReference.getCurrentIdentifier())) {
+        if (ConfigManager.getAdminIdentifier().equalsIgnoreCase(playerProfileManagerServiceFieldReference.getCurrentIdentifier())) {
             leaguesFieldReference = leagueReferenceManagerServiceFieldReference.getAllLeagues();
         } else {
             Player actualPlayerProfileLocalVariableValue = playerProfileManagerServiceFieldReference.getCurrentPlayer();
@@ -60,6 +70,12 @@ public class StatisticsGraphController implements ActionListener {
         viewInterfaceFieldReference.setLeagues(leaguesFieldReference, this);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -76,6 +92,13 @@ public class StatisticsGraphController implements ActionListener {
         }
     }
 
+
+    /**
+     * Muestra el liga.
+     *
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @param leagueReferenceDisplayNameParameterValue nombre de la liga.
+     */
     public void showLeagueData(int leagueReferenceIdentifierParameterValue,
                                String leagueReferenceDisplayNameParameterValue) {
         currentLeagueIdFieldReference = leagueReferenceIdentifierParameterValue;
@@ -84,6 +107,10 @@ public class StatisticsGraphController implements ActionListener {
         startChartAutoRefresh();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void refreshChartDataFromDatabase() {
         if (currentLeagueIdFieldReference == -1) { return; }
         LeagueManager.StandingsTimeline timelineLocalVariableValue = leagueReferenceManagerServiceFieldReference.computeStandingsTimeline(currentLeagueIdFieldReference);
@@ -96,6 +123,10 @@ public class StatisticsGraphController implements ActionListener {
         );
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void startChartAutoRefresh() {
         if (currentLeagueIdFieldReference == -1) { return; }
         if (chartAutoRefreshTimerFieldReference != null && chartAutoRefreshTimerFieldReference.isRunning()) { return; }
@@ -103,6 +134,10 @@ public class StatisticsGraphController implements ActionListener {
         chartAutoRefreshTimerFieldReference.start();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void stopChartAutoRefresh() {
         if (chartAutoRefreshTimerFieldReference != null) {
             chartAutoRefreshTimerFieldReference.stop();
@@ -110,18 +145,19 @@ public class StatisticsGraphController implements ActionListener {
         }
     }
 
+
+    /**
+     * Muestra el configuracion dialogo.
+     */
     private void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
-            configDialogLocalVariableValue.dispose();
-            if (Rounded.ConfigDialog.LOGOUT.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.show(AppNavigator.LOGIN);
-            } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.STATISTICS));
-                navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
-            }
-        });
-        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
+        Rounded.ConfigDialog configDialogLocalVariableValue =
+                Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
+        presentation.AccountSettingsWidgetService.configureDialogForCurrentSession(
+                configDialogLocalVariableValue,
+                AppNavigator.STATISTICS
+        );
         configDialogLocalVariableValue.setVisible(true);
     }
 }
+
+

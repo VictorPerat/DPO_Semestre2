@@ -8,13 +8,9 @@ import presentation.Views.UserProfileView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 /**
- * Controlador del perfil del usuario autenticado.
- *
- * Refactorizado: usa {@link AppNavigator} para navegar al cambio de
- * contraseña y al logout. La carga de datos del jugador actual se
- * dispara mediante {@link #refreshCurrentPlayer()}, que el navegador
- * o el flujo de login deben llamar al mostrar la pantalla.
+ * Coordina la pantalla del usuario perfil.
  */
 public class UserProfileController implements ActionListener {
 
@@ -22,6 +18,14 @@ public class UserProfileController implements ActionListener {
     private final PlayerManager playerProfileManagerServiceFieldReference;
     private final AppNavigator navigatorFieldReference;
 
+
+    /**
+     * Crea una instancia de el usuario perfil.
+     *
+     * @param userProfileViewInterfaceParameterValue usuario perfil vista.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public UserProfileController(
             UserProfileView userProfileViewInterfaceParameterValue,
             PlayerManager playerProfileManagerServiceParameterValue,
@@ -32,10 +36,9 @@ public class UserProfileController implements ActionListener {
         this.userProfileViewInterfaceFieldReference.registerController(this);
     }
 
+
     /**
-     * Carga (o recarga) los datos del jugador actualmente autenticado en
-     * la vista de perfil. Debe llamarse cada vez que el usuario llega a
-     * esta pantalla (después de login o al volver desde Change Password).
+     * Gestiona esta operacion.
      */
     public void refreshCurrentPlayer() {
         Player currentPlayerProfileLocalVariableValue = playerProfileManagerServiceFieldReference.getCurrentPlayer();
@@ -47,6 +50,12 @@ public class UserProfileController implements ActionListener {
         userProfileViewInterfaceFieldReference.displayUserInformation(currentPlayerProfileLocalVariableValue);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String actionCommandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -61,8 +70,14 @@ public class UserProfileController implements ActionListener {
         }
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void logoutAndReturnToLogin() {
         playerProfileManagerServiceFieldReference.logoutCurrentUser();
         navigatorFieldReference.show(AppNavigator.LOGIN);
     }
 }
+
+

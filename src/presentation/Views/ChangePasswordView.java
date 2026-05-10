@@ -7,17 +7,19 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+
 /**
- * Vista Swing para permitir al usuario cambiar su contraseña
- * con el mismo estilo visual que login, register y user profile.
- *
- * Refactorizada: extiende JPanel y se muestra como tarjeta dentro de
- * {@link MainView}. El controlador navega con AppNavigator en lugar
- * de gestionar dispose() y JFrame anteriores.
+ * Representa la vista del cambio contrasena.
  */
 public class ChangePasswordView extends JPanel {
 
+    /**
+     * Constante para el cambio.
+     */
     public static final String CHANGE_BUTTON = "CHANGE_BUTTON";
+    /**
+     * Constante para el vuelta.
+     */
     public static final String BACK_BUTTON = "BACK_BUTTON";
 
     private JPasswordField actualUserPasswordFieldFieldReference;
@@ -36,13 +38,18 @@ public class ChangePasswordView extends JPanel {
     private static final String BACKGROUND_IMAGE_PATH =
             ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
+
+    /**
+     * Crea una instancia de el cambio contrasena.
+     */
     public ChangePasswordView() {
         setLayout(new BorderLayout());
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
+
     /**
-     * Limpia los campos de contraseña al entrar en la pantalla.
+     * Gestiona esta operacion.
      */
     public void clearForm() {
         if (actualUserPasswordFieldFieldReference != null) actualUserPasswordFieldFieldReference.setText("");
@@ -50,6 +57,12 @@ public class ChangePasswordView extends JPanel {
         if (confirmUserPasswordFieldFieldReference != null) confirmUserPasswordFieldFieldReference.setText("");
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue = new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
@@ -58,6 +71,7 @@ public class ChangePasswordView extends JPanel {
         int horizontalOffsetLocalVariableValue = Math.max(70, (int) (screenWidthLocalVariableValue * 0.05));
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -100,13 +114,20 @@ public class ChangePasswordView extends JPanel {
         constraintsLocalVariableValue.weightx = 1.0;
         constraintsLocalVariableValue.weighty = 1.0;
         constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
-        constraintsLocalVariableValue.insets = new Insets(0, horizontalOffsetLocalVariableValue, 0, 0);
+
+        constraintsLocalVariableValue.insets = new Insets(0, horizontalOffsetLocalVariableValue, 0, 310);
 
         backgroundPanelLocalVariableValue.add(contentPanelLocalVariableValue, constraintsLocalVariableValue);
 
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -160,6 +181,12 @@ public class ChangePasswordView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye el cambio contrasena.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildChangePasswordCard() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidthLocalVariableValue = screenSizeLocalVariableValue.width;
@@ -167,6 +194,7 @@ public class ChangePasswordView extends JPanel {
         int cardWidthLocalVariableValue = Math.max(760, Math.min(860, (int) (screenWidthLocalVariableValue * 0.54)));
 
         JPanel cardPanelLocalVariableValue = new JPanel(new GridBagLayout()) {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 Graphics2D g2LocalVariableValue = (Graphics2D) graphicsParameterValue.create();
@@ -263,6 +291,13 @@ public class ChangePasswordView extends JPanel {
         return cardPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @param textParameterValue texto que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private JLabel buildFieldLabel(String textParameterValue) {
         JLabel labelLocalVariableValue = new JLabel(textParameterValue);
         labelLocalVariableValue.setForeground(LABEL_COLOR);
@@ -270,6 +305,13 @@ public class ChangePasswordView extends JPanel {
         return labelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contrasena.
+     *
+     * @param placeholderParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private JPasswordField buildPasswordField(String placeholderParameterValue) {
         Rounded.RoundedPasswordField passwordFieldLocalVariableValue =
                 new Rounded.RoundedPasswordField(20, 14);
@@ -286,23 +328,53 @@ public class ChangePasswordView extends JPanel {
         return passwordFieldLocalVariableValue;
     }
 
+
+    /**
+     * Devuelve el contrasena.
+     *
+     * @return el contrasena.
+     */
     public String getActualPassword() {
         return new String(actualUserPasswordFieldFieldReference.getPassword());
     }
 
+
+    /**
+     * Devuelve el contrasena.
+     *
+     * @return el contrasena.
+     */
     public String getNewPassword() {
         return new String(newUserPasswordFieldFieldReference.getPassword());
     }
 
+
+    /**
+     * Devuelve el contrasena.
+     *
+     * @return el contrasena.
+     */
     public String getConfirmPassword() {
         return new String(confirmUserPasswordFieldFieldReference.getPassword());
     }
 
+
+    /**
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void registerController(ActionListener controllerHandlerParameterValue) {
         changeButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         backButtonFieldReference.addActionListener(controllerHandlerParameterValue);
     }
 
+
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -312,3 +384,5 @@ public class ChangePasswordView extends JPanel {
         );
     }
 }
+
+

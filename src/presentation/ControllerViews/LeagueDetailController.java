@@ -21,7 +21,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-/** Controlador del detalle de liga. */
+
+/**
+ * Coordina la pantalla del liga detalle.
+ */
 public class LeagueDetailController implements ActionListener {
     private final LeagueDetailView viewInterfaceFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
@@ -37,10 +40,30 @@ public class LeagueDetailController implements ActionListener {
     private Timer standingsAutoRefreshTimerFieldReference;
     private static final int REFRESH_INTERVAL_MS = 5_000;
 
+
+    /**
+     * Define el contrato del calendario vista.
+     */
     public interface CalendarViewLoader {
+
+
+        /**
+         * Carga el calendario.
+         *
+         * @param teamsParameterValue equipos que usa la operacion.
+         * @param gamesParameterValue partidos que usa la operacion.
+         */
         void loadCalendar(ArrayList<String> teamsParameterValue, ArrayList<Game> gamesParameterValue);
     }
 
+
+    /**
+     * Crea una instancia de el liga detalle.
+     *
+     * @param viewInterfaceParameterValue vista que usa la operacion.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public LeagueDetailController(LeagueDetailView viewInterfaceParameterValue,
                                   PlayerManager playerProfileManagerServiceParameterValue,
                                   AppNavigator navigatorParameterValue) {
@@ -49,6 +72,7 @@ public class LeagueDetailController implements ActionListener {
         this.navigatorFieldReference = navigatorParameterValue;
         this.viewInterfaceFieldReference.registerController(this);
         this.viewInterfaceFieldReference.getStandingsTable().addMouseListener(new MouseAdapter() {
+
             @Override public void mouseClicked(MouseEvent eventArgumentParameterValue) {
                 if (eventArgumentParameterValue.getClickCount() >= 2) {
                     openSelectedTeam();
@@ -63,22 +87,46 @@ public class LeagueDetailController implements ActionListener {
         });
     }
 
-    public LeagueDetailController(LeagueDetailView viewInterfaceParameterValue,
-                                  MenuController menuControllerHandlerParameterValue,
-                                  PlayerManager playerProfileManagerServiceParameterValue) {
-        this(viewInterfaceParameterValue, playerProfileManagerServiceParameterValue, AppNavigator.getInstance());
-    }
 
+    /**
+     * Actualiza el equipo detalle.
+     *
+     * @param controllerParameterValue dato de entrada de la operacion.
+     */
     public void setTeamDetailController(TeamDetailController controllerParameterValue) { this.teamDetailControllerHandlerFieldReference = controllerParameterValue; }
+
+
+    /**
+     * Actualiza el estadisticas grafica.
+     *
+     * @param controllerParameterValue dato de entrada de la operacion.
+     */
     public void setStatisticsGraphController(StatisticsGraphController controllerParameterValue) { this.statisticsGraphControllerHandlerFieldReference = controllerParameterValue; }
+
+
+    /**
+     * Actualiza el calendario vista.
+     *
+     * @param loaderParameterValue dato de entrada de la operacion.
+     */
     public void setCalendarViewLoader(CalendarViewLoader loaderParameterValue) { this.calendarViewLoaderHandlerFieldReference = loaderParameterValue; }
 
+
+    /**
+     * Abre el liga.
+     *
+     * @param leagueReferenceParameterValue liga que usa la operacion.
+     */
     public void openLeague(League leagueReferenceParameterValue) {
         this.currentLeagueFieldReference = leagueReferenceParameterValue;
         refreshCurrentLeague();
         navigatorFieldReference.show(AppNavigator.LEAGUE_DETAIL);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void refreshCurrentLeague() {
         if (currentLeagueFieldReference == null) { return; }
         int identifierLocalVariableValue = leagueReferenceManagerServiceFieldReference.getLeagueIdByName(currentLeagueFieldReference.getName());
@@ -87,6 +135,10 @@ public class LeagueDetailController implements ActionListener {
         viewInterfaceFieldReference.loadLeague(currentLeagueFieldReference, informationOfTeamsLocalVariableValue, teamsLocalVariableValue, playerProfileManagerServiceFieldReference);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void startStandingsAutoRefresh() {
         refreshCurrentLeague();
         if (standingsAutoRefreshTimerFieldReference != null && standingsAutoRefreshTimerFieldReference.isRunning()) { return; }
@@ -94,6 +146,10 @@ public class LeagueDetailController implements ActionListener {
         standingsAutoRefreshTimerFieldReference.start();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void stopStandingsAutoRefresh() {
         if (standingsAutoRefreshTimerFieldReference != null) {
             standingsAutoRefreshTimerFieldReference.stop();
@@ -101,6 +157,12 @@ public class LeagueDetailController implements ActionListener {
         }
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         switch (eventArgumentParameterValue.getActionCommand()) {
@@ -121,6 +183,10 @@ public class LeagueDetailController implements ActionListener {
         }
     }
 
+
+    /**
+     * Abre el equipo.
+     */
     private void openSelectedTeam() {
         int rowLocalVariableValue = viewInterfaceFieldReference.getStandingsTable().getSelectedRow();
         String teamNameLocalVariableValue = viewInterfaceFieldReference.getTeamNameAtViewRow(rowLocalVariableValue);
@@ -131,6 +197,10 @@ public class LeagueDetailController implements ActionListener {
         }
     }
 
+
+    /**
+     * Muestra el contenido.
+     */
     private void showStats() {
         if (currentLeagueFieldReference == null) { return; }
         if (statisticsGraphControllerHandlerFieldReference != null) {
@@ -140,6 +210,10 @@ public class LeagueDetailController implements ActionListener {
         navigatorFieldReference.show(AppNavigator.STATISTICS);
     }
 
+
+    /**
+     * Muestra el calendario.
+     */
     private void showCalendar() {
         if (currentLeagueFieldReference == null) { return; }
         int leagueIdLocalVariableValue = leagueReferenceManagerServiceFieldReference.getLeagueIdByName(currentLeagueFieldReference.getName());
@@ -155,19 +229,19 @@ public class LeagueDetailController implements ActionListener {
         navigatorFieldReference.show(AppNavigator.CALENDAR);
     }
 
+
+    /**
+     * Muestra el configuracion dialogo.
+     */
     private void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
-            configDialogLocalVariableValue.dispose();
-            if (Rounded.ConfigDialog.LOGOUT.equals(eventArgumentParameterValue.getActionCommand())) {
-                playerProfileManagerServiceFieldReference.logoutCurrentUser();
-                navigatorFieldReference.show(AppNavigator.LOGIN);
-            } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.LEAGUE_DETAIL));
-                navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
-            }
-        });
-        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
+        Rounded.ConfigDialog configDialogLocalVariableValue =
+                Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
+        presentation.AccountSettingsWidgetService.configureDialogForCurrentSession(
+                configDialogLocalVariableValue,
+                AppNavigator.LEAGUE_DETAIL
+        );
         configDialogLocalVariableValue.setVisible(true);
     }
 }
+
+

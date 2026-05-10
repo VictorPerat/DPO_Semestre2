@@ -2,18 +2,29 @@ package bussines.objects;
 
 import java.util.ArrayList;
 
-// Objeto que representa una liga con su fecha y equipos participantes
+
+/**
+ * Agrupa la logica de el liga.
+ */
 public class League {
 
-    // Identificador unico y nombre visible de la liga
+
     private int identifierFieldReference;
     private String displayNameFieldReference;
 
-    // Fecha de inicio y lista de equipos asociados
+
     private String creationDateFieldReference;
     private ArrayList<String> participatingTeamsFieldReference;
 
-    // Construye una liga con todos sus datos principales
+
+    /**
+     * Crea una instancia de el liga.
+     *
+     * @param displayNameParameterValue nombre que se muestra.
+     * @param creationDateParameterValue dato de entrada de la operacion.
+     * @param participatingTeamsParameterValue equipos que usa la operacion.
+     * @param identifierParameterValue identificador del usuario.
+     */
     public League(String displayNameParameterValue,
                   String creationDateParameterValue,
                   ArrayList<String> participatingTeamsParameterValue,
@@ -24,21 +35,43 @@ public class League {
         this.participatingTeamsFieldReference = participatingTeamsParameterValue;
     }
 
-    // Devuelve el id de la liga
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public int getId() { return identifierFieldReference; }
 
-    // Devuelve el nombre de la liga
+
+    /**
+     * Devuelve el nombre.
+     *
+     * @return el nombre.
+     */
     public String getName() {
         return displayNameFieldReference;
     }
 
-    // Devuelve la fecha de inicio
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public String getStartDate() {
         return creationDateFieldReference;
     }
 
-    // Devuelve la lista de equipos participantes
+
+    /**
+     * Devuelve los equipos.
+     *
+     * @return los equipos.
+     */
     public ArrayList<String> getParticipatingTeams() {
         return participatingTeamsFieldReference;
     }
 }
+
+

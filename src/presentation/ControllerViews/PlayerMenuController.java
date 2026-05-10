@@ -8,18 +8,25 @@ import presentation.Views.PlayerMenuView;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import presentation.AccountSettingsWidgetService;
 
-/** Controlador del menú de jugador dentro del CardLayout. */
+
+/**
+ * Coordina la pantalla del jugador menu.
+ */
 public class PlayerMenuController implements ActionListener, MenuController, DeletePlayerListener {
     private final PlayerMenuView playerProfileMenuScreenInterfaceFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
     private final AppNavigator navigatorFieldReference;
 
-    private Timer liveMatchesPreviewTimerFieldReference;
-    private static final int LIVE_MATCHES_REFRESH_INTERVAL_MS = 3_000;
 
+    /**
+     * Crea una instancia de el jugador menu.
+     *
+     * @param playerProfileMenuScreenInterfaceParameterValue jugador perfil menu pantalla.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public PlayerMenuController(PlayerMenuView playerProfileMenuScreenInterfaceParameterValue,
                                 PlayerManager playerProfileManagerServiceParameterValue,
                                 AppNavigator navigatorParameterValue) {
@@ -27,56 +34,44 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
         this.playerProfileManagerServiceFieldReference = playerProfileManagerServiceParameterValue;
         this.navigatorFieldReference = navigatorParameterValue;
         this.playerProfileMenuScreenInterfaceFieldReference.registerController(this);
-        refreshLiveMatchesPreview();
     }
 
-    public PlayerMenuController(PlayerMenuView playerProfileMenuScreenInterfaceParameterValue,
-                                PlayerManager playerProfileManagerServiceParameterValue) {
-        this(playerProfileMenuScreenInterfaceParameterValue, playerProfileManagerServiceParameterValue, AppNavigator.getInstance());
-    }
 
+    /**
+     * Muestra el menu.
+     */
     @Override public void showMenu() { showPlayerMenu(); }
+
+
+    /**
+     * Gestiona esta operacion.
+     */
     @Override public void onPlayersDeleted() { showPlayerMenu(); }
+
+
+    /**
+     * Gestiona esta operacion.
+     */
     @Override public void returnToMenu() { showPlayerMenu(); }
 
-    public void startLiveMatchesPreviewAutoRefresh() {
-        refreshLiveMatchesPreview();
 
-        if (liveMatchesPreviewTimerFieldReference != null
-                && liveMatchesPreviewTimerFieldReference.isRunning()) {
-            return;
-        }
-
-        liveMatchesPreviewTimerFieldReference = new Timer(
-                LIVE_MATCHES_REFRESH_INTERVAL_MS,
-                eventArgumentParameterValue -> refreshLiveMatchesPreview()
-        );
-        liveMatchesPreviewTimerFieldReference.start();
-    }
-
-    public void stopLiveMatchesPreviewAutoRefresh() {
-        if (liveMatchesPreviewTimerFieldReference != null) {
-            liveMatchesPreviewTimerFieldReference.stop();
-            liveMatchesPreviewTimerFieldReference = null;
-        }
-    }
-
-    public void refreshLiveMatchesPreview() {
-        List<String[]> liveGamesLocalVariableValue =
-                playerProfileManagerServiceFieldReference.getLiveMatches();
-
-        playerProfileMenuScreenInterfaceFieldReference.updateLiveMatches(liveGamesLocalVariableValue);
-    }
-
+    /**
+     * Gestiona esta operacion.
+     */
     @Override
     public void handleLogout() {
-        stopLiveMatchesPreviewAutoRefresh();
         LiveMatchesWidgetService.hide();
         AccountSettingsWidgetService.hide();
         playerProfileManagerServiceFieldReference.setCurrentIdentifier(null);
         navigatorFieldReference.show(AppNavigator.LOGIN);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -98,53 +93,49 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
         }
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleWatchMatches() {
         navigatorFieldReference.show(AppNavigator.LIVE_MATCHES);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleViewLeagues() {
         navigatorFieldReference.show(AppNavigator.AVAILABLE_LEAGUES);
     }
 
+
+    /**
+     * Muestra el jugador menu.
+     */
     public void showPlayerMenu() {
         navigatorFieldReference.show(AppNavigator.PLAYER_MENU);
     }
 
+
+    /**
+     * Muestra el configuracion dialogo.
+     */
     @Override
     public void showConfigDialog() {
         Rounded.ConfigDialog configDialogLocalVariableValue =
                 Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
-
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
-            configDialogLocalVariableValue.dispose();
-            switch (eventArgumentParameterValue.getActionCommand()) {
-                case Rounded.ConfigDialog.LOGOUT:
-                    handleLogout();
-                    break;
-                case Rounded.ConfigDialog.DELETE_ACCOUNT:
-                    handleDeleteAccount();
-                    break;
-                case Rounded.ConfigDialog.CHANGE_PASSWORD:
-                    openChangePasswordView();
-                    break;
-                default:
-                    break;
-            }
-        });
-
-        configDialogLocalVariableValue.setBackButtonListener(
-                eventArgumentParameterValue -> configDialogLocalVariableValue.dispose()
+        presentation.AccountSettingsWidgetService.configureDialogForCurrentSession(
+                configDialogLocalVariableValue,
+                AppNavigator.PLAYER_MENU
         );
         configDialogLocalVariableValue.setVisible(true);
     }
 
-    private void openChangePasswordView() {
-        navigatorFieldReference.setChangePasswordReturnAction(
-                () -> navigatorFieldReference.show(AppNavigator.PLAYER_MENU)
-        );
-        navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
-    }
 
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleDeleteAccount() {
         int confirmLocalVariableValue = JOptionPane.showConfirmDialog(
                 navigatorFieldReference.getMainView(),
@@ -154,16 +145,32 @@ public class PlayerMenuController implements ActionListener, MenuController, Del
                 JOptionPane.WARNING_MESSAGE
         );
 
-        if (confirmLocalVariableValue == JOptionPane.YES_OPTION) {
-            boolean successLocalVariableValue =
-                    playerProfileManagerServiceFieldReference.deleteCurrentPlayer();
+        if (confirmLocalVariableValue != JOptionPane.YES_OPTION) {
+            return;
+        }
 
-            if (successLocalVariableValue) {
-                playerProfileMenuScreenInterfaceFieldReference.showMessageDialog("Account deleted successfully");
-                handleLogout();
-            } else {
-                playerProfileMenuScreenInterfaceFieldReference.showMessageDialog("Error deleting account");
-            }
+
+        playerProfileManagerServiceFieldReference.purgeUserDataFromDisk();
+
+
+        boolean successLocalVariableValue =
+                playerProfileManagerServiceFieldReference.deleteCurrentPlayer();
+
+
+        playerProfileManagerServiceFieldReference.setCurrentIdentifier(null);
+        LiveMatchesWidgetService.hide();
+        AccountSettingsWidgetService.hide();
+        navigatorFieldReference.show(AppNavigator.LOGIN);
+
+        if (!successLocalVariableValue) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Account deletion encountered an error, but you have been logged out.",
+                    "Delete Account",
+                    JOptionPane.WARNING_MESSAGE
+            );
         }
     }
 }
+
+

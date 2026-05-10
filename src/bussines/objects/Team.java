@@ -1,28 +1,54 @@
 package bussines.objects;
 
-// Objeto simple que representa un equipo
+
+/**
+ * Agrupa la logica de el equipo.
+ */
 public class Team {
 
-    // Identificador y nombre visible del equipo
+
     private int identifierFieldReference;
     private String displayNameFieldReference;
 
-    // Construye un equipo con id y nombre
+
+    /**
+     * Crea una instancia de el equipo.
+     *
+     * @param identifierParameterValue identificador del usuario.
+     * @param displayNameParameterValue nombre que se muestra.
+     */
     public Team(int identifierParameterValue, String displayNameParameterValue) {
         this.identifierFieldReference = identifierParameterValue;
         this.displayNameFieldReference = displayNameParameterValue;
     }
 
-    // Construye un equipo solo con el nombre
+
+    /**
+     * Crea una instancia de el equipo.
+     *
+     * @param displayNameParameterValue2 nombre que usa la operacion.
+     */
     public Team(String displayNameParameterValue2) {
         this.displayNameFieldReference = displayNameParameterValue2;
     }
 
-    // Devuelve el nombre del equipo
+
+    /**
+     * Devuelve el nombre.
+     *
+     * @return el nombre.
+     */
     public String getName() {
         return displayNameFieldReference;
     }
 
-    // Devuelve el identificador del equipo
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public int getId() { return identifierFieldReference; }
 }
+
+

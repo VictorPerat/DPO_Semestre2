@@ -12,17 +12,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+
 /**
- * Controlador del widget global de partidos en directo.
- *
- * Mantiene el {@link LiveMatchesWidget} sincronizado con el
- * {@link LiveMatchesScoreboard}: cada vez que el scoreboard cambia o
- * el timer dispara, el widget recibe la lista actualizada.
- *
- * Aplica la regla del apartado 2.9 del enunciado:
- *  - Admin → ve todos los partidos en curso.
- *  - Jugador → solo los partidos de las ligas en las que participa
- *    su equipo.
+ * Coordina la pantalla del directo partidos widget.
  */
 public class LiveMatchesWidgetController implements LiveMatchesScoreboard.ScoreboardListener {
 
@@ -35,6 +27,14 @@ public class LiveMatchesWidgetController implements LiveMatchesScoreboard.Scoreb
     private final Timer refreshTimerFieldReference;
     private final boolean isAdminViewerFieldReference;
 
+
+    /**
+     * Crea una instancia de el directo partidos widget.
+     *
+     * @param widgetViewParameterValue widget vista.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param isAdminViewerParameterValue administrador que usa la operacion.
+     */
     public LiveMatchesWidgetController(LiveMatchesWidget widgetViewParameterValue,
                                        PlayerManager playerProfileManagerServiceParameterValue,
                                        boolean isAdminViewerParameterValue) {
@@ -43,12 +43,10 @@ public class LiveMatchesWidgetController implements LiveMatchesScoreboard.Scoreb
         this.leagueReferenceManagerServiceFieldReference = new LeagueManager();
         this.isAdminViewerFieldReference = isAdminViewerParameterValue;
 
-        // Subscribirse al scoreboard para refrescar inmediatamente al
-        // recibir cambios (gol, fin de partido).
+
         LiveMatchesScoreboard.getInstance().addListener(this);
 
-        // Timer secundario para asegurar refresco aunque no haya
-        // listeners disparados (defensa frente a eventos perdidos).
+
         refreshTimerFieldReference = new Timer(
                 REFRESH_INTERVAL_MS,
                 eventArgumentParameterValueRefresh -> refreshNow()
@@ -56,11 +54,14 @@ public class LiveMatchesWidgetController implements LiveMatchesScoreboard.Scoreb
         refreshTimerFieldReference.setRepeats(true);
         refreshTimerFieldReference.start();
 
-        // Render inicial
+
         refreshNow();
     }
 
-    /** Vuelve a calcular y enviar la lista de partidos al widget. */
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void refreshNow() {
         List<LiveMatchesScoreboard.ScoreSnapshot> snapshotsLocalVariableValue;
 
@@ -76,14 +77,18 @@ public class LiveMatchesWidgetController implements LiveMatchesScoreboard.Scoreb
         widgetViewFieldReference.renderMatches(snapshotsLocalVariableValue);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     @Override
     public void onScoreboardChanged() {
         refreshNow();
     }
 
+
     /**
-     * Detiene el widget: cierra ventana, para timer, libera listener.
-     * Se llama al hacer logout o cerrar sesión.
+     * Gestiona esta operacion.
      */
     public void shutdown() {
         if (refreshTimerFieldReference != null) {
@@ -93,8 +98,11 @@ public class LiveMatchesWidgetController implements LiveMatchesScoreboard.Scoreb
         widgetViewFieldReference.dispose();
     }
 
+
     /**
-     * Devuelve los ids de las ligas del equipo del jugador actual.
+     * Busca el liga actual jugador.
+     *
+     * @return resultado de la busqueda.
      */
     private HashSet<Integer> findLeagueIdsForCurrentPlayer() {
         HashSet<Integer> resultLocalVariableValue = new HashSet<>();
@@ -123,3 +131,5 @@ public class LiveMatchesWidgetController implements LiveMatchesScoreboard.Scoreb
         return resultLocalVariableValue;
     }
 }
+
+

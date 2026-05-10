@@ -1,23 +1,32 @@
 package bussines.objects;
 
-// Objeto que guarda la clasificacion de un equipo dentro de una liga
+
+/**
+ * Agrupa la logica de el equipo.
+ */
 public class TeamInfo {
 
-    // Identificadores de liga y de equipo
+
     private int leagueReferenceIdentifierFieldReference;
     private int teamReferenceIdentifierFieldReference;
 
-    // Campos legacy reservados para informacion extra
-    private String statsFieldReference;
-    private int numericValuePlayersFieldReference;
 
-    // Estadisticas acumuladas del equipo
     private int winsFieldReference;
     private int defeatsFieldReference;
     private int tiesFieldReference;
     private int pointsFieldReference;
 
-    // Construye el registro estadistico principal del equipo
+
+    /**
+     * Crea una instancia de el equipo.
+     *
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @param teamReferenceIdentifierParameterValue equipo identificador.
+     * @param winsParameterValue dato de entrada de la operacion.
+     * @param defeatsParameterValue dato de entrada de la operacion.
+     * @param tiesParameterValue dato de entrada de la operacion.
+     * @param pointsParameterValue dato de entrada de la operacion.
+     */
     public TeamInfo(int leagueReferenceIdentifierParameterValue,
                     int teamReferenceIdentifierParameterValue,
                     int winsParameterValue,
@@ -34,69 +43,134 @@ public class TeamInfo {
         this.pointsFieldReference = pointsParameterValue;
     }
 
-    // Devuelve el id de la liga
+
+    /**
+     * Devuelve el liga.
+     *
+     * @return el liga.
+     */
     public int getLeagueId() {
         return leagueReferenceIdentifierFieldReference;
     }
 
-    // Actualiza el id de la liga
+
+    /**
+     * Actualiza el liga.
+     *
+     * @param leagueReferenceIdentifierParameterValue2 liga identificador.
+     */
     public void setLeagueId(int leagueReferenceIdentifierParameterValue2) {
         this.leagueReferenceIdentifierFieldReference =
                 leagueReferenceIdentifierParameterValue2;
     }
 
-    // Devuelve el id del equipo
+
+    /**
+     * Devuelve el equipo.
+     *
+     * @return el equipo.
+     */
     public int getTeamId() {
         return teamReferenceIdentifierFieldReference;
     }
 
-    // Actualiza el id del equipo
+
+    /**
+     * Actualiza el equipo.
+     *
+     * @param teamReferenceIdentifierParameterValue2 equipo identificador.
+     */
     public void setTeamId(int teamReferenceIdentifierParameterValue2) {
         this.teamReferenceIdentifierFieldReference =
                 teamReferenceIdentifierParameterValue2;
     }
 
-    // Devuelve el numero de victorias
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public int getWins() {
         return winsFieldReference;
     }
 
-    // Actualiza el numero de victorias
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param winsParameterValue2 dato de entrada de la operacion.
+     */
     public void setWins(int winsParameterValue2) {
         this.winsFieldReference = winsParameterValue2;
     }
 
-    // Devuelve el numero de derrotas
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public int getDefeats() {
         return defeatsFieldReference;
     }
 
-    // Actualiza el numero de derrotas
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param defeatsParameterValue2 dato de entrada de la operacion.
+     */
     public void setDefeats(int defeatsParameterValue2) {
         this.defeatsFieldReference = defeatsParameterValue2;
     }
 
-    // Devuelve el numero de empates
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public int getTies() {
         return tiesFieldReference;
     }
 
-    // Actualiza el numero de empates
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param tiesParameterValue2 dato de entrada de la operacion.
+     */
     public void setTies(int tiesParameterValue2) {
         this.tiesFieldReference = tiesParameterValue2;
     }
 
-    // Devuelve los puntos totales
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public int getPoints() {
         return pointsFieldReference;
     }
 
-    // Actualiza los puntos totales
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param pointsParameterValue2 dato de entrada de la operacion.
+     */
     public void setPoints(int pointsParameterValue2) {
         this.pointsFieldReference = pointsParameterValue2;
     }
 
-    // Devuelve una representacion legible del estado del equipo
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @return resultado de la operacion.
+     */
     @Override
     public String toString() {
         return "TeamLeague{"
@@ -109,3 +183,5 @@ public class TeamInfo {
                 + '}';
     }
 }
+
+

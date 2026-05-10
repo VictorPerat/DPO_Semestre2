@@ -8,17 +8,19 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+
 /**
- * Vista que muestra la información del usuario autenticado
- * con el mismo estilo visual que login y register.
- *
- * Refactorizada: extiende JPanel y se muestra como tarjeta dentro de
- * {@link MainView}. La navegación a logout / cambio de contraseña la
- * delega el controlador al AppNavigator.
+ * Representa la vista del usuario perfil.
  */
 public class UserProfileView extends JPanel {
 
+    /**
+     * Constante para el valor.
+     */
     public static final String LOGOUT_BUTTON = "LOGOUT_BUTTON";
+    /**
+     * Constante para el cambio contrasena.
+     */
     public static final String CHANGE_PASSWORD_BUTTON = "CHANGE_PASSWORD_BUTTON";
 
     private final JLabel displayNameFieldReference = new JLabel("-");
@@ -42,6 +44,10 @@ public class UserProfileView extends JPanel {
     private static final String BACKGROUND_IMAGE_PATH =
             ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
+
+    /**
+     * Crea una instancia de el usuario perfil.
+     */
     public UserProfileView() {
         logoutButtonFieldReference = new Rounded.RoundedButton("LOGOUT", 16);
         changePasswordButtonFieldReference = new Rounded.RoundedButton("CHANGE PASSWORD", 16);
@@ -50,6 +56,12 @@ public class UserProfileView extends JPanel {
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue = new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
@@ -58,6 +70,7 @@ public class UserProfileView extends JPanel {
         int horizontalOffsetLocalVariableValue = Math.max(70, (int) (screenWidthLocalVariableValue * 0.05));
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -100,13 +113,20 @@ public class UserProfileView extends JPanel {
         constraintsLocalVariableValue.weightx = 1.0;
         constraintsLocalVariableValue.weighty = 1.0;
         constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
-        constraintsLocalVariableValue.insets = new Insets(0, horizontalOffsetLocalVariableValue, 0, 0);
+
+        constraintsLocalVariableValue.insets = new Insets(0, horizontalOffsetLocalVariableValue, 0, 310);
 
         backgroundPanelLocalVariableValue.add(contentPanelLocalVariableValue, constraintsLocalVariableValue);
 
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -157,6 +177,12 @@ public class UserProfileView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye el perfil.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildProfileCard() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidthLocalVariableValue = screenSizeLocalVariableValue.width;
@@ -164,6 +190,7 @@ public class UserProfileView extends JPanel {
         int cardWidthLocalVariableValue = Math.max(900, Math.min(1020, (int) (screenWidthLocalVariableValue * 0.64)));
 
         JPanel cardPanelLocalVariableValue = new JPanel(new GridBagLayout()) {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 Graphics2D g2LocalVariableValue = (Graphics2D) graphicsParameterValue.create();
@@ -234,6 +261,14 @@ public class UserProfileView extends JPanel {
         return cardPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @param labelTextParameterValue texto que usa la operacion.
+     * @param valueLabelParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private JPanel buildInfoBlock(String labelTextParameterValue, JLabel valueLabelParameterValue) {
         JPanel blockPanelLocalVariableValue = new JPanel();
         blockPanelLocalVariableValue.setOpaque(false);
@@ -254,11 +289,19 @@ public class UserProfileView extends JPanel {
         return blockPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @param valueLabelParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private JPanel buildValueContainer(JLabel valueLabelParameterValue) {
         valueLabelParameterValue.setFont(new Font("Arial", Font.PLAIN, 20));
         valueLabelParameterValue.setForeground(VALUE_TEXT_COLOR);
 
         JPanel valuePanelLocalVariableValue = new JPanel(new BorderLayout()) {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 Graphics2D g2LocalVariableValue = (Graphics2D) graphicsParameterValue.create();
@@ -284,6 +327,10 @@ public class UserProfileView extends JPanel {
         return valuePanelLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void configureButtons() {
         Rounded.RoundedButton changePasswordButtonLocalVariableValue =
                 (Rounded.RoundedButton) changePasswordButtonFieldReference;
@@ -305,6 +352,12 @@ public class UserProfileView extends JPanel {
         logoutButtonLocalVariableValue.setShadowEnabled(false);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param playerProfileParameterValue jugador perfil.
+     */
     public void displayUserInformation(Player playerProfileParameterValue) {
         displayNameFieldReference.setText(playerProfileParameterValue.getNamePlayer());
         nationalIdentityDocumentFieldReference.setText(playerProfileParameterValue.getDniPlayer());
@@ -314,11 +367,23 @@ public class UserProfileView extends JPanel {
         phoneNumberFieldReference.setText(String.valueOf(playerProfileParameterValue.getPhoneNumber()));
     }
 
+
+    /**
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void registerController(ActionListener controllerHandlerParameterValue) {
         logoutButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         changePasswordButtonFieldReference.addActionListener(controllerHandlerParameterValue);
     }
 
+
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -328,3 +393,5 @@ public class UserProfileView extends JPanel {
         );
     }
 }
+
+

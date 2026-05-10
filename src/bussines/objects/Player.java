@@ -1,20 +1,34 @@
 package bussines.objects;
 
-// Objeto que representa a un jugador con sus datos personales y de equipo
+
+/**
+ * Agrupa la logica de el jugador.
+ */
 public class Player {
 
-    // Datos basicos de identificacion y contacto
+
     private String displayNameFieldReference;
     private String emailAddressFieldReference;
     private String nationalIdentityDocumentFieldReference;
 
-    // Equipo, dorsal, contrasena y telefono del jugador
+
     private String teamReferenceFieldReference;
     private int jerseyNumberFieldReference;
     private String userPasswordFieldReference;
     private int phoneNumberNumericValueFieldReference;
 
-    // Construye un jugador con todos los datos usados por la aplicacion
+
+    /**
+     * Crea una instancia de el jugador.
+     *
+     * @param displayNamePlayerProfileParameterValue nombre jugador perfil.
+     * @param emailAddressParameterValue direccion de email.
+     * @param nationalIdentityDocumentPlayerProfileParameterValue jugador perfil.
+     * @param teamReferenceIdentifierParameterValue equipo identificador.
+     * @param jerseyNumberParameterValue dorsal del jugador.
+     * @param userPasswordParameterValue contrasena del usuario.
+     * @param phoneNumberNumericValueParameterValue telefono numero.
+     */
     public Player(String displayNamePlayerProfileParameterValue,
                   String emailAddressParameterValue,
                   String nationalIdentityDocumentPlayerProfileParameterValue,
@@ -33,100 +47,197 @@ public class Player {
         this.userPasswordFieldReference = userPasswordParameterValue;
     }
 
-    // Devuelve el nombre del jugador
+
+    /**
+     * Devuelve el nombre.
+     *
+     * @return el nombre.
+     */
     public String getName() {
         return displayNameFieldReference;
     }
 
-    // Devuelve el DNI del jugador
+
+    /**
+     * Devuelve el dni.
+     *
+     * @return el dni.
+     */
     public String getDni() {
         return nationalIdentityDocumentFieldReference;
     }
 
-    // Devuelve el email del jugador
+
+    /**
+     * Devuelve el email.
+     *
+     * @return el email.
+     */
     public String getEmail() {
         return emailAddressFieldReference;
     }
 
-    // Devuelve el nombre o id del equipo asociado
+
+    /**
+     * Devuelve el equipo.
+     *
+     * @return el equipo.
+     */
     public String getTeam() {
         return teamReferenceFieldReference;
     }
 
-    // Devuelve el dorsal del jugador
+
+    /**
+     * Devuelve el numero.
+     *
+     * @return el numero.
+     */
     public int getNumber() {
         return jerseyNumberFieldReference;
     }
 
-    // Devuelve el telefono del jugador
+
+    /**
+     * Devuelve el telefono numero.
+     *
+     * @return el telefono numero.
+     */
     public int getPhoneNumber() {
         return phoneNumberNumericValueFieldReference;
     }
 
-    // Devuelve el identificador del equipo
+
+    /**
+     * Devuelve el equipo.
+     *
+     * @return el equipo.
+     */
     public String getTeamId() {
         return teamReferenceFieldReference;
     }
 
-    // Actualiza la contrasena almacenada
+
+    /**
+     * Actualiza el contrasena.
+     *
+     * @param userPasswordParameterValue2 contrasena del usuario.
+     */
     public void setPassword(String userPasswordParameterValue2) {
         this.userPasswordFieldReference = userPasswordParameterValue2;
     }
 
-    // Devuelve la contrasena almacenada
+
+    /**
+     * Devuelve el contrasena.
+     *
+     * @return el contrasena.
+     */
     public String getPassword() {
         return userPasswordFieldReference;
     }
 
-    // Cambia el equipo asignado al jugador
+
+    /**
+     * Actualiza el equipo.
+     *
+     * @param teamReferenceIdentifierParameterValue2 equipo identificador.
+     */
     public void setTeamId(String teamReferenceIdentifierParameterValue2) {
         this.teamReferenceFieldReference = teamReferenceIdentifierParameterValue2;
     }
 
-    // Devuelve el DNI con el nombre legacy del metodo
+
+    /**
+     * Devuelve el dni jugador.
+     *
+     * @return el dni jugador.
+     */
     public String getDniPlayer() {
         return nationalIdentityDocumentFieldReference;
     }
 
-    // Actualiza el DNI del jugador
+
+    /**
+     * Actualiza el dni jugador.
+     *
+     * @param nationalIdentityDocumentPlayerProfileParameterValue2 jugador perfil.
+     */
     public void setDniPlayer(String nationalIdentityDocumentPlayerProfileParameterValue2) {
         this.nationalIdentityDocumentFieldReference =
                 nationalIdentityDocumentPlayerProfileParameterValue2;
     }
 
-    // Devuelve el email con el nombre legacy del metodo
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public String getMail() {
         return emailAddressFieldReference;
     }
 
-    // Actualiza el email del jugador
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param emailAddressParameterValue2 email que usa la operacion.
+     */
     public void setMail(String emailAddressParameterValue2) {
         this.emailAddressFieldReference = emailAddressParameterValue2;
     }
 
-    // Devuelve el nombre con el nombre legacy del metodo
+
+    /**
+     * Devuelve el nombre jugador.
+     *
+     * @return el nombre jugador.
+     */
     public String getNamePlayer() {
         return displayNameFieldReference;
     }
 
-    // Actualiza el nombre del jugador
+
+    /**
+     * Actualiza el nombre jugador.
+     *
+     * @param displayNamePlayerProfileParameterValue2 nombre jugador perfil.
+     */
     public void setNamePlayer(String displayNamePlayerProfileParameterValue2) {
         this.displayNameFieldReference = displayNamePlayerProfileParameterValue2;
     }
 
-    // Devuelve el dorsal con el nombre legacy del metodo
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public int getDorsal() {
         return jerseyNumberFieldReference;
     }
 
-    // Actualiza el dorsal del jugador
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param jerseyNumberParameterValue2 numero que usa la operacion.
+     */
     public void setDorsal(int jerseyNumberParameterValue2) {
         this.jerseyNumberFieldReference = jerseyNumberParameterValue2;
     }
 
-    // Actualiza el telefono del jugador
+
+    /**
+     * Actualiza el telefono numero.
+     *
+     * @param phoneNumberNumericValueParameterValue2 telefono numero.
+     */
     public void setPhoneNumber(int phoneNumberNumericValueParameterValue2) {
         this.phoneNumberNumericValueFieldReference =
                 phoneNumberNumericValueParameterValue2;
     }
 }
+
+

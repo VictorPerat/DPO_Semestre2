@@ -1,16 +1,23 @@
 package persistance;
 
 import bussines.objects.Player;
+import shared.DaoErrorHandler;
 
 import java.sql.*;
 import java.util.ArrayList;
 
+
 /**
- * Esta clase se encarga de acceder a los datos de los jugadores en la base de datos.
+ * Gestiona el acceso a datos del jugador.
  */
 public class PlayerDao {
 
-    // Devuelve todos los jugadores guardados
+
+    /**
+     * Devuelve los jugadores.
+     *
+     * @return los jugadores.
+     */
     public ArrayList<Player> getAllPlayers() {
         ArrayList<Player> playersLocalVariableValue = new ArrayList<>();
 
@@ -33,13 +40,19 @@ public class PlayerDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("PlayerDao", eventArgumentExceptionParameter);
         }
 
         return playersLocalVariableValue;
     }
 
-    // Busca un jugador usando su DNI o su email
+
+    /**
+     * Busca el jugador identificador.
+     *
+     * @param identifierParameterValue identificador del usuario.
+     * @return resultado de la busqueda.
+     */
     public Player findPlayerByIdentifier(String identifierParameterValue) {
         String queryLocalVariableValue =
                 "SELECT p.id, p.name, p.email, p.dni, p.password, p.dorsal, p.phone, " +
@@ -65,13 +78,20 @@ public class PlayerDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("PlayerDao", eventArgumentExceptionParameter);
         }
 
         return null;
     }
 
-    // Comprueba si ya existe un jugador con ese DNI o email
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param nationalIdentityDocumentParameterValue documento de identidad del jugador.
+     * @param emailAddressParameterValue direccion de email.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean existsByDniOrEmail(String nationalIdentityDocumentParameterValue, String emailAddressParameterValue) {
         String queryLocalVariableValue = "SELECT COUNT(*) FROM players WHERE dni = ? OR email = ?";
 
@@ -90,31 +110,78 @@ public class PlayerDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("PlayerDao", eventArgumentExceptionParameter);
         }
 
         return false;
     }
 
-    // Borra un jugador usando su DNI
+
+    /**
+     * Elimina el jugador.
+     *
+     * @param nationalIdentityDocumentParameterValue documento de identidad del jugador.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean deletePlayer(String nationalIdentityDocumentParameterValue) {
-        String queryLocalVariableValue = "DELETE FROM players WHERE dni = ?";
+        String deleteRelationsQueryLocalVariableValue =
+                "DELETE FROM player_teams WHERE player_id = " +
+                "(SELECT id FROM players WHERE dni = ?)";
+        String deletePlayerQueryLocalVariableValue =
+                "DELETE FROM players WHERE dni = ?";
 
-        try (Connection connectionLocalVariableValue =
-                     DatabaseConnector.getInstance().getConnection();
-             PreparedStatement preparedStatementLocalVariableValue =
-                     connectionLocalVariableValue.prepareStatement(queryLocalVariableValue)) {
+        Connection connectionLocalVariableValue = null;
 
-            preparedStatementLocalVariableValue.setString(1, nationalIdentityDocumentParameterValue);
-            return preparedStatementLocalVariableValue.executeUpdate() > 0;
+        try {
+            connectionLocalVariableValue = DatabaseConnector.getInstance().getConnection();
+            connectionLocalVariableValue.setAutoCommit(false);
+
+
+            try (PreparedStatement deleteRelationsStatementLocalVariableValue =
+                         connectionLocalVariableValue.prepareStatement(
+                                 deleteRelationsQueryLocalVariableValue)) {
+                deleteRelationsStatementLocalVariableValue.setString(
+                        1, nationalIdentityDocumentParameterValue);
+                deleteRelationsStatementLocalVariableValue.executeUpdate();
+            }
+
+
+            int rowsAffectedLocalVariableValue;
+            try (PreparedStatement deletePlayerStatementLocalVariableValue =
+                         connectionLocalVariableValue.prepareStatement(
+                                 deletePlayerQueryLocalVariableValue)) {
+                deletePlayerStatementLocalVariableValue.setString(
+                        1, nationalIdentityDocumentParameterValue);
+                rowsAffectedLocalVariableValue =
+                        deletePlayerStatementLocalVariableValue.executeUpdate();
+            }
+
+            connectionLocalVariableValue.commit();
+            connectionLocalVariableValue.setAutoCommit(true);
+            return rowsAffectedLocalVariableValue > 0;
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("PlayerDao", eventArgumentExceptionParameter);
+            try {
+                if (connectionLocalVariableValue != null) {
+                    connectionLocalVariableValue.rollback();
+                    connectionLocalVariableValue.setAutoCommit(true);
+                }
+            } catch (SQLException ignoredExceptionParameterValue) {
+
+            }
             return false;
         }
     }
 
-    // Actualiza la contraseña de un jugador
+
+    /**
+     * Actualiza el contrasena.
+     *
+     * @param identifierParameterValue identificador del usuario.
+     * @param newUserPasswordParameterValue nueva contrasena del usuario.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean updatePassword(String identifierParameterValue, String newUserPasswordParameterValue) {
         String queryLocalVariableValue =
                 "UPDATE players SET password = ? WHERE dni = ? OR email = ?";
@@ -131,12 +198,18 @@ public class PlayerDao {
             return preparedStatementLocalVariableValue.executeUpdate() > 0;
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("PlayerDao", eventArgumentExceptionParameter);
             return false;
         }
     }
 
-    // Inserta un jugador nuevo en la base de datos
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param playerProfileParameterValue jugador perfil.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean insertPlayer(Player playerProfileParameterValue) {
         String searchTeamQueryLocalVariableValue = "SELECT id FROM teams WHERE name = ?";
         String insertTeamQueryLocalVariableValue = "INSERT INTO teams (name) VALUES (?)";
@@ -154,7 +227,7 @@ public class PlayerDao {
 
             int teamIdLocalVariableValue = -1;
 
-            // Busca si el equipo ya existe
+
             try (PreparedStatement searchTeamStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(searchTeamQueryLocalVariableValue)) {
 
@@ -167,7 +240,7 @@ public class PlayerDao {
                 }
             }
 
-            // Si el equipo no existe, lo crea
+
             if (teamIdLocalVariableValue == -1) {
                 try (PreparedStatement insertTeamStatementLocalVariableValue =
                              connectionLocalVariableValue.prepareStatement(
@@ -189,7 +262,7 @@ public class PlayerDao {
 
             int playerIdLocalVariableValue;
 
-            // Inserta el jugador
+
             try (PreparedStatement insertPlayerStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(
                                  insertPlayerQueryLocalVariableValue,
@@ -213,7 +286,7 @@ public class PlayerDao {
                 }
             }
 
-            // Crea la relación entre el jugador y el equipo
+
             try (PreparedStatement insertRelationStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(insertRelationQueryLocalVariableValue)) {
 
@@ -227,7 +300,7 @@ public class PlayerDao {
             return true;
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("PlayerDao", eventArgumentExceptionParameter);
 
             try {
                 if (connectionLocalVariableValue != null) {
@@ -241,7 +314,13 @@ public class PlayerDao {
         }
     }
 
-    // Convierte una fila del ResultSet en un objeto Player
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param resultLocalVariableValue resultado que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private Player mapPlayer(ResultSet resultLocalVariableValue) throws SQLException {
         String displayNameLocalVariableValue = resultLocalVariableValue.getString("name");
         String emailAddressLocalVariableValue = resultLocalVariableValue.getString("email");
@@ -253,7 +332,7 @@ public class PlayerDao {
 
         int phoneNumberLocalVariableValue = 0;
 
-        // Limpia el teléfono para quedarse solo con números
+
         if (phoneRawLocalVariableValue != null) {
             String digitsLocalVariableValue = phoneRawLocalVariableValue.replaceAll("\\D", "");
 

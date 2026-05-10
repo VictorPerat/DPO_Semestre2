@@ -5,16 +5,26 @@ import presentation.AppNavigator;
 import presentation.LiveMatchesWidgetService;
 import presentation.Views.AdminMenuView;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/** Controlador del menú de administrador dentro del CardLayout. */
+
+/**
+ * Coordina la pantalla del administrador menu.
+ */
 public class AdminMenuController implements ActionListener, DeletePlayerListener, MenuController, LeagueViewActions {
     private final AdminMenuView adminMenuViewInterfaceFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
     private final AppNavigator navigatorFieldReference;
 
+
+    /**
+     * Crea una instancia de el administrador menu.
+     *
+     * @param adminMenuViewInterfaceParameterValue administrador menu vista.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public AdminMenuController(AdminMenuView adminMenuViewInterfaceParameterValue,
                                PlayerManager playerProfileManagerServiceParameterValue,
                                AppNavigator navigatorParameterValue) {
@@ -24,30 +34,39 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
         this.adminMenuViewInterfaceFieldReference.registerController(this);
     }
 
-    public AdminMenuController(AdminMenuView adminMenuViewInterfaceParameterValue,
-                               PlayerManager playerProfileManagerServiceParameterValue) {
-        this(
-                adminMenuViewInterfaceParameterValue,
-                playerProfileManagerServiceParameterValue,
-                AppNavigator.getInstance()
-        );
-    }
 
+    /**
+     * Muestra el menu.
+     */
     @Override
     public void showMenu() {
         showAdminMenu();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     @Override
     public void returnToMenu() {
         showAdminMenu();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     @Override
     public void onPlayersDeleted() {
         showAdminMenu();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -82,25 +101,45 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
         }
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void handleStats() {
         navigatorFieldReference.show(AppNavigator.STATISTICS);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     @Override
     public void handleCreateLeague() {
         navigatorFieldReference.show(AppNavigator.CREATE_LEAGUE);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     @Override
     public void handleDeleteLeague() {
         navigatorFieldReference.show(AppNavigator.DELETE_LEAGUE);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     @Override
     public void handleViewLeagues() {
         navigatorFieldReference.show(AppNavigator.AVAILABLE_LEAGUES);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     @Override
     public void handleLogout() {
         LiveMatchesWidgetService.hide();
@@ -108,71 +147,71 @@ public class AdminMenuController implements ActionListener, DeletePlayerListener
         navigatorFieldReference.show(AppNavigator.LOGIN);
     }
 
+
+    /**
+     * Muestra el administrador menu.
+     */
     public void showAdminMenu() {
         navigatorFieldReference.show(AppNavigator.ADMIN_MENU);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleDeletePlayer() {
         navigatorFieldReference.show(AppNavigator.DELETE_PLAYER);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleDeleteTeam() {
         navigatorFieldReference.show(AppNavigator.DELETE_TEAM);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleCreateTeam() {
         navigatorFieldReference.show(AppNavigator.CREATE_TEAM);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleGames() {
         navigatorFieldReference.show(AppNavigator.LIVE_MATCHES);
     }
 
+
+    /**
+     * Devuelve el jugador.
+     *
+     * @return el jugador.
+     */
     public PlayerManager getPlayerManager() {
         return playerProfileManagerServiceFieldReference;
     }
 
+
+    /**
+     * Muestra el configuracion dialogo.
+     */
     @Override
     public void showConfigDialog() {
         Rounded.ConfigDialog configDialogLocalVariableValue =
                 Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
-
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
-            configDialogLocalVariableValue.dispose();
-
-            switch (eventArgumentParameterValue.getActionCommand()) {
-                case Rounded.ConfigDialog.LOGOUT:
-                    handleLogout();
-                    break;
-                case Rounded.ConfigDialog.DELETE_ACCOUNT:
-                    handleDeleteAccount();
-                    break;
-                case Rounded.ConfigDialog.CHANGE_PASSWORD:
-                    openChangePasswordView();
-                    break;
-                default:
-                    break;
-            }
-        });
-
-        configDialogLocalVariableValue.setBackButtonListener(
-                eventArgumentParameterValue -> configDialogLocalVariableValue.dispose()
+        presentation.AccountSettingsWidgetService.configureDialogForCurrentSession(
+                configDialogLocalVariableValue,
+                AppNavigator.ADMIN_MENU
         );
-
         configDialogLocalVariableValue.setVisible(true);
     }
 
-    private void openChangePasswordView() {
-        navigatorFieldReference.setChangePasswordReturnAction(
-                () -> navigatorFieldReference.show(AppNavigator.ADMIN_MENU)
-        );
-        navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
-    }
-
-    private void handleDeleteAccount() {
-        JOptionPane.showMessageDialog(
-                navigatorFieldReference.getMainView(),
-                "The admin account cannot be deleted."
-        );
-    }
 }
+
+

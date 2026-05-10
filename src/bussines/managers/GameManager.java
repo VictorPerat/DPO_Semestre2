@@ -7,35 +7,67 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+
 /**
- * Esta clase se encarga de gestionar las operaciones relacionadas con los partidos.
+ * Gestiona las operaciones del partido.
  */
 public class GameManager {
 
-    // DAO que se usa para acceder a los datos de los partidos
+
     private final GameDao gameEntityDataAccessObjectFieldReference = new GameDao();
 
-    // Devuelve todos los partidos de una liga
+
+    /**
+     * Devuelve el partidos liga.
+     *
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @return el partidos liga.
+     */
     public ArrayList<Game> getGamesByLeague(int leagueReferenceIdentifierParameterValue) {
         return gameEntityDataAccessObjectFieldReference.getGamesByLeague(leagueReferenceIdentifierParameterValue);
     }
 
-    // Actualiza si un partido ha comenzado o no
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param gameEntityIdentifierParameterValue partido identificador.
+     * @param començatParameterValue dato de entrada de la operacion.
+     */
     public void actualitzaComençat(int gameEntityIdentifierParameterValue, boolean començatParameterValue) {
         gameEntityDataAccessObjectFieldReference.actualitzaComençat(gameEntityIdentifierParameterValue, començatParameterValue);
     }
 
-    // Devuelve los partidos en directo visibles para admin
+
+    /**
+     * Devuelve los directo partidos.
+     *
+     * @return los directo partidos.
+     */
     public List<String[]> getLiveGames() {
         return gameEntityDataAccessObjectFieldReference.getLiveGames();
     }
 
-    // Devuelve los partidos en directo filtrados por ligas
+
+    /**
+     * Devuelve el directo partidos liga.
+     *
+     * @param leagueIdsParameterValue liga que usa la operacion.
+     * @return el directo partidos liga.
+     */
     public List<String[]> getLiveGamesByLeagueIds(Collection<Integer> leagueIdsParameterValue) {
         return gameEntityDataAccessObjectFieldReference.getLiveGamesByLeagueIds(leagueIdsParameterValue);
     }
 
-    // Busca el id de un partido usando los nombres de los equipos y la liga
+
+    /**
+     * Devuelve el partido liga.
+     *
+     * @param localParameterValue dato de entrada de la operacion.
+     * @param visitantParameterValue dato de entrada de la operacion.
+     * @param identifierParameterValue identificador del usuario.
+     * @return el partido liga.
+     */
     public int getGameIdByLeague(String localParameterValue,
                                  String visitantParameterValue,
                                  int identifierParameterValue) {
@@ -46,18 +78,32 @@ public class GameManager {
         );
     }
 
-    // Borra todos los partidos donde participa un equipo
+
+    /**
+     * Elimina el partidos equipo.
+     *
+     * @param displayNameParameterValue nombre que se muestra.
+     */
     public void deleteGamesByTeam(String displayNameParameterValue) {
         gameEntityDataAccessObjectFieldReference.deleteGamesByTeam(displayNameParameterValue);
     }
 
-    // Marca un partido como finalizado
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param gameEntityIdentifierParameterValue2 partido identificador.
+     */
     public void marcarPartitComAcabat(int gameEntityIdentifierParameterValue2) {
         gameEntityDataAccessObjectFieldReference.finishGame(gameEntityIdentifierParameterValue2);
     }
 
+
     /**
-     * Guarda el ganador del partido o "DRAW" si fue empate.
+     * Actualiza el partido.
+     *
+     * @param gameIdParameterValue partido que usa la operacion.
+     * @param winnerNameParameterValue nombre que usa la operacion.
      */
     public void setGameWinner(int gameIdParameterValue, String winnerNameParameterValue) {
         gameEntityDataAccessObjectFieldReference.setGameWinner(
@@ -66,7 +112,13 @@ public class GameManager {
         );
     }
 
-    // Comprueba si alguno de los equipos seleccionados está jugando ahora mismo
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param selectedTeamsParameterValue equipos que usa la operacion.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean teamIsPlaying(ArrayList<String> selectedTeamsParameterValue) {
         ArrayList<Game> gamesLocalVariableValue =
                 gameEntityDataAccessObjectFieldReference.searchPlayingTeams(selectedTeamsParameterValue);

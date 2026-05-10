@@ -1,34 +1,43 @@
 package bussines.managers;
 
 import bussines.objects.TeamInfo;
-import persistance.TeamInfoDao;
-import persistance.LeagueDao;
 import persistance.TeamDao;
+import persistance.TeamInfoDao;
 
 import java.util.ArrayList;
 
+
 /**
- * Esta clase se encarga de gestionar la información de los equipos dentro de las ligas.
+ * Gestiona las operaciones del equipo.
  */
 public class TeamInfoManager {
 
-    // DAO que se usa para acceder a la información de los equipos en las ligas
+
     private final TeamInfoDao informationTeamReferenceDataAccessObjectFieldReference;
 
-    // DAO relacionado con ligas
-    private LeagueDao leagueReferenceDataAccessObjectFieldReference;
 
-    // DAO relacionado con equipos
     private TeamDao teamReferenceDataAccessObjectFieldReference;
 
-    // Constructor que inicializa los DAOs necesarios
+
+    /**
+     * Crea una instancia de el equipo.
+     */
     public TeamInfoManager() {
         informationTeamReferenceDataAccessObjectFieldReference = new TeamInfoDao();
-        this.leagueReferenceDataAccessObjectFieldReference = new LeagueDao();
         this.teamReferenceDataAccessObjectFieldReference = new TeamDao();
     }
 
-    // Crea y guarda la información de un equipo dentro de una liga
+
+    /**
+     * Crea el equipo.
+     *
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @param teamReferenceIdentifierParameterValue equipo identificador.
+     * @param winsParameterValue dato de entrada de la operacion.
+     * @param defeatsParameterValue dato de entrada de la operacion.
+     * @param tiesParameterValue dato de entrada de la operacion.
+     * @param pointsParameterValue dato de entrada de la operacion.
+     */
     public void createInfoTeam(int leagueReferenceIdentifierParameterValue,
                                int teamReferenceIdentifierParameterValue,
                                int winsParameterValue,
@@ -48,7 +57,13 @@ public class TeamInfoManager {
         informationTeamReferenceDataAccessObjectFieldReference.createInfoTeam(logicTeamReferenceLocalVariableValue);
     }
 
-    // Devuelve la información de todos los equipos de una liga
+
+    /**
+     * Devuelve el equipos liga.
+     *
+     * @param leagueReferenceIdentifierParameterValue2 liga identificador.
+     * @return el equipos liga.
+     */
     public ArrayList<TeamInfo> getInfoTeamsOfLeague(int leagueReferenceIdentifierParameterValue2) {
         ArrayList<TeamInfo> teamsLocalVariableValue =
                 informationTeamReferenceDataAccessObjectFieldReference.getTeamsInLeague(
@@ -58,14 +73,22 @@ public class TeamInfoManager {
         return teamsLocalVariableValue;
     }
 
-    // Borra la información de un equipo usando su id
+
+    /**
+     * Elimina el equipo.
+     *
+     * @param idteamParameterValue dato de entrada de la operacion.
+     */
     public void deleteInfoTeam(int idteamParameterValue) {
         informationTeamReferenceDataAccessObjectFieldReference.deleteInfoTeam(idteamParameterValue);
     }
 
+
     /**
-     * Aplica el resultado de una victoria: +3 puntos y +1 win al
-     * ganador, +1 defeat al perdedor.
+     * Gestiona esta operacion.
+     *
+     * @param equipGuanyadorParameterValue dato de entrada de la operacion.
+     * @param leagueReferenceIdentifierParameterValue3 liga identificador.
      */
     public void afegirPuntsPerVictoria(String equipGuanyadorParameterValue,
                                        int leagueReferenceIdentifierParameterValue3) {
@@ -73,9 +96,13 @@ public class TeamInfoManager {
                 leagueReferenceIdentifierParameterValue3);
     }
 
+
     /**
-     * Versión con perdedor explícito para que se contabilicen también
-     * las defeats. El segundo parámetro puede ser null si no se conoce.
+     * Gestiona esta operacion.
+     *
+     * @param equipGuanyadorParameterValue dato de entrada de la operacion.
+     * @param equipPerdedorParameterValue dato de entrada de la operacion.
+     * @param leagueReferenceIdentifierParameterValue3 liga identificador.
      */
     public void afegirPuntsPerVictoria(String equipGuanyadorParameterValue,
                                        String equipPerdedorParameterValue,
@@ -110,8 +137,13 @@ public class TeamInfoManager {
         }
     }
 
+
     /**
-     * Aplica un empate: +1 punto y +1 tie a ambos equipos.
+     * Gestiona esta operacion.
+     *
+     * @param equip1ParameterValue dato de entrada de la operacion.
+     * @param equip2ParameterValue dato de entrada de la operacion.
+     * @param leagueReferenceIdentifierParameterValue4 liga identificador.
      */
     public void afegirPuntsPerEmpat(String equip1ParameterValue,
                                     String equip2ParameterValue,
@@ -150,3 +182,5 @@ public class TeamInfoManager {
         }
     }
 }
+
+

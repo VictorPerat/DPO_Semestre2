@@ -5,15 +5,16 @@ import bussines.objects.Game;
 import bussines.objects.Team;
 import presentation.AppNavigator;
 import presentation.Views.TeamSelectionView;
-import presentation.Views.CreateLeagueView;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-/** Controlador del paso de selección de equipos para crear liga. */
+
+/**
+ * Coordina la pantalla del equipo.
+ */
 public class TeamSelectionController implements ActionListener {
     private final TeamSelectionView teamReferenceSelectionViewInterfaceFieldReference;
     private final LeagueManager leagueReferenceManagerServiceFieldReference = new LeagueManager();
@@ -23,6 +24,14 @@ public class TeamSelectionController implements ActionListener {
     private String startDateFieldReference;
     private String startHourFieldReference;
 
+
+    /**
+     * Crea una instancia de el equipo.
+     *
+     * @param teamReferenceSelectionViewInterfaceParameterValue equipo vista.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     * @param calendarViewLoaderParameterValue calendario vista.
+     */
     public TeamSelectionController(TeamSelectionView teamReferenceSelectionViewInterfaceParameterValue,
                                    AppNavigator navigatorParameterValue,
                                    LeagueDetailController.CalendarViewLoader calendarViewLoaderParameterValue) {
@@ -33,15 +42,25 @@ public class TeamSelectionController implements ActionListener {
         this.teamReferenceSelectionViewInterfaceFieldReference.setBackButtonListener(eventArgumentParameterValue -> navigatorFieldReference.show(AppNavigator.CREATE_LEAGUE));
     }
 
-    public TeamSelectionController(TeamSelectionView teamReferenceSelectionViewInterfaceParameterValue,
-                                   CreateLeagueView createLeagueReferenceViewInterfaceParameterValue) {
-        this(teamReferenceSelectionViewInterfaceParameterValue, AppNavigator.getInstance(), null);
-    }
 
+    /**
+     * Actualiza el calendario vista.
+     *
+     * @param loaderParameterValue dato de entrada de la operacion.
+     */
     public void setCalendarViewLoader(LeagueDetailController.CalendarViewLoader loaderParameterValue) {
         this.calendarViewLoaderHandlerFieldReference = loaderParameterValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param leagueNameParameterValue nombre de la liga.
+     * @param startDateParameterValue dato de entrada de la operacion.
+     * @param startHourParameterValue dato de entrada de la operacion.
+     * @param teamsParameterValue equipos que usa la operacion.
+     */
     public void prepareLeagueCreation(String leagueNameParameterValue,
                                       String startDateParameterValue,
                                       String startHourParameterValue,
@@ -52,6 +71,12 @@ public class TeamSelectionController implements ActionListener {
         teamReferenceSelectionViewInterfaceFieldReference.loadAvailableTeams(teamsParameterValue);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         if (TeamSelectionView.CREATE_LEAGUE.equals(eventArgumentParameterValue.getActionCommand())) {
@@ -59,6 +84,10 @@ public class TeamSelectionController implements ActionListener {
         }
     }
 
+
+    /**
+     * Crea el liga.
+     */
     private void createLeague() {
         ArrayList<String> selectedTeamsLocalVariableValue = teamReferenceSelectionViewInterfaceFieldReference.getSelectedTeamNames();
         if (selectedTeamsLocalVariableValue.size() < 2) {
@@ -77,3 +106,5 @@ public class TeamSelectionController implements ActionListener {
         navigatorFieldReference.show(AppNavigator.CALENDAR);
     }
 }
+
+

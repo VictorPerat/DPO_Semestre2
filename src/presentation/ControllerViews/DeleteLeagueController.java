@@ -9,40 +9,58 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-/** Controlador para borrar ligas desde CardLayout. */
+
+/**
+ * Coordina la pantalla del liga.
+ */
 public class DeleteLeagueController implements ActionListener {
     private final DeleteLeagueView viewInterfaceFieldReference;
     private final LeagueManager leagueReferenceManagerServiceFieldReference = new LeagueManager();
     private final AppNavigator navigatorFieldReference;
 
+
+    /**
+     * Crea una instancia de el liga.
+     *
+     * @param viewInterfaceParameterValue vista que usa la operacion.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public DeleteLeagueController(DeleteLeagueView viewInterfaceParameterValue, AppNavigator navigatorParameterValue) {
         this.viewInterfaceFieldReference = viewInterfaceParameterValue;
         this.navigatorFieldReference = navigatorParameterValue;
-        this.viewInterfaceFieldReference.setConfigController(this);
+        this.viewInterfaceFieldReference.setController(this);
         refreshLeagues();
     }
 
-    public DeleteLeagueController(DeleteLeagueView viewInterfaceParameterValue, AdminMenuController adminMenuControllerHandlerParameterValue) {
-        this(viewInterfaceParameterValue, AppNavigator.getInstance());
-    }
 
+    /**
+     * Gestiona esta operacion.
+     */
     public void refreshLeagues() {
         ArrayList<League> leaguesLocalVariableValue = leagueReferenceManagerServiceFieldReference.getAllLeagues();
         viewInterfaceFieldReference.loadLeagues(leaguesLocalVariableValue);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
         if ("BACK".equals(commandLocalVariableValue)) {
             navigatorFieldReference.show(AppNavigator.ADMIN_MENU);
-        } else if ("CONFIG".equals(commandLocalVariableValue)) {
-            showConfigDialog();
         } else if ("DELETE_LEAGUES".equals(commandLocalVariableValue)) {
             deleteSelectedLeagues();
         }
     }
 
+
+    /**
+     * Elimina los ligas.
+     */
     private void deleteSelectedLeagues() {
         ArrayList<String> selectedLeaguesLocalVariableValue = viewInterfaceFieldReference.getSelectedLeagues();
         if (selectedLeaguesLocalVariableValue.isEmpty()) {
@@ -55,19 +73,6 @@ public class DeleteLeagueController implements ActionListener {
             refreshLeagues();
         }
     }
-
-    private void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
-            configDialogLocalVariableValue.dispose();
-            if (Rounded.ConfigDialog.LOGOUT.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.show(AppNavigator.LOGIN);
-            } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.DELETE_LEAGUE));
-                navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
-            }
-        });
-        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
-        configDialogLocalVariableValue.setVisible(true);
-    }
 }
+
+

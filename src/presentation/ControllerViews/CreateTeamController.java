@@ -14,10 +14,14 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Collections;
 
-/** Controlador para crear equipos desde JSON en CardLayout. */
+
+/**
+ * Coordina la pantalla del equipo.
+ */
 public class CreateTeamController {
     private static final String TEAMS_DIRECTORY_PATH = "data/teams";
     private final CreateTeamView viewInterfaceFieldReference;
@@ -25,6 +29,13 @@ public class CreateTeamController {
     private final TeamManager teamReferenceManagerServiceFieldReference = new TeamManager();
     private final PlayerManager playerProfileManagerServiceFieldReference = new PlayerManager();
 
+
+    /**
+     * Crea una instancia de el equipo.
+     *
+     * @param viewInterfaceParameterValue vista que usa la operacion.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public CreateTeamController(CreateTeamView viewInterfaceParameterValue,
                                 AppNavigator navigatorParameterValue) {
         this.viewInterfaceFieldReference = viewInterfaceParameterValue;
@@ -33,24 +44,34 @@ public class CreateTeamController {
         viewInterfaceParameterValue.refreshFileList();
     }
 
-    public CreateTeamController(CreateTeamView viewInterfaceParameterValue,
-                                AdminMenuController adminMenuControllerHandlerParameterValue) {
-        this(viewInterfaceParameterValue, AppNavigator.getInstance());
-    }
 
+    /**
+     * Actualiza el contenido.
+     */
     private void setupListeners() {
         viewInterfaceFieldReference.setBackButtonListener(eventArgumentParameterValue -> navigatorFieldReference.show(AppNavigator.ADMIN_MENU));
-        viewInterfaceFieldReference.setConfigController(eventArgumentParameterValue -> showConfigDialog());
         viewInterfaceFieldReference.setValidateListener(eventArgumentParameterValue -> validateAndImportTeams());
         viewInterfaceFieldReference.setFileUploadListener(this::copyUploadedFile);
     }
 
+
+    /**
+     * Devuelve los equipos.
+     *
+     * @return los equipos.
+     */
     private File getTeamsDirectory() {
         File folderLocalVariableValue = new File(TEAMS_DIRECTORY_PATH);
         if (!folderLocalVariableValue.exists()) { folderLocalVariableValue.mkdirs(); }
         return folderLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param selectedFileParameterValue dato de entrada de la operacion.
+     */
     private void copyUploadedFile(File selectedFileParameterValue) {
         try {
             File destinationLocalVariableValue = new File(getTeamsDirectory(), selectedFileParameterValue.getName());
@@ -62,6 +83,10 @@ public class CreateTeamController {
         }
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void validateAndImportTeams() {
         File[] filesLocalVariableValue = getTeamsDirectory().listFiles((dirParameterValue, displayNameParameterValue) -> displayNameParameterValue.toLowerCase().endsWith(".json"));
         if (filesLocalVariableValue == null || filesLocalVariableValue.length == 0) {
@@ -124,36 +149,83 @@ public class CreateTeamController {
         viewInterfaceFieldReference.refreshFileList();
     }
 
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param emailAddressParameterValue direccion de email.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     private boolean isValidEmail(String emailAddressParameterValue) {
         return emailAddressParameterValue != null && emailAddressParameterValue.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
     }
 
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param dniParameterValue dni que usa la operacion.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     private boolean isValidDNI(String dniParameterValue) {
         return dniParameterValue != null && dniParameterValue.matches("^[0-9]{8}[A-Za-z]$");
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param lengthParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private String generateRandomPassword(int lengthParameterValue) {
-        String charsLocalVariableValue = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        Random randomLocalVariableValue = new Random();
-        StringBuilder builderLocalVariableValue = new StringBuilder();
-        for (int indexCounterLocalVariableValue = 0; indexCounterLocalVariableValue < lengthParameterValue; indexCounterLocalVariableValue++) {
-            builderLocalVariableValue.append(charsLocalVariableValue.charAt(randomLocalVariableValue.nextInt(charsLocalVariableValue.length())));
+        int effectiveLengthLocalVariableValue = Math.max(lengthParameterValue, 8);
+
+        String lowercaseCharsLocalVariableValue = "abcdefghijklmnopqrstuvwxyz";
+        String uppercaseCharsLocalVariableValue = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String digitCharsLocalVariableValue = "0123456789";
+        String allCharsLocalVariableValue =
+                lowercaseCharsLocalVariableValue
+                + uppercaseCharsLocalVariableValue
+                + digitCharsLocalVariableValue;
+
+        SecureRandom secureRandomLocalVariableValue = new SecureRandom();
+        ArrayList<Character> passwordCharsLocalVariableValue = new ArrayList<>();
+
+
+        passwordCharsLocalVariableValue.add(
+                lowercaseCharsLocalVariableValue.charAt(
+                        secureRandomLocalVariableValue.nextInt(
+                                lowercaseCharsLocalVariableValue.length())));
+        passwordCharsLocalVariableValue.add(
+                uppercaseCharsLocalVariableValue.charAt(
+                        secureRandomLocalVariableValue.nextInt(
+                                uppercaseCharsLocalVariableValue.length())));
+        passwordCharsLocalVariableValue.add(
+                digitCharsLocalVariableValue.charAt(
+                        secureRandomLocalVariableValue.nextInt(
+                                digitCharsLocalVariableValue.length())));
+
+
+        for (int indexCounterLocalVariableValue = 3;
+             indexCounterLocalVariableValue < effectiveLengthLocalVariableValue;
+             indexCounterLocalVariableValue++) {
+            passwordCharsLocalVariableValue.add(
+                    allCharsLocalVariableValue.charAt(
+                            secureRandomLocalVariableValue.nextInt(
+                                    allCharsLocalVariableValue.length())));
         }
+
+
+        Collections.shuffle(passwordCharsLocalVariableValue, secureRandomLocalVariableValue);
+
+        StringBuilder builderLocalVariableValue = new StringBuilder();
+        for (char charValueLocalVariableValue : passwordCharsLocalVariableValue) {
+            builderLocalVariableValue.append(charValueLocalVariableValue);
+        }
+
         return builderLocalVariableValue.toString();
     }
-
-    private void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
-            configDialogLocalVariableValue.dispose();
-            if (Rounded.ConfigDialog.LOGOUT.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.show(AppNavigator.LOGIN);
-            } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.CREATE_TEAM));
-                navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
-            }
-        });
-        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
-        configDialogLocalVariableValue.setVisible(true);
-    }
 }
+
+

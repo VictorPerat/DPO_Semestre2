@@ -5,10 +5,12 @@ import shared.ProjectPathResolver;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/** Formulario para crear una liga como tarjeta CardLayout. */
+
+/**
+ * Representa la vista del liga.
+ */
 public class CreateLeagueView extends JPanel {
 
     private JTextField leagueReferenceDisplayNameFieldFieldReference;
@@ -18,13 +20,15 @@ public class CreateLeagueView extends JPanel {
 
     private Rounded.RoundedButton availableTeamsButtonFieldReference;
     private Rounded.RoundedButton backButtonFieldReference;
-    private JButton configButtonFieldReference;
 
-    private ActionListener configControllerHandlerFieldReference;
-
+    /**
+     * Constante para los disponibles equipos.
+     */
     public static final String AVAILABLE_TEAMS_BUTTON = "AVAILABLE_TEAMS_BUTTON";
+    /**
+     * Constante para el vuelta.
+     */
     public static final String BACK = "BACK";
-    public static final String CONFIG = "CONFIG";
 
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
     private static final Color TITLE_WHITE = new Color(245, 247, 250);
@@ -40,16 +44,27 @@ public class CreateLeagueView extends JPanel {
     private static final String TROPHY_IMAGE_PATH =
             ProjectPathResolver.resolveProjectPath("photos/trofeo.png");
 
+
+    /**
+     * Crea una instancia de el liga.
+     */
     public CreateLeagueView() {
         setLayout(new BorderLayout());
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue =
                 new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -65,7 +80,7 @@ public class CreateLeagueView extends JPanel {
 
                 Graphics2D g2LocalVariableValue =
                         (Graphics2D) graphicsParameterValue.create();
-                g2LocalVariableValue.setColor(new Color(0, 0, 0, 55));
+                g2LocalVariableValue.setColor(new Color(0, 0, 0, 35));
                 g2LocalVariableValue.fillRect(0, 0, getWidth(), getHeight());
                 g2LocalVariableValue.dispose();
             }
@@ -75,20 +90,26 @@ public class CreateLeagueView extends JPanel {
 
         backgroundPanelLocalVariableValue.add(buildTopBar(), BorderLayout.NORTH);
         backgroundPanelLocalVariableValue.add(buildCenterContent(), BorderLayout.CENTER);
-        backgroundPanelLocalVariableValue.add(buildBottomBar(), BorderLayout.SOUTH);
+
 
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTopBar() {
         JPanel topBarLocalVariableValue = new JPanel(new BorderLayout());
         topBarLocalVariableValue.setOpaque(false);
         topBarLocalVariableValue.setBorder(new EmptyBorder(28, 40, 0, 40));
 
-        JPanel rightPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        JPanel rightPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         rightPanelLocalVariableValue.setOpaque(false);
 
-        backButtonFieldReference = new Rounded.RoundedButton("← BACK", 18);
+        backButtonFieldReference = new Rounded.RoundedButton("< BACK", 18);
         backButtonFieldReference.setActionCommand(BACK);
         backButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 15));
         backButtonFieldReference.setForeground(ACCENT_COLOR);
@@ -98,65 +119,17 @@ public class CreateLeagueView extends JPanel {
         backButtonFieldReference.setPreferredSize(new Dimension(145, 44));
 
         rightPanelLocalVariableValue.add(backButtonFieldReference);
-        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.EAST);
+        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.WEST);
 
         return topBarLocalVariableValue;
     }
 
-    private JPanel buildBottomBar() {
-        JPanel bottomBarLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 8));
-        bottomBarLocalVariableValue.setOpaque(false);
-        bottomBarLocalVariableValue.setBorder(new EmptyBorder(0, 20, 18, 0));
 
-        configButtonFieldReference = buildConfigButton();
-        bottomBarLocalVariableValue.add(configButtonFieldReference);
-
-        return bottomBarLocalVariableValue;
-    }
-
-    private JButton buildConfigButton() {
-        JButton buttonControlLocalVariableValue = new JButton();
-        buttonControlLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
-        buttonControlLocalVariableValue.setContentAreaFilled(false);
-        buttonControlLocalVariableValue.setFocusPainted(false);
-        buttonControlLocalVariableValue.setOpaque(false);
-        buttonControlLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        try {
-            String iconPathLocalVariableValue = resolveExistingIconPath(
-                    "photos/Rueda_Ajustes.png",
-                    "photos/Rueda Ajustes.png"
-            );
-
-            Image rawIconLocalVariableValue =
-                    new ImageIcon(iconPathLocalVariableValue).getImage();
-
-            Image scaledIconLocalVariableValue =
-                    rawIconLocalVariableValue.getScaledInstance(
-                            82,
-                            82,
-                            Image.SCALE_SMOOTH
-                    );
-
-            buttonControlLocalVariableValue.setIcon(new ImageIcon(scaledIconLocalVariableValue));
-            buttonControlLocalVariableValue.setPreferredSize(new Dimension(120, 120));
-        } catch (Exception ignoredExceptionParameterValue) {
-            buttonControlLocalVariableValue.setText("⚙");
-            buttonControlLocalVariableValue.setForeground(Color.WHITE);
-            buttonControlLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 32));
-        }
-
-        buttonControlLocalVariableValue.addActionListener(eventArgumentParameterValue -> {
-            if (configControllerHandlerFieldReference != null) {
-                configControllerHandlerFieldReference.actionPerformed(
-                        new ActionEvent(this, ActionEvent.ACTION_PERFORMED, CONFIG)
-                );
-            }
-        });
-
-        return buttonControlLocalVariableValue;
-    }
-
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildCenterContent() {
         JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
         centerWrapperLocalVariableValue.setOpaque(false);
@@ -176,7 +149,7 @@ public class CreateLeagueView extends JPanel {
 
         contentPanelLocalVariableValue.add(titleBlockLocalVariableValue);
 
-        // Menos separación para que la card tenga más espacio vertical.
+
         contentPanelLocalVariableValue.add(Box.createVerticalStrut(38));
 
         contentPanelLocalVariableValue.add(formCardLocalVariableValue);
@@ -188,6 +161,8 @@ public class CreateLeagueView extends JPanel {
         constraintsLocalVariableValue.weighty = 1.0;
         constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
 
+        constraintsLocalVariableValue.insets = new Insets(0, 0, 0, 310);
+
         centerWrapperLocalVariableValue.add(
                 contentPanelLocalVariableValue,
                 constraintsLocalVariableValue
@@ -196,6 +171,12 @@ public class CreateLeagueView extends JPanel {
         return centerWrapperLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -261,6 +242,12 @@ public class CreateLeagueView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildFormCard() {
         JPanel cardLocalVariableValue = new RoundedCardPanel();
         cardLocalVariableValue.setOpaque(false);
@@ -268,10 +255,10 @@ public class CreateLeagueView extends JPanel {
                 new BoxLayout(cardLocalVariableValue, BoxLayout.Y_AXIS)
         );
 
-        // Márgenes internos más compactos.
+
         cardLocalVariableValue.setBorder(new EmptyBorder(18, 34, 26, 34));
 
-        // Card más alta para que el botón quede dentro.
+
         cardLocalVariableValue.setPreferredSize(new Dimension(760, 600));
         cardLocalVariableValue.setMinimumSize(new Dimension(760, 600));
         cardLocalVariableValue.setMaximumSize(new Dimension(760, 600));
@@ -323,7 +310,7 @@ public class CreateLeagueView extends JPanel {
         availableTeamsButtonFieldReference.setOutlineMode(ACCENT_COLOR, 2);
         availableTeamsButtonFieldReference.setShadowEnabled(false);
 
-        // El botón mantiene el tamaño que ya estaba bien.
+
         availableTeamsButtonFieldReference.setPreferredSize(new Dimension(620, 46));
         availableTeamsButtonFieldReference.setMaximumSize(new Dimension(620, 46));
         availableTeamsButtonFieldReference.setMinimumSize(new Dimension(620, 46));
@@ -334,11 +321,17 @@ public class CreateLeagueView extends JPanel {
         return cardLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTrophyPanel() {
         JPanel trophyPanelLocalVariableValue = new JPanel(new GridBagLayout());
         trophyPanelLocalVariableValue.setOpaque(false);
 
-        // Grande, pero no tan alto como 170x170 para no empujar el botón.
+
         trophyPanelLocalVariableValue.setPreferredSize(new Dimension(138, 138));
         trophyPanelLocalVariableValue.setMaximumSize(new Dimension(138, 138));
         trophyPanelLocalVariableValue.setMinimumSize(new Dimension(138, 138));
@@ -362,7 +355,7 @@ public class CreateLeagueView extends JPanel {
                     new ImageIcon(scaledTrophyLocalVariableValue)
             );
         } catch (Exception ignoredExceptionParameterValue) {
-            trophyLabelLocalVariableValue.setText("🏆");
+            trophyLabelLocalVariableValue.setText("ÃƒÂ°Ã…Â¸Ã‚ÂÃ¢â‚¬Â ");
             trophyLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 62));
         }
 
@@ -371,6 +364,15 @@ public class CreateLeagueView extends JPanel {
         return trophyPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea el contenido.
+     *
+     * @param parentPanelParameterValue dato de entrada de la operacion.
+     * @param labelTextParameterValue texto que usa la operacion.
+     * @param placeholderParameterValue dato de entrada de la operacion.
+     * @return elemento creado por el metodo.
+     */
     private JTextField createInputField(JPanel parentPanelParameterValue,
                                         String labelTextParameterValue,
                                         String placeholderParameterValue) {
@@ -388,7 +390,7 @@ public class CreateLeagueView extends JPanel {
         textFieldLocalVariableValue.setFocusBorderColor(ACCENT_COLOR);
         textFieldLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 15));
 
-        // Un poco más alto
+
         textFieldLocalVariableValue.setPreferredSize(new Dimension(620, 42));
         textFieldLocalVariableValue.setMaximumSize(new Dimension(620, 42));
         textFieldLocalVariableValue.setMinimumSize(new Dimension(620, 42));
@@ -402,6 +404,13 @@ public class CreateLeagueView extends JPanel {
         return textFieldLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param labelParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private JPanel labelLabelWrapper(JLabel labelParameterValue) {
         JPanel wrapperLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         wrapperLocalVariableValue.setOpaque(false);
@@ -413,39 +422,51 @@ public class CreateLeagueView extends JPanel {
         return wrapperLocalVariableValue;
     }
 
-    private String resolveExistingIconPath(String primaryRelativePathParameterValue,
-                                           String fallbackRelativePathParameterValue) {
-        String primaryAbsolutePathLocalVariableValue =
-                ProjectPathResolver.resolveProjectPath(primaryRelativePathParameterValue);
 
-        if (new java.io.File(primaryAbsolutePathLocalVariableValue).exists()) {
-            return primaryAbsolutePathLocalVariableValue;
-        }
-
-        return ProjectPathResolver.resolveProjectPath(fallbackRelativePathParameterValue);
-    }
-
-    public void setConfigController(ActionListener controllerHandlerParameterValue) {
-        this.configControllerHandlerFieldReference = controllerHandlerParameterValue;
-    }
-
+    /**
+     * Devuelve el liga nombre.
+     *
+     * @return el liga nombre.
+     */
     public String getLeagueName() {
         return leagueReferenceDisplayNameFieldFieldReference.getText();
     }
 
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public String getDate() {
         return dateFieldFieldReference.getText();
     }
 
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public String getStartTime() {
         return startTimeFieldFieldReference.getText();
     }
 
+
+    /**
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void registerController(ActionListener controllerHandlerParameterValue) {
         availableTeamsButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         backButtonFieldReference.addActionListener(controllerHandlerParameterValue);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void clearForm() {
         leagueReferenceDisplayNameFieldFieldReference.setText("");
         seasonFieldFieldReference.setText("");
@@ -453,6 +474,12 @@ public class CreateLeagueView extends JPanel {
         startTimeFieldFieldReference.setText("");
     }
 
+
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -462,7 +489,18 @@ public class CreateLeagueView extends JPanel {
         );
     }
 
+
+    /**
+     * Agrupa la logica de esta parte de la aplicacion.
+     */
     private static class RoundedCardPanel extends JPanel {
+
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -477,7 +515,7 @@ public class CreateLeagueView extends JPanel {
             int heightLocalVariableValue = getHeight();
             int radiusLocalVariableValue = 22;
 
-            // sombra suave
+
             g2LocalVariableValue.setColor(new Color(8, 20, 46, 42));
             g2LocalVariableValue.fillRoundRect(
                     8,
@@ -488,7 +526,7 @@ public class CreateLeagueView extends JPanel {
                     radiusLocalVariableValue
             );
 
-            // cuerpo blanco: ahora MÁS ALTO para que el botón quede dentro visualmente
+
             g2LocalVariableValue.setColor(new Color(255, 255, 255, 250));
             g2LocalVariableValue.fillRoundRect(
                     0,
@@ -499,7 +537,7 @@ public class CreateLeagueView extends JPanel {
                     radiusLocalVariableValue
             );
 
-            // borde verde
+
             g2LocalVariableValue.setColor(new Color(22, 150, 83));
             g2LocalVariableValue.setStroke(new BasicStroke(2f));
             g2LocalVariableValue.drawRoundRect(
@@ -516,3 +554,5 @@ public class CreateLeagueView extends JPanel {
         }
     }
 }
+
+

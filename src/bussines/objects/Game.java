@@ -2,30 +2,44 @@ package bussines.objects;
 
 import java.time.LocalDateTime;
 
-// Objeto que representa un partido con sus datos basicos de estado
+
+/**
+ * Agrupa la logica de el partido.
+ */
 public class Game {
 
-    // Identificador unico del partido
+
     private int gameEntityIdentifierFieldReference;
 
-    // Nombre del equipo local y del visitante
+
     private String nomLocalFieldReference;
     private String nomVisitantFieldReference;
 
-    // Fecha del partido y liga a la que pertenece
+
     private LocalDateTime dataFieldReference;
     private int lligaIdentifierFieldReference;
 
-    // Jornada y estado actual del partido
+
     private int jornadaFieldReference;
     private boolean començatFieldReference;
     private boolean acabatFieldReference;
 
-    // Nombre del equipo ganador (o "DRAW" si fue empate, null si el
-    // partido todavía no ha acabado).
+
     private String winnerNameFieldReference;
 
-    // Construye un partido con todos sus datos persistidos
+
+    /**
+     * Crea una instancia de el partido.
+     *
+     * @param gameEntityIdentifierParameterValue partido identificador.
+     * @param nomLocalParameterValue dato de entrada de la operacion.
+     * @param nomVisitantParameterValue dato de entrada de la operacion.
+     * @param dataParameterValue dato de entrada de la operacion.
+     * @param lligaIdentifierParameterValue identificador que usa la operacion.
+     * @param jornadaParameterValue dato de entrada de la operacion.
+     * @param començatParameterValue dato de entrada de la operacion.
+     * @param acabatParameterValue dato de entrada de la operacion.
+     */
     public Game(int gameEntityIdentifierParameterValue,
                 String nomLocalParameterValue,
                 String nomVisitantParameterValue,
@@ -44,77 +58,169 @@ public class Game {
         this.acabatFieldReference = acabatParameterValue;
     }
 
-    // Devuelve el id del partido
+
+    /**
+     * Devuelve el partido.
+     *
+     * @return el partido.
+     */
     public int getGameId() { return gameEntityIdentifierFieldReference; }
 
-    // Devuelve el nombre del equipo local
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public String getNomLocal() { return nomLocalFieldReference; }
 
-    // Devuelve el nombre del equipo visitante
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public String getNomVisitant() { return nomVisitantFieldReference; }
 
-    // Devuelve la fecha y hora del partido
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public LocalDateTime getData() { return dataFieldReference; }
 
-    // Devuelve el id de la liga
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public int getLligaId() { return lligaIdentifierFieldReference; }
 
-    // Devuelve la jornada del partido
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public int getJornada() { return jornadaFieldReference; }
 
-    // Indica si el partido ya ha comenzado
+
+    /**
+     * Indica el estado actual.
+     *
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean isComençat() { return començatFieldReference; }
 
-    // Indica si el partido ya ha finalizado
+
+    /**
+     * Indica el estado actual.
+     *
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean isAcabat() { return acabatFieldReference; }
 
-    // Actualiza el id del partido
+
+    /**
+     * Actualiza el partido.
+     *
+     * @param gameEntityIdentifierParameterValue2 partido identificador.
+     */
     public void setGameId(int gameEntityIdentifierParameterValue2) {
         this.gameEntityIdentifierFieldReference = gameEntityIdentifierParameterValue2;
     }
 
-    // Actualiza el equipo local
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param nomLocalParameterValue2 dato de entrada de la operacion.
+     */
     public void setNomLocal(String nomLocalParameterValue2) {
         this.nomLocalFieldReference = nomLocalParameterValue2;
     }
 
-    // Actualiza el equipo visitante
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param nomVisitantParameterValue2 dato de entrada de la operacion.
+     */
     public void setNomVisitant(String nomVisitantParameterValue2) {
         this.nomVisitantFieldReference = nomVisitantParameterValue2;
     }
 
-    // Actualiza la fecha del partido
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param dataParameterValue2 dato de entrada de la operacion.
+     */
     public void setData(LocalDateTime dataParameterValue2) {
         this.dataFieldReference = dataParameterValue2;
     }
 
-    // Actualiza el id de la liga
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param lligaIdentifierParameterValue2 identificador que usa la operacion.
+     */
     public void setLligaId(int lligaIdentifierParameterValue2) {
         this.lligaIdentifierFieldReference = lligaIdentifierParameterValue2;
     }
 
-    // Actualiza la jornada del partido
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param jornadaParameterValue2 dato de entrada de la operacion.
+     */
     public void setJornada(int jornadaParameterValue2) {
         this.jornadaFieldReference = jornadaParameterValue2;
     }
 
-    // Marca si el partido ha empezado o no
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param començatParameterValue2 dato de entrada de la operacion.
+     */
     public void setComençat(boolean començatParameterValue2) {
         this.començatFieldReference = començatParameterValue2;
     }
 
-    // Marca si el partido ha acabado o no
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param acabatParameterValue2 dato de entrada de la operacion.
+     */
     public void setAcabat(boolean acabatParameterValue2) {
         this.acabatFieldReference = acabatParameterValue2;
     }
 
-    // Devuelve el nombre del ganador (o "DRAW" / null)
+
+    /**
+     * Devuelve el nombre.
+     *
+     * @return el nombre.
+     */
     public String getWinnerName() {
         return winnerNameFieldReference;
     }
 
-    // Asigna el nombre del ganador
+
+    /**
+     * Actualiza el nombre.
+     *
+     * @param winnerNameParameterValue nombre que usa la operacion.
+     */
     public void setWinnerName(String winnerNameParameterValue) {
         this.winnerNameFieldReference = winnerNameParameterValue;
     }
 }
+
+

@@ -14,20 +14,24 @@ import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+
 /**
- * Esta clase se encarga de gestionar lo relacionado con las ligas.
+ * Gestiona las operaciones del liga.
  */
 public class LeagueManager {
 
-    // DAO que se usa para acceder a los datos de las ligas
+
     private final LeagueDao leagueReferenceDataAccessObjectFieldReference;
 
-    // Managers auxiliares para trabajar con equipos, información y partidos
+
     private TeamInfoManager informationTeamReferenceManagerServiceFieldReference;
     private TeamManager teamReferenceManagerServiceFieldReference;
     private GameManager gameEntityManagerServiceFieldReference;
 
-    // Constructor que inicializa los objetos necesarios
+
+    /**
+     * Crea una instancia de el liga.
+     */
     public LeagueManager() {
         leagueReferenceDataAccessObjectFieldReference = new LeagueDao();
         this.informationTeamReferenceManagerServiceFieldReference = new TeamInfoManager();
@@ -35,21 +39,22 @@ public class LeagueManager {
         this.gameEntityManagerServiceFieldReference = new GameManager();
     }
 
-    // Devuelve todas las ligas guardadas
+
+    /**
+     * Devuelve los ligas.
+     *
+     * @return los ligas.
+     */
     public ArrayList<League> getAllLeagues() {
         return leagueReferenceDataAccessObjectFieldReference.getAllLeagues();
     }
 
+
     /**
-     * Reconstruye la evolución de puntos por jornada de cada equipo de
-     * una liga (apartado 2.7.1 del enunciado).
+     * Gestiona esta operacion.
      *
-     * Recorre los partidos por orden de jornada y asigna 3 puntos al
-     * ganador (o 1 a cada uno si fue empate). Los partidos no acabados
-     * no aportan puntos. Devuelve un objeto con:
-     *  - matriz [equipo][jornada] con los puntos acumulados.
-     *  - lista de nombres de equipos (mismo orden que la matriz).
-     *  - número total de jornadas de la liga.
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @return resultado de la operacion.
      */
     public StandingsTimeline computeStandingsTimeline(int leagueReferenceIdentifierParameterValue) {
         ArrayList<bussines.objects.Game> gamesLocalVariableValue =
@@ -61,7 +66,7 @@ public class LeagueManager {
             return new StandingsTimeline(new String[0], new int[0][0], 0);
         }
 
-        // Determinamos el conjunto de equipos y el número total de jornadas
+
         java.util.LinkedHashSet<String> teamSetLocalVariableValue =
                 new java.util.LinkedHashSet<>();
         int totalRoundsLocalVariableValue = 0;
@@ -77,7 +82,7 @@ public class LeagueManager {
                 teamSetLocalVariableValue.toArray(new String[0]);
         int teamCountLocalVariableValue = teamNamesLocalVariableValue.length;
 
-        // Mapa nombre -> índice en el array final
+
         java.util.HashMap<String, Integer> teamIndexLocalVariableValue =
                 new java.util.HashMap<>();
         for (int indexCounterLocalVariableValue = 0;
@@ -89,19 +94,18 @@ public class LeagueManager {
             );
         }
 
-        // Inicialmente todos los equipos tienen 0 puntos en cada jornada
+
         int[][] cumulativePointsLocalVariableValue =
                 new int[teamCountLocalVariableValue][totalRoundsLocalVariableValue];
 
-        // Para cada jornada, los puntos acumulados son los de la
-        // jornada anterior + lo ganado en esta jornada concreta.
+
         for (int roundIndexLocalVariableValue = 0;
              roundIndexLocalVariableValue < totalRoundsLocalVariableValue;
              roundIndexLocalVariableValue++) {
 
             int currentRoundLocalVariableValue = roundIndexLocalVariableValue + 1;
 
-            // Copiar acumulado de la jornada anterior
+
             if (roundIndexLocalVariableValue > 0) {
                 for (int teamIdxLocalVariableValue = 0;
                      teamIdxLocalVariableValue < teamCountLocalVariableValue;
@@ -111,7 +115,7 @@ public class LeagueManager {
                 }
             }
 
-            // Aplicar resultados de los partidos acabados en esta jornada
+
             for (bussines.objects.Game gameEntityLocalVariableValue : gamesLocalVariableValue) {
                 if (gameEntityLocalVariableValue.getJornada() != currentRoundLocalVariableValue) {
                     continue;
@@ -157,14 +161,23 @@ public class LeagueManager {
         );
     }
 
+
     /**
-     * Resultado del cálculo de evolución de puntos por jornada.
+     * Agrupa la logica de esta parte de la aplicacion.
      */
     public static class StandingsTimeline {
         private final String[] teamNamesFieldReference;
         private final int[][] cumulativePointsFieldReference;
         private final int totalRoundsFieldReference;
 
+
+        /**
+         * Crea una instancia de standingstimeline.
+         *
+         * @param teamNamesParameterValue equipo que usa la operacion.
+         * @param cumulativePointsParameterValue dato de entrada de la operacion.
+         * @param totalRoundsParameterValue dato de entrada de la operacion.
+         */
         public StandingsTimeline(String[] teamNamesParameterValue,
                                  int[][] cumulativePointsParameterValue,
                                  int totalRoundsParameterValue) {
@@ -173,16 +186,37 @@ public class LeagueManager {
             this.totalRoundsFieldReference = totalRoundsParameterValue;
         }
 
+
+        /**
+         * Devuelve el equipo.
+         *
+         * @return el equipo.
+         */
         public String[] getTeamNames() { return teamNamesFieldReference; }
+
+
+        /**
+         * Devuelve el contenido.
+         *
+         * @return el contenido.
+         */
         public int[][] getCumulativePoints() { return cumulativePointsFieldReference; }
+
+
+        /**
+         * Devuelve el contenido.
+         *
+         * @return el contenido.
+         */
         public int getTotalRounds() { return totalRoundsFieldReference; }
     }
 
+
     /**
-     * Calcula la etiqueta de estado de una liga (apartado 2.7 del
-     * enunciado): "Finished" si todos los partidos han acabado,
-     * "Round X" si la liga está en curso (X = jornada actual mayor con
-     * algún partido iniciado) o "Pending" si todavía no ha empezado.
+     * Devuelve el liga.
+     *
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @return el liga.
      */
     public String getLeagueStatusLabel(int leagueReferenceIdentifierParameterValue) {
         ArrayList<Game> gamesLocalVariableValue =
@@ -216,16 +250,13 @@ public class LeagueManager {
         return "Round " + currentRoundLocalVariableValue;
     }
 
+
     /**
-     * Construye la lista de entradas que verá la pantalla de ligas
-     * disponibles. Cada entrada incluye nombre, número de equipos y
-     * estado actual (apartado 2.7 del enunciado).
+     * Devuelve el liga.
      *
-     * @param isAdminParameterValue si es true se devuelven todas las
-     *        ligas; si es false se filtran por las del equipo del
-     *        jugador.
-     * @param userTeamNameParameterValue nombre del equipo del jugador
-     *        actual (ignorado cuando isAdmin = true).
+     * @param isAdminParameterValue administrador que usa la operacion.
+     * @param userTeamNameParameterValue nombre del equipo.
+     * @return el liga.
      */
     public ArrayList<LeagueListEntry> getLeagueListEntries(boolean isAdminParameterValue,
                                                            String userTeamNameParameterValue) {
@@ -261,17 +292,36 @@ public class LeagueManager {
         return entriesLocalVariableValue;
     }
 
-    // Devuelve las ligas en las que participa un equipo
+
+    /**
+     * Devuelve el ligas usuario equipo.
+     *
+     * @param teamReferenceDisplayNameParameterValue nombre del equipo.
+     * @return el ligas usuario equipo.
+     */
     public ArrayList<League> getLeaguesByUserTeam(String teamReferenceDisplayNameParameterValue) {
         return leagueReferenceDataAccessObjectFieldReference.getLeaguesByUserTeam(teamReferenceDisplayNameParameterValue);
     }
 
-    // Borra una liga usando su nombre
+
+    /**
+     * Elimina el liga nombre.
+     *
+     * @param displayNameParameterValue nombre que se muestra.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean deleteLeagueByName(String displayNameParameterValue) {
         return leagueReferenceDataAccessObjectFieldReference.deleteLeagueByName(displayNameParameterValue);
     }
 
-    // Comprueba si una liga ya existe en una lista
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param leaguesParameterValue ligas que usa la operacion.
+     * @param displayNameParameterValue2 nombre que usa la operacion.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean leagueExist(ArrayList<League> leaguesParameterValue, String displayNameParameterValue2) {
         for (League leagueReferenceLocalVariableValue : leaguesParameterValue) {
             if (leagueReferenceLocalVariableValue.getName().equalsIgnoreCase(displayNameParameterValue2)) {
@@ -281,7 +331,12 @@ public class LeagueManager {
         return false;
     }
 
-    // Devuelve una lista con los ids de todas las ligas
+
+    /**
+     * Devuelve el liga.
+     *
+     * @return el liga.
+     */
     public ArrayList<Integer> getAllLeagueIds() {
         ArrayList<Integer> leagueReferenceIdentifiersLocalVariableValue = new ArrayList<>();
         ArrayList<League> leaguesLocalVariableValue = leagueReferenceDataAccessObjectFieldReference.getAllLeagues();
@@ -297,7 +352,13 @@ public class LeagueManager {
         return leagueReferenceIdentifiersLocalVariableValue;
     }
 
-    // Comprueba si una fecha es válida o si ya ha pasado
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param dateParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     public int checkDateStatus(String dateParameterValue) {
         try {
             LocalDate inputDateLocalVariableValue = LocalDate.parse(dateParameterValue);
@@ -313,7 +374,14 @@ public class LeagueManager {
         }
     }
 
-    // Comprueba si una fecha y una hora son válidas o si ya han pasado
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param timeParameterValue dato de entrada de la operacion.
+     * @param dateParameterValue2 dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     public int checkTimeStatus(String timeParameterValue, String dateParameterValue2) {
         try {
             LocalDate inputDateLocalVariableValue2 = LocalDate.parse(dateParameterValue2);
@@ -330,7 +398,14 @@ public class LeagueManager {
         }
     }
 
-    // Crea una nueva liga y la guarda en la base de datos
+
+    /**
+     * Crea el liga.
+     *
+     * @param leagueReferenceDisplayNameParameterValue nombre de la liga.
+     * @param startDateParameterValue dato de entrada de la operacion.
+     * @param teamReferenceNamesParameterValue equipo que usa la operacion.
+     */
     public void createLeague(String leagueReferenceDisplayNameParameterValue,
                              String startDateParameterValue,
                              ArrayList<String> teamReferenceNamesParameterValue) {
@@ -345,37 +420,35 @@ public class LeagueManager {
         leagueReferenceDataAccessObjectFieldReference.createLeague(newLeagueReferenceLocalVariableValue);
     }
 
-    // Devuelve el id de una liga a partir de su nombre
+
+    /**
+     * Devuelve el liga nombre.
+     *
+     * @param leagueReferenceDisplayNameParameterValue2 nombre de la liga.
+     * @return el liga nombre.
+     */
     public int getLeagueIdByName(String leagueReferenceDisplayNameParameterValue2) {
         return leagueReferenceDataAccessObjectFieldReference.getLeagueIdByName(leagueReferenceDisplayNameParameterValue2);
     }
 
-    // Devuelve el id de la liga donde juega un equipo
+
+    /**
+     * Devuelve el liga equipo.
+     *
+     * @param teamReferenceDisplayNameParameterValue2 nombre del equipo.
+     * @return el liga equipo.
+     */
     public int getLeagueIdByTeam(String teamReferenceDisplayNameParameterValue2) {
         return leagueReferenceDataAccessObjectFieldReference.getLeagueIdByTeam(teamReferenceDisplayNameParameterValue2);
     }
 
+
     /**
-     * Genera los partidos de una liga usando round-robin a doble vuelta
-     * y los guarda en la base de datos (apartado 2.6.1 del enunciado).
+     * Gestiona esta operacion.
      *
-     * Reglas aplicadas:
-     *  - Todos los equipos juegan contra todos una vez por vuelta.
-     *  - Un equipo no juega contra sí mismo.
-     *  - Si el número de equipos es impar, se añade un equipo ficticio
-     *    "DESCANSA" para que cada jornada quede uno sin jugar.
-     *  - La primera jornada empieza 1 minuto después de la fecha y hora
-     *    indicadas por el administrador.
-     *  - Las jornadas siguientes se separan por
-     *    {@code matchTime + 1} minutos (duración del partido + 1 minuto
-     *    de espera, según el apartado 2.6.1).
-     *  - En la segunda vuelta se invierte local/visitante.
-     *
-     * @param teamReferenceNamesParameterValue2 nombres de los equipos
-     *        que participan en la liga.
-     * @param leagueReferenceIdentifierParameterValue id de la liga.
-     * @param timeParameterValue2 fecha y hora introducidas por el admin
-     *        al crear la liga (sin el +1 minuto, este método lo aplica).
+     * @param teamReferenceNamesParameterValue2 equipo que usa la operacion.
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @param timeParameterValue2 dato de entrada de la operacion.
      */
     public void generateAndInsertMatchesForLeague(ArrayList<String> teamReferenceNamesParameterValue2,
                                                   int leagueReferenceIdentifierParameterValue,
@@ -384,7 +457,7 @@ public class LeagueManager {
         int numberTeamsLocalVariableValue = teamReferenceNamesParameterValue2.size();
         boolean evenLocalVariableValue = (numberTeamsLocalVariableValue % 2 == 0);
 
-        // Si hay un número impar de equipos, se añade un equipo ficticio
+
         if (!evenLocalVariableValue) {
             teamReferenceNamesParameterValue2.add("DESCANSA");
         }
@@ -395,13 +468,10 @@ public class LeagueManager {
         ArrayList<String> rotatedTeamsLocalVariableValue = new ArrayList<>(teamReferenceNamesParameterValue2);
         String fixedTeamReferenceLocalVariableValue = rotatedTeamsLocalVariableValue.remove(0);
 
-        // La primera jornada empieza 1 minuto después de la fecha-hora
-        // configurada por el admin (apartado 2.6.1 del enunciado).
+
         LocalDateTime jornadaTimeLocalVariableValue = timeParameterValue2.plusMinutes(1);
 
-        // Separación entre jornadas: duración del partido + 1 minuto de
-        // espera. Se lee de config.json para que sea coherente con el
-        // valor "matchTime" usado por la simulación.
+
         int matchDurationMinutesLocalVariableValue = ConfigManager.getDurationMatch();
         long minutesBetweenRoundsLocalVariableValue = matchDurationMinutesLocalVariableValue + 1L;
 
@@ -419,7 +489,7 @@ public class LeagueManager {
                     visitanteLocalVariableValue =
                             rotatedTeamsLocalVariableValue.get(rotatedTeamsLocalVariableValue.size() - indexCounterLocalVariableValue - 1);
                 } else {
-                    // Segunda vuelta: se invierte local/visitante.
+
                     visitanteLocalVariableValue = (indexCounterLocalVariableValue == 0)
                             ? fixedTeamReferenceLocalVariableValue
                             : rotatedTeamsLocalVariableValue.get(indexCounterLocalVariableValue - 1);
@@ -428,7 +498,7 @@ public class LeagueManager {
                             rotatedTeamsLocalVariableValue.get(rotatedTeamsLocalVariableValue.size() - indexCounterLocalVariableValue - 1);
                 }
 
-                // Si uno de los equipos descansa, no se crea partido
+
                 if (localLocalVariableValue.equals("DESCANSA") || visitanteLocalVariableValue.equals("DESCANSA")) {
                     continue;
                 }
@@ -442,19 +512,24 @@ public class LeagueManager {
                 );
             }
 
-            // Pasa al siguiente bloque horario respetando el tiempo de
-            // partido + 1 minuto de espera entre jornadas.
+
             jornadaTimeLocalVariableValue =
                     jornadaTimeLocalVariableValue.plusMinutes(minutesBetweenRoundsLocalVariableValue);
 
-            // Rota los equipos para la siguiente jornada
+
             String lastLocalVariableValue =
                     rotatedTeamsLocalVariableValue.remove(rotatedTeamsLocalVariableValue.size() - 1);
             rotatedTeamsLocalVariableValue.add(0, lastLocalVariableValue);
         }
     }
 
-    // Borra varias ligas y también elimina sus equipos y partidos relacionados
+
+    /**
+     * Elimina el liga.
+     *
+     * @param leaguesToDeleteParameterValue ligas que usa la operacion.
+     * @return resultado de la operacion.
+     */
     public String deleteLeague(ArrayList<String> leaguesToDeleteParameterValue) {
         StringBuilder messageLocalVariableValue = new StringBuilder("Deleted leagues:\n");
 
@@ -463,8 +538,7 @@ public class LeagueManager {
             int leagueReferenceIdentifierLocalVariableValue2 =
                     getLeagueIdByName(leagueReferenceDisplayNameLocalVariableValue);
 
-            // Antes de borrar nada, paramos los partidos en curso de
-            // esta liga (apartado 2.10 del enunciado).
+
             LiveMatchesRegistry.getInstance().abortMatchesByLeague(
                     leagueReferenceIdentifierLocalVariableValue2
             );

@@ -6,23 +6,18 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+
 /**
- * Marcador en memoria de los partidos que se están jugando en directo.
- *
- * Sirve de fuente única para el widget global de "Live Matches"
- * (apartado 2.9 del enunciado). Cada vez que la simulación marca un
- * gol, llama a {@link #updateScore(int, ScoreSnapshot)} con el
- * snapshot actualizado; cuando el partido acaba, se llama a
- * {@link #remove(int)} para que ya no se muestre.
- *
- * Es thread-safe porque la simulación corre en un hilo dedicado por
- * partido y el widget consulta desde el EDT de Swing.
+ * Agrupa la logica de los directo partidos.
  */
 public final class LiveMatchesScoreboard {
 
     private static final LiveMatchesScoreboard INSTANCE = new LiveMatchesScoreboard();
 
-    /** Snapshot del marcador de un partido en directo. */
+
+    /**
+     * Agrupa la logica de esta parte de la aplicacion.
+     */
     public static final class ScoreSnapshot {
         private final int gameIdFieldReference;
         private final int leagueIdFieldReference;
@@ -31,6 +26,17 @@ public final class LiveMatchesScoreboard {
         private final int homeGoalsFieldReference;
         private final int awayGoalsFieldReference;
 
+
+        /**
+         * Crea una instancia de scoresnapshot.
+         *
+         * @param gameIdParameterValue partido que usa la operacion.
+         * @param leagueIdParameterValue liga que usa la operacion.
+         * @param homeNameParameterValue nombre que usa la operacion.
+         * @param awayNameParameterValue nombre que usa la operacion.
+         * @param homeGoalsParameterValue dato de entrada de la operacion.
+         * @param awayGoalsParameterValue dato de entrada de la operacion.
+         */
         public ScoreSnapshot(int gameIdParameterValue,
                              int leagueIdParameterValue,
                              String homeNameParameterValue,
@@ -45,16 +51,65 @@ public final class LiveMatchesScoreboard {
             this.awayGoalsFieldReference = awayGoalsParameterValue;
         }
 
+
+        /**
+         * Devuelve el partido.
+         *
+         * @return el partido.
+         */
         public int getGameId() { return gameIdFieldReference; }
+
+
+        /**
+         * Devuelve el liga.
+         *
+         * @return el liga.
+         */
         public int getLeagueId() { return leagueIdFieldReference; }
+
+
+        /**
+         * Devuelve el nombre.
+         *
+         * @return el nombre.
+         */
         public String getHomeName() { return homeNameFieldReference; }
+
+
+        /**
+         * Devuelve el nombre.
+         *
+         * @return el nombre.
+         */
         public String getAwayName() { return awayNameFieldReference; }
+
+
+        /**
+         * Devuelve el contenido.
+         *
+         * @return el contenido.
+         */
         public int getHomeGoals() { return homeGoalsFieldReference; }
+
+
+        /**
+         * Devuelve el contenido.
+         *
+         * @return el contenido.
+         */
         public int getAwayGoals() { return awayGoalsFieldReference; }
     }
 
-    /** Listener al que se notifica cuando cambia el scoreboard. */
+
+    /**
+     * Define el contrato de esta parte de la aplicacion.
+     */
     public interface ScoreboardListener {
+
+
+        /**
+         * Gestiona esta operacion.
+         */
         void onScoreboardChanged();
     }
 
@@ -64,44 +119,72 @@ public final class LiveMatchesScoreboard {
     private final CopyOnWriteArrayList<ScoreboardListener> listenersFieldReference =
             new CopyOnWriteArrayList<>();
 
+
+    /**
+     * Crea una instancia de los directo partidos.
+     */
     private LiveMatchesScoreboard() {
     }
 
+
+    /**
+     * Devuelve el instancia.
+     *
+     * @return el instancia.
+     */
     public static LiveMatchesScoreboard getInstance() {
         return INSTANCE;
     }
 
+
     /**
-     * Inserta o actualiza el marcador de un partido y notifica a los
-     * listeners.
+     * Actualiza el contenido.
+     *
+     * @param gameIdParameterValue partido que usa la operacion.
+     * @param snapshotParameterValue dato de entrada de la operacion.
      */
     public void updateScore(int gameIdParameterValue, ScoreSnapshot snapshotParameterValue) {
         scoresFieldReference.put(gameIdParameterValue, snapshotParameterValue);
         notifyListeners();
     }
 
+
     /**
-     * Elimina un partido del marcador (típicamente al acabar).
+     * Elimina el contenido.
+     *
+     * @param gameIdParameterValue partido que usa la operacion.
      */
     public void remove(int gameIdParameterValue) {
         scoresFieldReference.remove(gameIdParameterValue);
         notifyListeners();
     }
 
+
     /**
-     * Vacía el marcador. Útil al hacer logout.
+     * Gestiona esta operacion.
      */
     public void clear() {
         scoresFieldReference.clear();
         notifyListeners();
     }
 
-    /** Devuelve una copia inmutable de los partidos en curso. */
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public List<ScoreSnapshot> getAll() {
         return new ArrayList<>(scoresFieldReference.values());
     }
 
-    /** Devuelve solo los partidos de las ligas indicadas. */
+
+    /**
+     * Devuelve el liga.
+     *
+     * @param leagueIdsParameterValue liga que usa la operacion.
+     * @return el liga.
+     */
     public List<ScoreSnapshot> getByLeagueIds(Collection<Integer> leagueIdsParameterValue) {
         ArrayList<ScoreSnapshot> filteredLocalVariableValue = new ArrayList<>();
         if (leagueIdsParameterValue == null || leagueIdsParameterValue.isEmpty()) {
@@ -115,21 +198,39 @@ public final class LiveMatchesScoreboard {
         return filteredLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param listenerParameterValue listener que se registra.
+     */
     public void addListener(ScoreboardListener listenerParameterValue) {
         listenersFieldReference.add(listenerParameterValue);
     }
 
+
+    /**
+     * Elimina el contenido.
+     *
+     * @param listenerParameterValue listener que se registra.
+     */
     public void removeListener(ScoreboardListener listenerParameterValue) {
         listenersFieldReference.remove(listenerParameterValue);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void notifyListeners() {
         for (ScoreboardListener listenerLocalVariableValue : listenersFieldReference) {
             try {
                 listenerLocalVariableValue.onScoreboardChanged();
             } catch (Exception eventArgumentExceptionParameterValue) {
-                eventArgumentExceptionParameterValue.printStackTrace();
+                shared.DaoErrorHandler.log("LiveMatchesScoreboard", eventArgumentExceptionParameterValue);
             }
         }
     }
 }
+
+

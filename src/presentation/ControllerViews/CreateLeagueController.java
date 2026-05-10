@@ -7,12 +7,14 @@ import bussines.objects.Team;
 import presentation.AppNavigator;
 import presentation.Views.CreateLeagueView;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-/** Controlador del formulario de creación de liga. */
+
+/**
+ * Coordina la pantalla del liga.
+ */
 public class CreateLeagueController implements ActionListener {
     private final CreateLeagueView createLeagueReferenceViewInterfaceFieldReference;
     private final LeagueManager leagueReferenceManagerServiceFieldReference = new LeagueManager();
@@ -23,6 +25,14 @@ public class CreateLeagueController implements ActionListener {
     private String pendingStartDateFieldReference;
     private String pendingStartHourFieldReference;
 
+
+    /**
+     * Crea una instancia de el liga.
+     *
+     * @param createLeagueReferenceViewInterfaceParameterValue liga vista.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     * @param teamSelectionControllerParameterValue equipo que usa la operacion.
+     */
     public CreateLeagueController(CreateLeagueView createLeagueReferenceViewInterfaceParameterValue,
                                   AppNavigator navigatorParameterValue,
                                   TeamSelectionController teamSelectionControllerParameterValue) {
@@ -30,18 +40,24 @@ public class CreateLeagueController implements ActionListener {
         this.navigatorFieldReference = navigatorParameterValue;
         this.teamReferenceSelectionControllerHandlerFieldReference = teamSelectionControllerParameterValue;
         this.createLeagueReferenceViewInterfaceFieldReference.registerController(this);
-        this.createLeagueReferenceViewInterfaceFieldReference.setConfigController(this);
     }
 
-    public CreateLeagueController(CreateLeagueView createLeagueReferenceViewInterfaceParameterValue,
-                                  AdminMenuController adminMenuControllerHandlerParameterValue) {
-        this(createLeagueReferenceViewInterfaceParameterValue, AppNavigator.getInstance(), null);
-    }
 
+    /**
+     * Actualiza el equipo.
+     *
+     * @param controllerParameterValue dato de entrada de la operacion.
+     */
     public void setTeamSelectionController(TeamSelectionController controllerParameterValue) {
         this.teamReferenceSelectionControllerHandlerFieldReference = controllerParameterValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -49,15 +65,37 @@ public class CreateLeagueController implements ActionListener {
             handleAvailableTeams();
         } else if (CreateLeagueView.BACK.equals(commandLocalVariableValue)) {
             navigatorFieldReference.show(AppNavigator.ADMIN_MENU);
-        } else if (CreateLeagueView.CONFIG.equals(commandLocalVariableValue) || "CONFIG".equals(commandLocalVariableValue)) {
-            showConfigDialog();
         }
     }
 
+
+    /**
+     * Devuelve el liga nombre.
+     *
+     * @return el liga nombre.
+     */
     public String getLeagueName() { return createLeagueReferenceViewInterfaceFieldReference.getLeagueName(); }
+
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public String getStartDate() { return createLeagueReferenceViewInterfaceFieldReference.getDate(); }
+
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public String getStartHour() { return createLeagueReferenceViewInterfaceFieldReference.getStartTime(); }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     private void handleAvailableTeams() {
         pendingLeagueNameFieldReference = getLeagueName();
         pendingStartDateFieldReference = getStartDate();
@@ -92,19 +130,6 @@ public class CreateLeagueController implements ActionListener {
         }
         navigatorFieldReference.show(AppNavigator.TEAM_SELECTION);
     }
-
-    public void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
-            configDialogLocalVariableValue.dispose();
-            if (Rounded.ConfigDialog.LOGOUT.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.show(AppNavigator.LOGIN);
-            } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.CREATE_LEAGUE));
-                navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
-            }
-        });
-        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
-        configDialogLocalVariableValue.setVisible(true);
-    }
 }
+
+

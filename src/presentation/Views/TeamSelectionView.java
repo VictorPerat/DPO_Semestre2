@@ -7,17 +7,29 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-/** Selección de equipos como JPanel reutilizable. */
+
+/**
+ * Representa la vista del equipo.
+ */
 public class TeamSelectionView extends JPanel {
+    /**
+     * Constante para el liga.
+     */
     public static final String CREATE_LEAGUE = "CREATE_LEAGUE";
+    /**
+     * Constante para el vuelta.
+     */
     public static final String BACK = "BACK";
 
     private JButton createLeagueReferenceButtonFieldReference;
     private JPanel availableTeamsPanelFieldReference;
     private JPanel addedTeamsPanelFieldReference;
     private JButton backButtonFieldReference;
-    private ActionListener createControllerHandlerFieldReference;
 
+
+    /**
+     * Crea una instancia de el equipo.
+     */
     public TeamSelectionView() {
         setLayout(new BorderLayout());
         setBackground(new Color(240, 240, 240));
@@ -65,11 +77,23 @@ public class TeamSelectionView extends JPanel {
         add(buttonPanelLocalVariableValue, BorderLayout.SOUTH);
     }
 
+
+    /**
+     * Crea una instancia de el equipo.
+     *
+     * @param teamsParameterValue equipos que usa la operacion.
+     */
     public TeamSelectionView(ArrayList<Team> teamsParameterValue) {
         this();
         loadAvailableTeams(teamsParameterValue);
     }
 
+
+    /**
+     * Carga los disponibles equipos.
+     *
+     * @param teamsParameterValue equipos que usa la operacion.
+     */
     public void loadAvailableTeams(ArrayList<Team> teamsParameterValue) {
         availableTeamsPanelFieldReference.removeAll();
         addedTeamsPanelFieldReference.removeAll();
@@ -91,8 +115,20 @@ public class TeamSelectionView extends JPanel {
         addedTeamsPanelFieldReference.repaint();
     }
 
+
+    /**
+     * Devuelve los equipos.
+     *
+     * @return los equipos.
+     */
     public JPanel getAddedTeamsPanel() { return addedTeamsPanelFieldReference; }
 
+
+    /**
+     * Devuelve el equipo.
+     *
+     * @return el equipo.
+     */
     public ArrayList<String> getSelectedTeamNames() {
         ArrayList<String> namesLocalVariableValue = new ArrayList<>();
         for (Component componentLocalVariableValue : addedTeamsPanelFieldReference.getComponents()) {
@@ -103,11 +139,22 @@ public class TeamSelectionView extends JPanel {
         return namesLocalVariableValue;
     }
 
+
+    /**
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void registerController(ActionListener controllerHandlerParameterValue) {
-        this.createControllerHandlerFieldReference = controllerHandlerParameterValue;
         createLeagueReferenceButtonFieldReference.addActionListener(controllerHandlerParameterValue);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param buttonParameterValue dato de entrada de la operacion.
+     */
     private void styleButton(JButton buttonParameterValue) {
         buttonParameterValue.setBackground(new Color(0, 30, 60));
         buttonParameterValue.setForeground(Color.WHITE);
@@ -119,6 +166,14 @@ public class TeamSelectionView extends JPanel {
         buttonParameterValue.setBorderPainted(true);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param buttonControlParameterValue dato de entrada de la operacion.
+     * @param fromParameterValue dato de entrada de la operacion.
+     * @param toParameterValue dato de entrada de la operacion.
+     */
     private void toggleTeam(JButton buttonControlParameterValue, JPanel fromParameterValue, JPanel toParameterValue) {
         fromParameterValue.remove(buttonControlParameterValue);
         toParameterValue.add(buttonControlParameterValue);
@@ -133,11 +188,25 @@ public class TeamSelectionView extends JPanel {
         buttonControlParameterValue.addActionListener(eventArgumentParameterValue -> toggleTeam(buttonControlParameterValue, toParameterValue, fromParameterValue));
     }
 
+
+    /**
+     * Actualiza el vuelta.
+     *
+     * @param listenerParameterValue listener que se registra.
+     */
     public void setBackButtonListener(ActionListener listenerParameterValue) {
         backButtonFieldReference.addActionListener(listenerParameterValue);
     }
 
+
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), messageParameterValue, "Team selection", JOptionPane.WARNING_MESSAGE);
     }
 }
+
+

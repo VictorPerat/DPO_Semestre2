@@ -10,13 +10,28 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+
+/**
+ * Resuelve la ruta del ruta.
+ */
 public final class ProjectPathResolver {
 
     private static final String PROJECT_DIRECTORY_NAME = "Project";
 
+
+    /**
+     * Crea una instancia de el ruta.
+     */
     private ProjectPathResolver() {
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param relativePathParameterValue ruta que usa la operacion.
+     * @return resultado de la operacion.
+     */
     public static File requireExistingFile(String relativePathParameterValue) throws FileNotFoundException {
         List<Path> candidatePathsLocalVariableValue = buildCandidatePaths(relativePathParameterValue);
 
@@ -30,6 +45,13 @@ public final class ProjectPathResolver {
         throw new FileNotFoundException(buildNotFoundMessage(relativePathParameterValue, candidatePathsLocalVariableValue));
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param relativePathParameterValue ruta que usa la operacion.
+     * @return resultado de la operacion.
+     */
     public static File resolveProjectFile(String relativePathParameterValue) {
         List<Path> candidatePathsLocalVariableValue = buildCandidatePaths(relativePathParameterValue);
 
@@ -43,10 +65,24 @@ public final class ProjectPathResolver {
         return candidatePathsLocalVariableValue.get(0).toFile();
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param relativePathParameterValue ruta que usa la operacion.
+     * @return resultado de la operacion.
+     */
     public static String resolveProjectPath(String relativePathParameterValue) {
         return resolveProjectFile(relativePathParameterValue).getPath();
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @param relativePathParameterValue ruta que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private static List<Path> buildCandidatePaths(String relativePathParameterValue) {
         LinkedHashSet<Path> candidatePathsLocalVariableValue = new LinkedHashSet<>();
 
@@ -62,6 +98,14 @@ public final class ProjectPathResolver {
         return new ArrayList<>(candidatePathsLocalVariableValue);
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param candidatePathsParameterValue dato de entrada de la operacion.
+     * @param rootPathParameterValue ruta que usa la operacion.
+     * @param relativePathParameterValue ruta que usa la operacion.
+     */
     private static void addCandidatesForRoot(LinkedHashSet<Path> candidatePathsParameterValue,
                                              Path rootPathParameterValue,
                                              String relativePathParameterValue) {
@@ -76,6 +120,12 @@ public final class ProjectPathResolver {
         candidatePathsParameterValue.add(rootPathParameterValue.resolve(relativePathParameterValue).normalize().toAbsolutePath());
     }
 
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     private static List<Path> getSearchRoots() {
         LinkedHashSet<Path> searchRootsLocalVariableValue = new LinkedHashSet<>();
 
@@ -98,6 +148,14 @@ public final class ProjectPathResolver {
         return new ArrayList<>(searchRootsLocalVariableValue);
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @param relativePathParameterValue ruta que usa la operacion.
+     * @param candidatePathsParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private static String buildNotFoundMessage(String relativePathParameterValue, List<Path> candidatePathsParameterValue) {
         StringBuilder messageBuilderLocalVariableValue =
                 new StringBuilder("No se encontro el recurso '")
@@ -114,3 +172,5 @@ public final class ProjectPathResolver {
         return messageBuilderLocalVariableValue.toString();
     }
 }
+
+

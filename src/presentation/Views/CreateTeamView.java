@@ -10,7 +10,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.function.Consumer;
 
-/** Vista para importar equipos desde JSON como JPanel. */
+
+/**
+ * Representa la vista del equipo.
+ */
 public class CreateTeamView extends JPanel {
 
     private static final String TEAMS_DIR = "data/teams";
@@ -30,7 +33,6 @@ public class CreateTeamView extends JPanel {
             ProjectPathResolver.resolveProjectPath("photos/create_team.png");
 
     private ActionListener backButtonListenerFieldReference;
-    private ActionListener configControllerHandlerFieldReference;
     private ActionListener validateListenerFieldReference;
     private Consumer<File> fileUploadListenerFieldReference;
 
@@ -39,18 +41,28 @@ public class CreateTeamView extends JPanel {
     private Rounded.RoundedButton backButtonFieldReference;
     private Rounded.RoundedButton validateButtonFieldReference;
     private Rounded.RoundedButton uploadButtonFieldReference;
-    private JButton configButtonFieldReference;
 
+
+    /**
+     * Crea una instancia de el equipo.
+     */
     public CreateTeamView() {
         setLayout(new BorderLayout());
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue =
                 new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -66,7 +78,7 @@ public class CreateTeamView extends JPanel {
 
                 Graphics2D g2LocalVariableValue =
                         (Graphics2D) graphicsParameterValue.create();
-                g2LocalVariableValue.setColor(new Color(0, 0, 0, 55));
+                g2LocalVariableValue.setColor(new Color(0, 0, 0, 35));
                 g2LocalVariableValue.fillRect(0, 0, getWidth(), getHeight());
                 g2LocalVariableValue.dispose();
             }
@@ -75,20 +87,26 @@ public class CreateTeamView extends JPanel {
         backgroundPanelLocalVariableValue.setLayout(new BorderLayout());
         backgroundPanelLocalVariableValue.add(buildTopBar(), BorderLayout.NORTH);
         backgroundPanelLocalVariableValue.add(buildCenterContent(), BorderLayout.CENTER);
-        backgroundPanelLocalVariableValue.add(buildBottomBar(), BorderLayout.SOUTH);
+
 
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTopBar() {
         JPanel topBarLocalVariableValue = new JPanel(new BorderLayout());
         topBarLocalVariableValue.setOpaque(false);
         topBarLocalVariableValue.setBorder(new EmptyBorder(28, 40, 0, 40));
 
-        JPanel rightPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        JPanel rightPanelLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         rightPanelLocalVariableValue.setOpaque(false);
 
-        backButtonFieldReference = new Rounded.RoundedButton("← BACK", 18);
+        backButtonFieldReference = new Rounded.RoundedButton("< BACK", 18);
         backButtonFieldReference.setActionCommand("BACK");
         backButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 15));
         backButtonFieldReference.setForeground(ACCENT_COLOR);
@@ -104,65 +122,17 @@ public class CreateTeamView extends JPanel {
         });
 
         rightPanelLocalVariableValue.add(backButtonFieldReference);
-        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.EAST);
+        topBarLocalVariableValue.add(rightPanelLocalVariableValue, BorderLayout.WEST);
 
         return topBarLocalVariableValue;
     }
 
-    private JPanel buildBottomBar() {
-        JPanel bottomBarLocalVariableValue = new JPanel(new FlowLayout(FlowLayout.LEFT, 25, 8));
-        bottomBarLocalVariableValue.setOpaque(false);
-        bottomBarLocalVariableValue.setBorder(new EmptyBorder(0, 20, 18, 0));
 
-        configButtonFieldReference = buildConfigButton();
-        bottomBarLocalVariableValue.add(configButtonFieldReference);
-
-        return bottomBarLocalVariableValue;
-    }
-
-    private JButton buildConfigButton() {
-        JButton buttonControlLocalVariableValue = new JButton();
-        buttonControlLocalVariableValue.setBorder(BorderFactory.createEmptyBorder());
-        buttonControlLocalVariableValue.setContentAreaFilled(false);
-        buttonControlLocalVariableValue.setFocusPainted(false);
-        buttonControlLocalVariableValue.setOpaque(false);
-        buttonControlLocalVariableValue.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        try {
-            String iconPathLocalVariableValue = resolveExistingIconPath(
-                    "photos/Rueda_Ajustes.png",
-                    "photos/Rueda Ajustes.png"
-            );
-
-            Image rawIconLocalVariableValue =
-                    new ImageIcon(iconPathLocalVariableValue).getImage();
-
-            Image scaledIconLocalVariableValue =
-                    rawIconLocalVariableValue.getScaledInstance(
-                            82,
-                            82,
-                            Image.SCALE_SMOOTH
-                    );
-
-            buttonControlLocalVariableValue.setIcon(new ImageIcon(scaledIconLocalVariableValue));
-            buttonControlLocalVariableValue.setPreferredSize(new Dimension(120, 120));
-        } catch (Exception ignoredExceptionParameterValue) {
-            buttonControlLocalVariableValue.setText("⚙");
-            buttonControlLocalVariableValue.setForeground(Color.WHITE);
-            buttonControlLocalVariableValue.setFont(new Font("Arial", Font.BOLD, 32));
-        }
-
-        buttonControlLocalVariableValue.addActionListener(eventArgumentParameterValue -> {
-            if (configControllerHandlerFieldReference != null) {
-                configControllerHandlerFieldReference.actionPerformed(
-                        new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "CONFIG")
-                );
-            }
-        });
-
-        return buttonControlLocalVariableValue;
-    }
-
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildCenterContent() {
         JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
         centerWrapperLocalVariableValue.setOpaque(false);
@@ -191,6 +161,8 @@ public class CreateTeamView extends JPanel {
         constraintsLocalVariableValue.weighty = 1.0;
         constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
 
+        constraintsLocalVariableValue.insets = new Insets(0, 0, 0, 310);
+
         centerWrapperLocalVariableValue.add(
                 contentPanelLocalVariableValue,
                 constraintsLocalVariableValue
@@ -199,6 +171,12 @@ public class CreateTeamView extends JPanel {
         return centerWrapperLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -264,6 +242,12 @@ public class CreateTeamView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildFormCard() {
         JPanel cardLocalVariableValue = new RoundedCardPanel();
         cardLocalVariableValue.setOpaque(false);
@@ -272,7 +256,7 @@ public class CreateTeamView extends JPanel {
         );
         cardLocalVariableValue.setBorder(new EmptyBorder(24, 34, 30, 34));
 
-        // Card más ancha, igual que CreateLeagueView.
+
         cardLocalVariableValue.setPreferredSize(new Dimension(760, 600));
         cardLocalVariableValue.setMinimumSize(new Dimension(760, 600));
         cardLocalVariableValue.setMaximumSize(new Dimension(760, 600));
@@ -348,6 +332,12 @@ public class CreateTeamView extends JPanel {
         return cardLocalVariableValue;
     }
 
+
+    /**
+     * Construye el equipo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTeamIconPanel() {
         JPanel iconPanelLocalVariableValue = new JPanel(new GridBagLayout());
         iconPanelLocalVariableValue.setOpaque(false);
@@ -375,7 +365,7 @@ public class CreateTeamView extends JPanel {
                     new ImageIcon(scaledIconLocalVariableValue)
             );
         } catch (Exception ignoredExceptionParameterValue) {
-            iconLabelLocalVariableValue.setText("⚽");
+            iconLabelLocalVariableValue.setText("ÃƒÂ¢Ã…Â¡Ã‚Â½");
             iconLabelLocalVariableValue.setFont(new Font("Arial", Font.PLAIN, 72));
         }
 
@@ -384,6 +374,12 @@ public class CreateTeamView extends JPanel {
         return iconPanelLocalVariableValue;
     }
 
+
+    /**
+     * Crea el contenido.
+     *
+     * @return elemento creado por el metodo.
+     */
     private JScrollPane createFilesScrollPane() {
         getTeamsDirectory().mkdirs();
 
@@ -401,7 +397,7 @@ public class CreateTeamView extends JPanel {
                 BorderFactory.createLineBorder(FIELD_BORDER, 1)
         );
 
-        // Lista más ancha.
+
         scrollPaneLocalVariableValue.setPreferredSize(new Dimension(620, 150));
         scrollPaneLocalVariableValue.setMaximumSize(new Dimension(620, 150));
         scrollPaneLocalVariableValue.setMinimumSize(new Dimension(620, 150));
@@ -419,6 +415,10 @@ public class CreateTeamView extends JPanel {
         return scrollPaneLocalVariableValue;
     }
 
+
+    /**
+     * Abre el contenido.
+     */
     private void openFileChooser() {
         JFileChooser fileChooserLocalVariableValue = new JFileChooser();
         fileChooserLocalVariableValue.setDialogTitle("Seleccionar archivo JSON");
@@ -440,6 +440,10 @@ public class CreateTeamView extends JPanel {
         }
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void refreshFileList() {
         if (filesPanelFieldReference == null) {
             return;
@@ -487,6 +491,13 @@ public class CreateTeamView extends JPanel {
         filesPanelFieldReference.repaint();
     }
 
+
+    /**
+     * Crea el contenido.
+     *
+     * @param fileNameParameterValue nombre que usa la operacion.
+     * @return elemento creado por el metodo.
+     */
     private JPanel createFileRow(String fileNameParameterValue) {
         JPanel rowPanelLocalVariableValue = new JPanel(new BorderLayout());
         rowPanelLocalVariableValue.setBackground(Color.WHITE);
@@ -511,39 +522,58 @@ public class CreateTeamView extends JPanel {
         return rowPanelLocalVariableValue;
     }
 
+
+    /**
+     * Devuelve los equipos.
+     *
+     * @return los equipos.
+     */
     private File getTeamsDirectory() {
         return new File(TEAMS_DIR);
     }
 
-    private String resolveExistingIconPath(String primaryRelativePathParameterValue,
-                                           String fallbackRelativePathParameterValue) {
-        String primaryAbsolutePathLocalVariableValue =
-                ProjectPathResolver.resolveProjectPath(primaryRelativePathParameterValue);
 
-        if (new java.io.File(primaryAbsolutePathLocalVariableValue).exists()) {
-            return primaryAbsolutePathLocalVariableValue;
-        }
-
-        return ProjectPathResolver.resolveProjectPath(fallbackRelativePathParameterValue);
-    }
-
+    /**
+     * Actualiza el vuelta.
+     *
+     * @param listenerParameterValue listener que se registra.
+     */
     public void setBackButtonListener(ActionListener listenerParameterValue) {
         this.backButtonListenerFieldReference = listenerParameterValue;
     }
 
-    public void setConfigController(ActionListener listenerParameterValue) {
-        this.configControllerHandlerFieldReference = listenerParameterValue;
-    }
 
+    /**
+     * Actualiza el contenido.
+     *
+     * @param listenerParameterValue listener que se registra.
+     */
     public void setValidateListener(ActionListener listenerParameterValue) {
         this.validateListenerFieldReference = listenerParameterValue;
     }
 
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param listenerParameterValue listener que se registra.
+     */
     public void setFileUploadListener(Consumer<File> listenerParameterValue) {
         this.fileUploadListenerFieldReference = listenerParameterValue;
     }
 
+
+    /**
+     * Agrupa la logica de esta parte de la aplicacion.
+     */
     private static class RoundedCardPanel extends JPanel {
+
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue =
@@ -594,3 +624,5 @@ public class CreateTeamView extends JPanel {
         }
     }
 }
+
+

@@ -1,18 +1,23 @@
 package persistance;
 
 import bussines.objects.TeamInfo;
+import shared.DaoErrorHandler;
 
 import java.sql.*;
 import java.util.ArrayList;
 
+
 /**
- * Esta clase se encarga de acceder a la información de los equipos dentro de cada liga.
+ * Gestiona el acceso a datos del equipo.
  */
 public class TeamInfoDao {
 
-    // Inserta la información de un equipo en una liga.
-    // Usamos INSERT IGNORE para que un duplicado (mismo league_id +
-    // team_id) no lance excepción y no rompa la creación de la liga.
+
+    /**
+     * Crea el equipo.
+     *
+     * @param logicTeamParameterValue equipo que usa la operacion.
+     */
     public void createInfoTeam(TeamInfo logicTeamParameterValue) {
         String queryLocalVariableValue =
                 "INSERT IGNORE INTO league_teams (league_id, team_id, wins, defeats, ties, points) VALUES (?, ?, ?, ?, ?, ?)";
@@ -31,11 +36,16 @@ public class TeamInfoDao {
             preparedStatementLocalVariableValue.executeUpdate();
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("TeamInfoDao", eventArgumentExceptionParameter);
         }
     }
 
-    // Borra la información de un equipo usando su id
+
+    /**
+     * Elimina el equipo.
+     *
+     * @param teamReferenceIdentifierParameterValue equipo identificador.
+     */
     public void deleteInfoTeam(int teamReferenceIdentifierParameterValue) {
         String queryLocalVariableValue = "DELETE FROM league_teams WHERE team_id = ?";
 
@@ -48,16 +58,27 @@ public class TeamInfoDao {
             preparedStatementLocalVariableValue.executeUpdate();
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("TeamInfoDao", eventArgumentExceptionParameter);
         }
     }
 
-    // Devuelve toda la información de todos los equipos
+
+    /**
+     * Devuelve el equipo.
+     *
+     * @return el equipo.
+     */
     public ArrayList<TeamInfo> getAlInfoTeam() {
         return getTeamsInLeague(-1);
     }
 
-    // Devuelve la información de los equipos de una liga concreta
+
+    /**
+     * Devuelve el equipos liga.
+     *
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @return el equipos liga.
+     */
     public ArrayList<TeamInfo> getTeamsInLeague(int leagueReferenceIdentifierParameterValue) {
         ArrayList<TeamInfo> informationTeamsLocalVariableValue = new ArrayList<>();
 
@@ -88,16 +109,19 @@ public class TeamInfoDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("TeamInfoDao", eventArgumentExceptionParameter);
         }
 
         return informationTeamsLocalVariableValue;
     }
 
+
     /**
-     * Suma 1 a la columna indicada (wins, defeats, ties) del equipo
-     * dentro de la liga concreta. Solo se aceptan nombres de columna
-     * conocidos para evitar inyección SQL.
+     * Gestiona esta operacion.
+     *
+     * @param nomEquipParameterValue dato de entrada de la operacion.
+     * @param lligaIdParameterValue dato de entrada de la operacion.
+     * @param columnNameParameterValue nombre que usa la operacion.
      */
     public void incrementCounter(String nomEquipParameterValue,
                                  int lligaIdParameterValue,
@@ -145,11 +169,18 @@ public class TeamInfoDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("TeamInfoDao", eventArgumentExceptionParameter);
         }
     }
 
-    // Añade puntos a un equipo dentro de una liga
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param nomEquipGuanyadorParameterValue dato de entrada de la operacion.
+     * @param lligaIdParameterValue dato de entrada de la operacion.
+     * @param puntsParameterValue dato de entrada de la operacion.
+     */
     public void afegirPunts(String nomEquipGuanyadorParameterValue,
                             int lligaIdParameterValue,
                             int puntsParameterValue) {
@@ -163,7 +194,7 @@ public class TeamInfoDao {
 
             int teamReferenceIdentifierLocalVariableValue = -1;
 
-            // Busca el id del equipo usando su nombre
+
             try (PreparedStatement preparedStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(teamQueryLocalVariableValue)) {
 
@@ -176,12 +207,12 @@ public class TeamInfoDao {
                 }
             }
 
-            // Si no encuentra el equipo, no hace nada
+
             if (teamReferenceIdentifierLocalVariableValue == -1) {
                 return;
             }
 
-            // Suma los puntos al equipo en la liga correspondiente
+
             try (PreparedStatement preparedStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(updateQueryLocalVariableValue)) {
 
@@ -192,7 +223,7 @@ public class TeamInfoDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("TeamInfoDao", eventArgumentExceptionParameter);
         }
     }
 }

@@ -26,3 +26,9 @@ replay_pid*
 
 out/
 target/
+.claude/
+.codex-build/
+.codex-empty-sourcepath/
+uml_diagram.html
+uml_diagram_layered.html
+uml_diagrama.html

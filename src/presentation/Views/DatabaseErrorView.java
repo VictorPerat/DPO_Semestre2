@@ -3,8 +3,16 @@ package presentation.Views;
 import javax.swing.*;
 import java.awt.*;
 
-/** Pantalla de error de base de datos como JPanel. */
+
+/**
+ * Representa la vista del base de datos error.
+ */
 public class DatabaseErrorView extends JPanel {
+
+
+    /**
+     * Crea una instancia de el base de datos error.
+     */
     public DatabaseErrorView() {
         setLayout(new BorderLayout());
         setBackground(new Color(245,245,245));
@@ -19,3 +27,5 @@ public class DatabaseErrorView extends JPanel {
         add(panelLocalVariableValue, BorderLayout.CENTER);
     }
 }
+
+

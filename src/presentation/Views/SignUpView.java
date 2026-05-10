@@ -7,11 +7,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+
 /**
- * Vista de registro para nuevos usuarios.
- *
- * Refactorizada: extiende JPanel y se muestra como tarjeta dentro de
- * {@link MainView}. La navegación al login se delega en AppNavigator.
+ * Representa la vista de esta parte de la aplicacion.
  */
 public class SignUpView extends JPanel {
 
@@ -25,7 +23,13 @@ public class SignUpView extends JPanel {
     private JButton registerButtonFieldReference;
     private JButton backButtonFieldReference;
 
+    /**
+     * Constante para el valor.
+     */
     public static final String REGISTER_BUTTON = "REGISTER_BUTTON";
+    /**
+     * Constante para el vuelta inicio de sesion.
+     */
     public static final String BACK_TO_LOGIN = "BACK_TO_LOGIN";
 
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
@@ -38,13 +42,18 @@ public class SignUpView extends JPanel {
     private static final String BACKGROUND_IMAGE_PATH =
             ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
+
+    /**
+     * Crea una instancia de signupview.
+     */
     public SignUpView() {
         setLayout(new BorderLayout());
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
+
     /**
-     * Limpia todos los campos del formulario de registro.
+     * Gestiona esta operacion.
      */
     public void clearForm() {
         if (nationalIdentityDocumentFieldFieldReference != null) nationalIdentityDocumentFieldFieldReference.setText("");
@@ -55,6 +64,12 @@ public class SignUpView extends JPanel {
         if (phoneNumberFieldFieldReference != null) phoneNumberFieldFieldReference.setText("");
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue = new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
@@ -63,6 +78,7 @@ public class SignUpView extends JPanel {
         int horizontalOffsetLocalVariableValue = Math.max(70, (int) (screenWidthLocalVariableValue * 0.05));
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -112,6 +128,12 @@ public class SignUpView extends JPanel {
         return backgroundPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenHeightLocalVariableValue = screenSizeLocalVariableValue.height;
@@ -162,6 +184,12 @@ public class SignUpView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
+     */
     private JPanel buildSignUpCard() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidthLocalVariableValue = screenSizeLocalVariableValue.width;
@@ -169,6 +197,7 @@ public class SignUpView extends JPanel {
         int cardWidthLocalVariableValue = Math.max(860, Math.min(980, (int) (screenWidthLocalVariableValue * 0.62)));
 
         JPanel cardPanelLocalVariableValue = new JPanel(new GridBagLayout()) {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 Graphics2D g2LocalVariableValue = (Graphics2D) graphicsParameterValue.create();
@@ -266,6 +295,14 @@ public class SignUpView extends JPanel {
         return cardPanelLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @param labelTextParameterValue texto que usa la operacion.
+     * @param fieldParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private JPanel buildFieldBlock(String labelTextParameterValue, JTextField fieldParameterValue) {
         JPanel fieldBlockLocalVariableValue = new JPanel();
         fieldBlockLocalVariableValue.setOpaque(false);
@@ -285,6 +322,13 @@ public class SignUpView extends JPanel {
         return fieldBlockLocalVariableValue;
     }
 
+
+    /**
+     * Construye el contenido.
+     *
+     * @param placeholderParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private JTextField buildInputField(String placeholderParameterValue) {
         Rounded.RoundedTextField textFieldLocalVariableValue =
                 new Rounded.RoundedTextField(20, 14);
@@ -301,36 +345,83 @@ public class SignUpView extends JPanel {
         return textFieldLocalVariableValue;
     }
 
+
+    /**
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void registerController(ActionListener controllerHandlerParameterValue) {
         registerButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         backButtonFieldReference.addActionListener(controllerHandlerParameterValue);
     }
 
+
+    /**
+     * Devuelve el dni.
+     *
+     * @return el dni.
+     */
     public String getDni() {
         return nationalIdentityDocumentFieldFieldReference.getText();
     }
 
+
+    /**
+     * Devuelve el nombre.
+     *
+     * @return el nombre.
+     */
     public String getName() {
         return displayNameFieldFieldReference.getText();
     }
 
+
+    /**
+     * Devuelve el email.
+     *
+     * @return el email.
+     */
     public String getEmail() {
         return emailAddressFieldFieldReference.getText();
     }
 
+
+    /**
+     * Devuelve el contenido.
+     *
+     * @return el contenido.
+     */
     public String getDorsal() {
         return jerseyNumberFieldFieldReference.getText();
     }
 
 
+    /**
+     * Devuelve el equipo.
+     *
+     * @return el equipo.
+     */
     public String getTeam() {
         return teamReferenceFieldFieldReference.getText();
     }
 
+
+    /**
+     * Devuelve el telefono.
+     *
+     * @return el telefono.
+     */
     public String getPhone() {
         return phoneNumberFieldFieldReference.getText();
     }
 
+
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -340,3 +431,5 @@ public class SignUpView extends JPanel {
         );
     }
 }
+
+

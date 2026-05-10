@@ -1,18 +1,25 @@
 package persistance;
 
 import bussines.objects.Team;
+import shared.DaoErrorHandler;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+
 /**
- * Esta clase se encarga de acceder a los datos de los equipos en la base de datos.
+ * Gestiona el acceso a datos del equipo.
  */
 public class TeamDao {
 
-    // Devuelve todos los equipos guardados
+
+    /**
+     * Devuelve los equipos.
+     *
+     * @return los equipos.
+     */
     public ArrayList<Team> getAllTeams() {
         ArrayList<Team> teamsLocalVariableValue = new ArrayList<>();
         String queryLocalVariableValue = "SELECT id, name FROM teams ORDER BY name";
@@ -31,13 +38,18 @@ public class TeamDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("TeamDao", eventArgumentExceptionParameter);
         }
 
         return teamsLocalVariableValue;
     }
 
-    // Devuelve los ids de los equipos que ya están asignados a alguna liga
+
+    /**
+     * Devuelve el equipo.
+     *
+     * @return el equipo.
+     */
     public Set<Integer> getAssignedTeamIds() {
         Set<Integer> assignedTeamReferenceIdentifiersLocalVariableValue = new HashSet<>();
         String queryLocalVariableValue = "SELECT team_id FROM league_teams";
@@ -55,13 +67,19 @@ public class TeamDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("TeamDao", eventArgumentExceptionParameter);
         }
 
         return assignedTeamReferenceIdentifiersLocalVariableValue;
     }
 
-    // Borra un equipo usando su nombre
+
+    /**
+     * Elimina el equipo nombre.
+     *
+     * @param displayNameParameterValue nombre que se muestra.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean deleteTeamByName(String displayNameParameterValue) {
         String selectTeamQueryLocalVariableValue = "SELECT id FROM teams WHERE name = ?";
         String deleteGamesQueryLocalVariableValue = "DELETE FROM games WHERE home_team_id = ? OR away_team_id = ?";
@@ -76,7 +94,7 @@ public class TeamDao {
 
             int teamReferenceIdentifierLocalVariableValue = -1;
 
-            // Busca el id del equipo
+
             try (PreparedStatement preparedStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(selectTeamQueryLocalVariableValue)) {
 
@@ -90,14 +108,14 @@ public class TeamDao {
                 }
             }
 
-            // Si no encuentra el equipo, devuelve false
+
             if (teamReferenceIdentifierLocalVariableValue == -1) {
                 connectionLocalVariableValue.rollback();
                 connectionLocalVariableValue.setAutoCommit(true);
                 return false;
             }
 
-            // Borra los partidos donde aparece ese equipo
+
             try (PreparedStatement preparedStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(deleteGamesQueryLocalVariableValue)) {
 
@@ -106,7 +124,7 @@ public class TeamDao {
                 preparedStatementLocalVariableValue.executeUpdate();
             }
 
-            // Borra la relación del equipo con las ligas
+
             try (PreparedStatement preparedStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(deleteLeagueTeamsQueryLocalVariableValue)) {
 
@@ -114,7 +132,7 @@ public class TeamDao {
                 preparedStatementLocalVariableValue.executeUpdate();
             }
 
-            // Borra la relación del equipo con los jugadores
+
             try (PreparedStatement preparedStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(deletePlayerTeamsQueryLocalVariableValue)) {
 
@@ -124,7 +142,7 @@ public class TeamDao {
 
             boolean deletedLocalVariableValue;
 
-            // Finalmente borra el equipo
+
             try (PreparedStatement preparedStatementLocalVariableValue =
                          connectionLocalVariableValue.prepareStatement(deleteTeamQueryLocalVariableValue)) {
 
@@ -138,12 +156,18 @@ public class TeamDao {
             return deletedLocalVariableValue;
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("TeamDao", eventArgumentExceptionParameter);
             return false;
         }
     }
 
-    // Devuelve el id de un equipo a partir de su nombre
+
+    /**
+     * Devuelve el equipo.
+     *
+     * @param teamReferenceDisplayNameParameterValue nombre del equipo.
+     * @return el equipo.
+     */
     public int getTeamId(String teamReferenceDisplayNameParameterValue) {
         String queryLocalVariableValue = "SELECT id FROM teams WHERE name = ?";
 
@@ -161,13 +185,19 @@ public class TeamDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("TeamDao", eventArgumentExceptionParameter);
         }
 
         return -1;
     }
 
-    // Inserta un equipo nuevo y devuelve su id
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param teamReferenceDisplayNameParameterValue nombre del equipo.
+     * @return resultado de la operacion.
+     */
     public int insertTeam(String teamReferenceDisplayNameParameterValue) {
         String queryLocalVariableValue = "INSERT INTO teams (name) VALUES (?)";
 

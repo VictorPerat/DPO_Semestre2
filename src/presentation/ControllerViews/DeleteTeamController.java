@@ -8,36 +8,54 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-/** Controlador para borrar equipos desde CardLayout. */
+
+/**
+ * Coordina la pantalla del equipo.
+ */
 public class DeleteTeamController implements ActionListener {
     private final DeleteTeamView viewInterfaceFieldReference;
     private final TeamManager teamReferenceManagerServiceFieldReference = new TeamManager();
     private final AppNavigator navigatorFieldReference;
 
+
+    /**
+     * Crea una instancia de el equipo.
+     *
+     * @param viewInterfaceParameterValue vista que usa la operacion.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public DeleteTeamController(DeleteTeamView viewInterfaceParameterValue, AppNavigator navigatorParameterValue) {
         this.viewInterfaceFieldReference = viewInterfaceParameterValue;
         this.navigatorFieldReference = navigatorParameterValue;
-        this.viewInterfaceFieldReference.setConfigController(this);
+        this.viewInterfaceFieldReference.setController(this);
     }
 
-    public DeleteTeamController(DeleteTeamView viewInterfaceParameterValue, AdminMenuController adminMenuControllerHandlerParameterValue) {
-        this(viewInterfaceParameterValue, AppNavigator.getInstance());
-    }
 
+    /**
+     * Gestiona esta operacion.
+     */
     public void refreshTeams() { viewInterfaceFieldReference.refreshTeamsList(); }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
         if ("BACK".equals(commandLocalVariableValue)) {
             navigatorFieldReference.show(AppNavigator.ADMIN_MENU);
-        } else if ("CONFIG".equals(commandLocalVariableValue)) {
-            showConfigDialog();
         } else if ("DELETE_TEAMS".equals(commandLocalVariableValue)) {
             deleteSelectedTeams();
         }
     }
 
+
+    /**
+     * Elimina los equipos.
+     */
     private void deleteSelectedTeams() {
         ArrayList<String> selectedTeamsLocalVariableValue = viewInterfaceFieldReference.getSelectedTeams();
         if (selectedTeamsLocalVariableValue.isEmpty()) {
@@ -50,19 +68,6 @@ public class DeleteTeamController implements ActionListener {
             refreshTeams();
         }
     }
-
-    private void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
-            configDialogLocalVariableValue.dispose();
-            if (Rounded.ConfigDialog.LOGOUT.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.show(AppNavigator.LOGIN);
-            } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.DELETE_TEAM));
-                navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
-            }
-        });
-        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
-        configDialogLocalVariableValue.setVisible(true);
-    }
 }
+
+

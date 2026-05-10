@@ -1,50 +1,54 @@
 package bussines.managers;
 
 import bussines.objects.Player;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import persistance.PlayerDao;
 import shared.PasswordHasher;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * Identificador reservado para el usuario administrador. Según el enunciado
- * (apartado 2.2), el admin se autentica con el literal "admin" y la
- * contraseña que esté escrita en config.json, no contra la base de datos.
- */
 
 /**
- * Esta clase se encarga de gestionar lo relacionado con los jugadores.
+ * Gestiona las operaciones del jugador.
  */
 public class PlayerManager {
 
-    // Identificador reservado para el usuario administrador.
-    public static final String ADMIN_IDENTIFIER = "admin";
 
-    // DAO que se usa para acceder a los datos de los jugadores
     private final PlayerDao playerDataAccessObjectFieldReference;
 
-    // Guarda el identificador del usuario que ha iniciado sesión
+
+    /**
+     * Guarda el identificador.
+     */
     public static String currentIdentifierFieldReference;
 
-    // Constructor que inicializa el DAO de jugadores
+
+    /**
+     * Crea una instancia de el jugador.
+     */
     public PlayerManager() {
         this.playerDataAccessObjectFieldReference = new PlayerDao();
     }
 
+
     /**
-     * Comprueba si las credenciales corresponden al administrador.
+     * Indica el estado actual.
      *
-     * Según el apartado 2.2 del enunciado, el administrador se autentica
-     * con el literal "admin" y la contraseña almacenada en config.json,
-     * sin pasar por la base de datos.
+     * @param identifierParameterValue identificador del usuario.
+     * @param userPasswordParameterValue contrasena del usuario.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
      */
     public boolean isAdmin(String identifierParameterValue, String userPasswordParameterValue) {
         if (identifierParameterValue == null || userPasswordParameterValue == null) {
             return false;
         }
 
-        if (!ADMIN_IDENTIFIER.equalsIgnoreCase(identifierParameterValue)) {
+        if (!ConfigManager.getAdminIdentifier().equalsIgnoreCase(identifierParameterValue)) {
             return false;
         }
 
@@ -58,17 +62,18 @@ public class PlayerManager {
         return userPasswordParameterValue.equals(adminPasswordFromConfigLocalVariableValue);
     }
 
+
     /**
-     * Busca un jugador y comprueba si las credenciales son correctas.
+     * Busca el jugador.
      *
-     * Si las credenciales coinciden con el administrador (definido en
-     * config.json), se autentica como admin sin consultar la base de
-     * datos. En cualquier otro caso, se delega en el DAO de jugadores.
+     * @param userIdentifierParameterValue identificador del usuario.
+     * @param userPasswordParameterValue contrasena del usuario.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
      */
     public boolean searchPlayer(String userIdentifierParameterValue, String userPasswordParameterValue) {
-        // Caso especial: login del administrador contra config.json.
+
         if (isAdmin(userIdentifierParameterValue, userPasswordParameterValue)) {
-            currentIdentifierFieldReference = ADMIN_IDENTIFIER;
+            currentIdentifierFieldReference = ConfigManager.getAdminIdentifier();
             return true;
         }
 
@@ -87,36 +92,38 @@ public class PlayerManager {
         return true;
     }
 
+
     /**
-     * Comprueba si existe un jugador con el identificador indicado, sin
-     * validar contraseña. El literal "admin" se considera siempre
-     * existente, ya que su credencial vive en config.json y no en la
-     * base de datos.
+     * Gestiona esta operacion.
+     *
+     * @param userIdentifierParameterValue identificador del usuario.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
      */
     public boolean playerExists(String userIdentifierParameterValue) {
         if (userIdentifierParameterValue == null) {
             return false;
         }
-        if (ADMIN_IDENTIFIER.equalsIgnoreCase(userIdentifierParameterValue)) {
+        if (ConfigManager.getAdminIdentifier().equalsIgnoreCase(userIdentifierParameterValue)) {
             return true;
         }
         return playerDataAccessObjectFieldReference.findPlayerByIdentifier(userIdentifierParameterValue) != null;
     }
 
+
     /**
-     * Comprueba si la contraseña introducida coincide con la almacenada.
+     * Gestiona esta operacion.
      *
-     * Para el administrador, la fuente de la contraseña es config.json
-     * (no la base de datos) y se compara en texto plano. Para el resto
-     * de jugadores, se compara el hash almacenado en BD.
+     * @param userIdentifierParameterValue identificador del usuario.
+     * @param userPasswordParameterValue contrasena del usuario.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
      */
     public boolean verifyPassword(String userIdentifierParameterValue, String userPasswordParameterValue) {
         if (userIdentifierParameterValue == null || userPasswordParameterValue == null) {
             return false;
         }
 
-        // El administrador se valida contra config.json, no contra BD.
-        if (ADMIN_IDENTIFIER.equalsIgnoreCase(userIdentifierParameterValue)) {
+
+        if (ConfigManager.getAdminIdentifier().equalsIgnoreCase(userIdentifierParameterValue)) {
             return userPasswordParameterValue.equals(ConfigManager.getAdminPassword());
         }
 
@@ -133,33 +140,46 @@ public class PlayerManager {
         return hashedPasswordLocalVariableValue.equals(playerProfileLocalVariableValue.getPassword());
     }
 
-    // Borra un jugador usando su DNI
+
+    /**
+     * Elimina el jugador.
+     *
+     * @param nationalIdentityDocumentParameterValue documento de identidad del jugador.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean deletePlayer(String nationalIdentityDocumentParameterValue) {
         return playerDataAccessObjectFieldReference.deletePlayer(nationalIdentityDocumentParameterValue);
     }
 
-    // Devuelve el jugador que tiene la sesión iniciada.
-    // El administrador no es un jugador real, así que devuelve null.
+
+    /**
+     * Devuelve el actual jugador.
+     *
+     * @return el actual jugador.
+     */
     public Player getCurrentPlayer() {
         if (currentIdentifierFieldReference == null) {
             return null;
         }
-        if (ADMIN_IDENTIFIER.equalsIgnoreCase(currentIdentifierFieldReference)) {
+        if (ConfigManager.getAdminIdentifier().equalsIgnoreCase(currentIdentifierFieldReference)) {
             return null;
         }
         return playerDataAccessObjectFieldReference.findPlayerByIdentifier(currentIdentifierFieldReference);
     }
 
+
     /**
-     * Actualiza la contraseña de un usuario.
+     * Actualiza el contrasena.
      *
-     * El administrador no puede cambiar su contraseña desde la app: su
-     * contraseña vive en config.json (apartado 2.1 del enunciado) y
-     * cualquier intento de actualizarla a través de la BD se rechaza.
+     * @param identifierParameterValue identificador del usuario.
+     * @param newUserPasswordParameterValue nueva contrasena del usuario.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
      */
     public boolean updatePassword(String identifierParameterValue, String newUserPasswordParameterValue) {
-        if (ADMIN_IDENTIFIER.equalsIgnoreCase(identifierParameterValue)) {
-            return false;
+        if (ConfigManager.getAdminIdentifier().equalsIgnoreCase(identifierParameterValue)) {
+            return ConfigManager.updateAdminPassword(
+                    newUserPasswordParameterValue
+            );
         }
 
         String hashedPasswordLocalVariableValue =
@@ -171,7 +191,12 @@ public class PlayerManager {
         );
     }
 
-    // Devuelve los partidos en directo
+
+    /**
+     * Devuelve los directo partidos.
+     *
+     * @return los directo partidos.
+     */
     public List<String[]> getLiveMatches() {
         Player currentPlayerProfileLocalVariableValue = getCurrentPlayer();
 
@@ -211,15 +236,14 @@ public class PlayerManager {
         );
     }
 
+
     /**
-     * Borra la cuenta del usuario que tiene la sesión iniciada.
+     * Elimina el actual jugador.
      *
-     * El administrador es una excepción del derecho al olvido (RGPD)
-     * según el apartado 2.3 del enunciado y nunca puede eliminar su
-     * propia cuenta.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
      */
     public boolean deleteCurrentPlayer() {
-        if (ADMIN_IDENTIFIER.equalsIgnoreCase(currentIdentifierFieldReference)) {
+        if (ConfigManager.getAdminIdentifier().equalsIgnoreCase(currentIdentifierFieldReference)) {
             return false;
         }
 
@@ -241,7 +265,13 @@ public class PlayerManager {
         return removedLocalVariableValue;
     }
 
-    // Borra varios jugadores y devuelve un mensaje con el resultado
+
+    /**
+     * Elimina los jugadores.
+     *
+     * @param selectedPlayersParameterValue jugadores que usa la operacion.
+     * @return resultado de la operacion.
+     */
     public String deletePlayers(ArrayList<Player> selectedPlayersParameterValue) {
         StringBuilder resultLocalVariableValue = new StringBuilder("Deleted:\n");
 
@@ -265,7 +295,19 @@ public class PlayerManager {
         return resultLocalVariableValue.toString();
     }
 
-    // Registra un nuevo jugador en el sistema
+
+    /**
+     * Registra la accion.
+     *
+     * @param nationalIdentityDocumentParameterValue documento de identidad del jugador.
+     * @param displayNameParameterValue nombre que se muestra.
+     * @param emailAddressParameterValue direccion de email.
+     * @param userPasswordParameterValue contrasena del usuario.
+     * @param jerseyNumberParameterValue dorsal del jugador.
+     * @param teamReferenceParameterValue equipo asociado.
+     * @param phoneNumberParameterValue numero de telefono.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
     public boolean registerPlayer(String nationalIdentityDocumentParameterValue,
                                   String displayNameParameterValue,
                                   String emailAddressParameterValue,
@@ -274,10 +316,15 @@ public class PlayerManager {
                                   String teamReferenceParameterValue,
                                   String phoneNumberParameterValue) {
 
-        // Comprueba que no exista ya un jugador con el mismo DNI o email
+
         if (playerDataAccessObjectFieldReference.existsByDniOrEmail(
                 nationalIdentityDocumentParameterValue,
                 emailAddressParameterValue)) {
+            return false;
+        }
+
+
+        if (!isValidGeneratedPassword(userPasswordParameterValue)) {
             return false;
         }
 
@@ -304,12 +351,23 @@ public class PlayerManager {
         return playerDataAccessObjectFieldReference.insertPlayer(newPlayerProfileLocalVariableValue);
     }
 
-    // Devuelve todos los jugadores
+
+    /**
+     * Devuelve los jugadores.
+     *
+     * @return los jugadores.
+     */
     public ArrayList<Player> getPlayers() {
         return playerDataAccessObjectFieldReference.getAllPlayers();
     }
 
-    // Devuelve los jugadores de un equipo concreto
+
+    /**
+     * Devuelve el jugadores equipo.
+     *
+     * @param teamReferenceDisplayNameParameterValue nombre del equipo.
+     * @return el jugadores equipo.
+     */
     public ArrayList<Player> getPlayersByTeam(String teamReferenceDisplayNameParameterValue) {
         ArrayList<Player> allPlayersLocalVariableValue =
                 playerDataAccessObjectFieldReference.getAllPlayers();
@@ -325,23 +383,159 @@ public class PlayerManager {
         return teamPlayersLocalVariableValue;
     }
 
-    // Devuelve cuántos jugadores tiene un equipo
+
+    /**
+     * Devuelve el numero jugadores equipo nombre.
+     *
+     * @param teamReferenceDisplayNameParameterValue nombre del equipo.
+     * @return el numero jugadores equipo nombre.
+     */
     public int getNumberOfPlayersByTeamName(String teamReferenceDisplayNameParameterValue) {
         return getPlayersByTeam(teamReferenceDisplayNameParameterValue).size();
     }
 
-    // Devuelve el identificador del usuario actual
+
+    /**
+     * Devuelve el actual identificador.
+     *
+     * @return el actual identificador.
+     */
     public String getCurrentIdentifier() {
         return currentIdentifierFieldReference;
     }
 
-    // Guarda el identificador del usuario actual
+
+    /**
+     * Actualiza el actual identificador.
+     *
+     * @param currentIdentifierParameterValue actual identificador.
+     */
     public void setCurrentIdentifier(String currentIdentifierParameterValue) {
         currentIdentifierFieldReference = currentIdentifierParameterValue;
     }
 
-    // Cierra la sesión del usuario actual
+
+    /**
+     * Gestiona esta operacion.
+     */
     public void logoutCurrentUser() {
         currentIdentifierFieldReference = null;
     }
+
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param userPasswordParameterValue contrasena del usuario.
+     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
+     */
+    private boolean isValidGeneratedPassword(String userPasswordParameterValue) {
+        if (userPasswordParameterValue == null
+                || userPasswordParameterValue.length() < 8) {
+            return false;
+        }
+        boolean hasLowercaseLocalVariableValue =
+                userPasswordParameterValue.matches(".*[a-z].*");
+        boolean hasUppercaseLocalVariableValue =
+                userPasswordParameterValue.matches(".*[A-Z].*");
+        boolean hasDigitLocalVariableValue =
+                userPasswordParameterValue.matches(".*[0-9].*");
+
+        return hasLowercaseLocalVariableValue
+                && hasUppercaseLocalVariableValue
+                && hasDigitLocalVariableValue;
+    }
+
+
+    /**
+     * Gestiona esta operacion.
+     */
+    public void purgeUserDataFromDisk() {
+        Player currentPlayerProfileLocalVariableValue = getCurrentPlayer();
+
+        if (currentPlayerProfileLocalVariableValue == null) {
+            return;
+        }
+
+        String playerDniLocalVariableValue =
+                currentPlayerProfileLocalVariableValue.getDniPlayer();
+
+        File teamsFolderLocalVariableValue = new File("data/teams");
+
+        if (!teamsFolderLocalVariableValue.exists()
+                || !teamsFolderLocalVariableValue.isDirectory()) {
+            return;
+        }
+
+        File[] jsonFilesLocalVariableValue = teamsFolderLocalVariableValue
+                .listFiles((dirParameterValue, nameParameterValue) ->
+                        nameParameterValue.toLowerCase().endsWith(".json"));
+
+        if (jsonFilesLocalVariableValue == null) {
+            return;
+        }
+
+        for (File jsonFileLocalVariableValue : jsonFilesLocalVariableValue) {
+            try {
+                String contentLocalVariableValue = new String(
+                        Files.readAllBytes(jsonFileLocalVariableValue.toPath()),
+                        StandardCharsets.UTF_8
+                );
+
+                JSONObject teamJsonLocalVariableValue =
+                        new JSONObject(contentLocalVariableValue);
+
+                if (!teamJsonLocalVariableValue.has("players")) {
+                    continue;
+                }
+
+                JSONArray playersArrayLocalVariableValue =
+                        teamJsonLocalVariableValue.getJSONArray("players");
+
+                JSONArray filteredPlayersLocalVariableValue = new JSONArray();
+
+                for (int indexCounterLocalVariableValue = 0;
+                     indexCounterLocalVariableValue < playersArrayLocalVariableValue.length();
+                     indexCounterLocalVariableValue++) {
+
+                    JSONObject playerEntryLocalVariableValue =
+                            playersArrayLocalVariableValue
+                                    .getJSONObject(indexCounterLocalVariableValue);
+
+                    String entryDniLocalVariableValue =
+                            playerEntryLocalVariableValue.optString("dni", "");
+
+
+                    boolean isSamePlayerLocalVariableValue =
+                            playerDniLocalVariableValue.equalsIgnoreCase(entryDniLocalVariableValue);
+
+                    if (!isSamePlayerLocalVariableValue) {
+                        filteredPlayersLocalVariableValue.put(playerEntryLocalVariableValue);
+                    }
+                }
+
+
+                if (filteredPlayersLocalVariableValue.length()
+                        < playersArrayLocalVariableValue.length()) {
+                    teamJsonLocalVariableValue.put("players",
+                            filteredPlayersLocalVariableValue);
+                    Files.write(
+                            jsonFileLocalVariableValue.toPath(),
+                            teamJsonLocalVariableValue.toString(2)
+                                    .getBytes(StandardCharsets.UTF_8)
+                    );
+                }
+
+            } catch (Exception eventArgumentExceptionParameterValue) {
+                System.err.println(
+                        "purgeUserDataFromDisk: error procesando "
+                        + jsonFileLocalVariableValue.getName()
+                        + " — "
+                        + eventArgumentExceptionParameterValue.getMessage()
+                );
+            }
+        }
+    }
 }
+
+

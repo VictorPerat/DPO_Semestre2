@@ -9,9 +9,18 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Detalle de equipo como JPanel reutilizable. */
+
+/**
+ * Representa la vista del equipo detalle.
+ */
 public class TeamDetailView extends JPanel {
+    /**
+     * Constante para el vuelta.
+     */
     public static final String BACK = "BACK";
+    /**
+     * Constante para el configuracion.
+     */
     public static final String CONFIG = "CONFIG";
 
     private JLabel titleLabelFieldReference;
@@ -20,6 +29,10 @@ public class TeamDetailView extends JPanel {
     private JButton backButtonFieldReference;
     private JButton configButtonFieldReference;
 
+
+    /**
+     * Crea una instancia de el equipo detalle.
+     */
     public TeamDetailView() {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -38,6 +51,7 @@ public class TeamDetailView extends JPanel {
 
         String[] columnsLocalVariableValue = {"Name", "Email", "DNI", "Number", "Phone"};
         tableModelFieldReference = new DefaultTableModel(columnsLocalVariableValue, 0) {
+
             @Override public boolean isCellEditable(int rowParameterValue, int columnParameterValue) { return false; }
         };
         playersTableFieldReference = new JTable(tableModelFieldReference);
@@ -47,6 +61,13 @@ public class TeamDetailView extends JPanel {
         add(new JScrollPane(playersTableFieldReference), BorderLayout.CENTER);
     }
 
+
+    /**
+     * Carga el equipo.
+     *
+     * @param teamReferenceDisplayNameParameterValue nombre del equipo.
+     * @param playersParameterValue jugadores que usa la operacion.
+     */
     public void loadTeam(String teamReferenceDisplayNameParameterValue, ArrayList<Player> playersParameterValue) {
         titleLabelFieldReference.setText(teamReferenceDisplayNameParameterValue == null ? "TEAM DETAILS" : teamReferenceDisplayNameParameterValue.toUpperCase());
         tableModelFieldReference.setRowCount(0);
@@ -62,6 +83,12 @@ public class TeamDetailView extends JPanel {
         }
     }
 
+
+    /**
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void registerController(ActionListener controllerHandlerParameterValue) {
         backButtonFieldReference.addActionListener(controllerHandlerParameterValue);
         backButtonFieldReference.setActionCommand(BACK);
@@ -69,3 +96,5 @@ public class TeamDetailView extends JPanel {
         configButtonFieldReference.setActionCommand(CONFIG);
     }
 }
+
+

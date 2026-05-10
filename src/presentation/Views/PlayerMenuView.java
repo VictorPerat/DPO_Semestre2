@@ -9,61 +9,66 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
+
 
 /**
- * Vista del menú principal del jugador.
- *
- * Mantiene el lenguaje gráfico de Login/SignUp (fondo + título +
- * subtítulo) pero cambia la zona central por una fila de "menu cards"
- * con icono circular, título, barra de acento y descripción —
- * inspirada en el mockup proporcionado por el usuario.
- *
- * La API pública (constantes y métodos) permanece intacta:
- *   - registerController(ActionListener)
- *   - showMessageDialog(String)
- *   - constantes WATCH_MATCHES, VIEW_LEAGUES, DELETE_PLAYER, LOGOUT.
+ * Representa la vista del jugador menu.
  */
 public class PlayerMenuView extends JPanel {
 
-    // Comandos de acción para los botones
+
+    /**
+     * Constante para los partidos.
+     */
     public static final String WATCH_MATCHES = "WATCH_MATCHES";
+    /**
+     * Constante para los vista ligas.
+     */
     public static final String VIEW_LEAGUES = "VIEW_LEAGUES";
+    /**
+     * Constante para el jugador.
+     */
     public static final String DELETE_PLAYER = "DELETE_PLAYER";
+    /**
+     * Constante para el valor.
+     */
     public static final String LOGOUT = "LOGOUT";
 
-    // Cards principales de la vista
+
     private MenuCardPanel viewLeaguesCardFieldReference;
     private MenuCardPanel deleteAccountCardFieldReference;
     private MenuCardPanel logoutCardFieldReference;
 
-    // Paleta de los títulos / textos (heredada de Login/SignUp).
+
     private static final Color ACCENT_COLOR = new Color(55, 109, 230);
     private static final Color TITLE_WHITE = new Color(245, 247, 250);
     private static final Color SUBTITLE_WHITE = new Color(238, 241, 247);
 
-    // Paleta de cada card (icono + barra + footer-pill).
-    private static final Color CARD_BLUE = new Color(46, 95, 215);
+
     private static final Color CARD_GREEN = new Color(38, 166, 91);
     private static final Color CARD_ORANGE = new Color(245, 137, 47);
     private static final Color CARD_PURPLE = new Color(110, 70, 220);
 
-    // Texto interno de las cards.
+
     private static final Color CARD_TITLE_COLOR = new Color(28, 35, 51);
     private static final Color CARD_BODY_COLOR = new Color(110, 122, 142);
 
     private static final String BACKGROUND_IMAGE_PATH =
             ProjectPathResolver.resolveProjectPath("photos/login_background.jpg");
 
+
+    /**
+     * Crea una instancia de el jugador menu.
+     */
     public PlayerMenuView() {
         setLayout(new BorderLayout());
         buildCards();
         add(buildBackgroundPanel(), BorderLayout.CENTER);
     }
 
+
     /**
-     * Crea las cards y les asigna los iconos PNG correspondientes
-     * desde la carpeta photos/.
+     * Construye el contenido.
      */
     private void buildCards() {
         viewLeaguesCardFieldReference = new MenuCardPanel(
@@ -91,15 +96,12 @@ public class PlayerMenuView extends JPanel {
         logoutCardFieldReference.setIcon(loadCardIcon("photos/Salir_Meu_Principal.png"));
     }
 
-    public void updateLiveMatches(List<String[]> liveGamesParameterValue) {
-        // Ya no se muestra preview de Live Matches dentro del menú.
-        // El widget global inferior se encarga de mostrar los partidos en directo.
-    }
-
 
     /**
-     * Carga un icono PNG de la carpeta photos/ y lo escala al tamaño
-     * adecuado para mostrarlo en cada card (sin círculo de fondo).
+     * Carga el contenido.
+     *
+     * @param relativePathParameterValue ruta que usa la operacion.
+     * @return resultado de la operacion.
      */
     private Icon loadCardIcon(String relativePathParameterValue) {
         try {
@@ -117,13 +119,15 @@ public class PlayerMenuView extends JPanel {
 
 
     /**
-     * Panel de fondo que pinta la imagen + overlay y centra el bloque
-     * de título y la fila de cards.
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
      */
     private JPanel buildBackgroundPanel() {
         Image backgroundImageLocalVariableValue = new ImageIcon(BACKGROUND_IMAGE_PATH).getImage();
 
         JPanel backgroundPanelLocalVariableValue = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics graphicsParameterValue) {
                 super.paintComponent(graphicsParameterValue);
@@ -141,7 +145,7 @@ public class PlayerMenuView extends JPanel {
 
         backgroundPanelLocalVariableValue.setLayout(new BorderLayout());
 
-        // Centro: bloque de título + fila de cards, todo centrado
+
         JPanel centerWrapperLocalVariableValue = new JPanel(new GridBagLayout());
         centerWrapperLocalVariableValue.setOpaque(false);
 
@@ -169,6 +173,8 @@ public class PlayerMenuView extends JPanel {
         constraintsLocalVariableValue.weighty = 1.0;
         constraintsLocalVariableValue.anchor = GridBagConstraints.CENTER;
 
+        constraintsLocalVariableValue.insets = new Insets(0, 0, 0, 310);
+
         centerWrapperLocalVariableValue.add(contentPanelLocalVariableValue, constraintsLocalVariableValue);
 
         backgroundPanelLocalVariableValue.add(centerWrapperLocalVariableValue, BorderLayout.CENTER);
@@ -176,8 +182,11 @@ public class PlayerMenuView extends JPanel {
         return backgroundPanelLocalVariableValue;
     }
 
+
     /**
-     * Bloque de título "PLAYER MENU" con subrayado de acento.
+     * Construye el titulo.
+     *
+     * @return resultado de la operacion.
      */
     private JPanel buildTitleBlock() {
         Dimension screenSizeLocalVariableValue = Toolkit.getDefaultToolkit().getScreenSize();
@@ -234,9 +243,11 @@ public class PlayerMenuView extends JPanel {
         return titleContainerLocalVariableValue;
     }
 
+
     /**
-     * Fila horizontal con las 4 cards: Live Matches, Leagues,
-     * Delete Account, Logout. Cada una con su color de acento.
+     * Construye el contenido.
+     *
+     * @return resultado de la operacion.
      */
     private JPanel buildCardsRow() {
         JPanel rowLocalVariableValue = new JPanel(new GridLayout(1, 3, 35, 0));
@@ -249,12 +260,24 @@ public class PlayerMenuView extends JPanel {
         return rowLocalVariableValue;
     }
 
+
+    /**
+     * Registra la accion.
+     *
+     * @param controllerHandlerParameterValue dato de entrada de la operacion.
+     */
     public void registerController(ActionListener controllerHandlerParameterValue) {
         viewLeaguesCardFieldReference.setActionListener(controllerHandlerParameterValue);
         deleteAccountCardFieldReference.setActionListener(controllerHandlerParameterValue);
         logoutCardFieldReference.setActionListener(controllerHandlerParameterValue);
     }
 
+
+    /**
+     * Muestra el dialogo.
+     *
+     * @param messageParameterValue dato de entrada de la operacion.
+     */
     public void showMessageDialog(String messageParameterValue) {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
@@ -264,33 +287,9 @@ public class PlayerMenuView extends JPanel {
         );
     }
 
-    /**
-     * Permite asignar más tarde el icono de cada card. Útil para que
-     * el usuario añada los iconos PNG cuando los tenga sin tocar el
-     * código del menú.
-     */
-    public void setWatchMatchesIcon(Icon iconParameterValue) {
-        // La card de Live Matches ya no existe en el Player Menu.
-    }
-    public void setViewLeaguesIcon(Icon iconParameterValue) {
-        viewLeaguesCardFieldReference.setIcon(iconParameterValue);
-    }
-    public void setDeleteAccountIcon(Icon iconParameterValue) {
-        deleteAccountCardFieldReference.setIcon(iconParameterValue);
-    }
-    public void setLogoutIcon(Icon iconParameterValue) {
-        logoutCardFieldReference.setIcon(iconParameterValue);
-    }
-
-    // ============================================================
-    //                    MenuCardPanel (interna)
-    // ============================================================
 
     /**
-     * Card visual con: círculo coloreado para el icono, título, barra
-     * de acento, descripción y footer-pill al fondo. Funciona como
-     * botón: al hacer clic dispara el {@link ActionListener} con el
-     * actionCommand asignado.
+     * Agrupa la logica de el menu.
      */
     private static class MenuCardPanel extends JPanel {
 
@@ -305,6 +304,11 @@ public class PlayerMenuView extends JPanel {
         private boolean hoverFieldReference = false;
 
 
+        /**
+         * Actualiza el contenido.
+         *
+         * @param htmlContentParameterValue dato de entrada de la operacion.
+         */
         public void setDescriptionHtml(String htmlContentParameterValue) {
             descriptionLabelFieldReference.setText(
                     "<html><div style='text-align:center;'>"
@@ -315,6 +319,15 @@ public class PlayerMenuView extends JPanel {
             descriptionLabelFieldReference.repaint();
         }
 
+
+        /**
+         * Crea una instancia de el menu.
+         *
+         * @param titleParameterValue titulo que usa la operacion.
+         * @param descriptionParameterValue dato de entrada de la operacion.
+         * @param accentColorParameterValue dato de entrada de la operacion.
+         * @param actionCommandParameterValue accion que usa la operacion.
+         */
         MenuCardPanel(String titleParameterValue,
                       String descriptionParameterValue,
                       Color accentColorParameterValue,
@@ -331,9 +344,7 @@ public class PlayerMenuView extends JPanel {
             setMinimumSize(new Dimension(290, 410));
             setMaximumSize(new Dimension(290, 410));
 
-            // Icono central de la card (sin círculo de fondo). Se ve
-            // directamente la imagen PNG al tamaño que devuelve
-            // loadCardIcon.
+
             iconHolderLabelFieldReference = new JLabel();
             iconHolderLabelFieldReference.setHorizontalAlignment(SwingConstants.CENTER);
             iconHolderLabelFieldReference.setVerticalAlignment(SwingConstants.CENTER);
@@ -342,13 +353,13 @@ public class PlayerMenuView extends JPanel {
             iconHolderLabelFieldReference.setMinimumSize(new Dimension(200, 200));
             iconHolderLabelFieldReference.setMaximumSize(new Dimension(200, 200));
 
-            // Título
+
             titleLabelFieldReference = new JLabel(titleParameterValue, SwingConstants.CENTER);
             titleLabelFieldReference.setFont(new Font("Arial", Font.BOLD, 26));
             titleLabelFieldReference.setForeground(CARD_TITLE_COLOR);
             titleLabelFieldReference.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            // Barra de acento bajo el título
+
             JPanel titleAccentBarLocalVariableValue = new JPanel();
             titleAccentBarLocalVariableValue.setBackground(accentColorFieldReference);
             titleAccentBarLocalVariableValue.setPreferredSize(new Dimension(60, 4));
@@ -356,7 +367,7 @@ public class PlayerMenuView extends JPanel {
             titleAccentBarLocalVariableValue.setMinimumSize(new Dimension(60, 4));
             titleAccentBarLocalVariableValue.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            // Descripción
+
             descriptionLabelFieldReference = new JLabel(
                     "<html><div style='text-align:center;'>"
                             + descriptionParameterValue
@@ -376,19 +387,22 @@ public class PlayerMenuView extends JPanel {
             add(descriptionLabelFieldReference);
             add(Box.createVerticalGlue());
 
-            // Click → dispara ActionListener
+
             addMouseListener(new MouseAdapter() {
+
                 @Override
                 public void mouseEntered(MouseEvent eventArgumentParameterValue) {
                     hoverFieldReference = true;
                     repaint();
                 }
 
+
                 @Override
                 public void mouseExited(MouseEvent eventArgumentParameterValue) {
                     hoverFieldReference = false;
                     repaint();
                 }
+
 
                 @Override
                 public void mouseClicked(MouseEvent eventArgumentParameterValue) {
@@ -404,15 +418,33 @@ public class PlayerMenuView extends JPanel {
 
         }
 
+
+        /**
+         * Actualiza el accion.
+         *
+         * @param listenerParameterValue listener que se registra.
+         */
         public void setActionListener(ActionListener listenerParameterValue) {
             this.listenerFieldReference = listenerParameterValue;
         }
 
+
+        /**
+         * Actualiza el contenido.
+         *
+         * @param iconParameterValue dato de entrada de la operacion.
+         */
         public void setIcon(Icon iconParameterValue) {
             iconHolderLabelFieldReference.setIcon(iconParameterValue);
             iconHolderLabelFieldReference.repaint();
         }
 
+
+        /**
+         * Gestiona esta operacion.
+         *
+         * @param graphicsParameterValue dato de entrada de la operacion.
+         */
         @Override
         protected void paintComponent(Graphics graphicsParameterValue) {
             Graphics2D g2LocalVariableValue = (Graphics2D) graphicsParameterValue.create();
@@ -425,7 +457,7 @@ public class PlayerMenuView extends JPanel {
             int heightLocalVariableValue = getHeight();
             int radiusLocalVariableValue = 22;
 
-            // Sombra suave detrás de la card
+
             g2LocalVariableValue.setColor(new Color(8, 20, 46, 38));
             g2LocalVariableValue.fillRoundRect(
                     8, 14,
@@ -435,7 +467,7 @@ public class PlayerMenuView extends JPanel {
                     radiusLocalVariableValue
             );
 
-            // Cuerpo blanco (sin barra de color en el fondo).
+
             int alphaLocalVariableValue = hoverFieldReference ? 255 : 250;
             g2LocalVariableValue.setColor(new Color(255, 255, 255, alphaLocalVariableValue));
             g2LocalVariableValue.fillRoundRect(
@@ -451,3 +483,5 @@ public class PlayerMenuView extends JPanel {
         }
     }
 }
+
+

@@ -3,25 +3,34 @@ package Rounded;
 import javax.swing.*;
 import java.awt.*;
 
-// Boton redondeado con soporte para degradado, outline y sombra
+
+/**
+ * Agrupa la logica de esta parte de la aplicacion.
+ */
 public class RoundedButton extends JButton {
 
-    // Radio usado para redondear el borde del boton
+
     private final int radiusFieldReference;
 
-    // Colores del degradado principal
+
     private Color startColorFieldReference;
     private Color endColorFieldReference;
 
-    // Estado y configuracion del modo borde
+
     private boolean outlineModeFieldReference = false;
     private Color outlineColorFieldReference = new Color(52, 102, 219);
     private int outlineThicknessFieldReference = 2;
 
-    // Permite activar o desactivar la sombra inferior
+
     private boolean shadowEnabledFieldReference = true;
 
-    // Construye el boton base y desactiva la pintura estandar
+
+    /**
+     * Crea una instancia de roundedbutton.
+     *
+     * @param textParameterValue texto que usa la operacion.
+     * @param radiusParameterValue dato de entrada de la operacion.
+     */
     public RoundedButton(String textParameterValue, int radiusParameterValue) {
         super(textParameterValue);
         this.radiusFieldReference = radiusParameterValue;
@@ -34,7 +43,13 @@ public class RoundedButton extends JButton {
         setRolloverEnabled(true);
     }
 
-    // Activa el modo degradado con los colores recibidos
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param startColorParameterValue dato de entrada de la operacion.
+     * @param endColorParameterValue dato de entrada de la operacion.
+     */
     public void setGradientColors(Color startColorParameterValue,
                                   Color endColorParameterValue) {
         this.startColorFieldReference = startColorParameterValue;
@@ -43,7 +58,13 @@ public class RoundedButton extends JButton {
         repaint();
     }
 
-    // Activa el modo outline y configura grosor y color del borde
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param outlineColorParameterValue dato de entrada de la operacion.
+     * @param outlineThicknessParameterValue dato de entrada de la operacion.
+     */
     public void setOutlineMode(Color outlineColorParameterValue,
                                int outlineThicknessParameterValue) {
         this.outlineModeFieldReference = true;
@@ -52,13 +73,23 @@ public class RoundedButton extends JButton {
         repaint();
     }
 
-    // Permite mostrar o quitar la sombra del boton
+
+    /**
+     * Actualiza el contenido.
+     *
+     * @param shadowEnabledParameterValue dato de entrada de la operacion.
+     */
     public void setShadowEnabled(boolean shadowEnabledParameterValue) {
         this.shadowEnabledFieldReference = shadowEnabledParameterValue;
         repaint();
     }
 
-    // Dibuja el boton completo con el estilo personalizado
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param graphicsParameterValue dato de entrada de la operacion.
+     */
     @Override
     protected void paintComponent(Graphics graphicsParameterValue) {
         Graphics2D g2LocalVariableValue =
@@ -79,7 +110,7 @@ public class RoundedButton extends JButton {
         int drawHeightLocalVariableValue =
                 getHeight() - shadowOffsetLocalVariableValue;
 
-        // Primero se pinta la sombra cuando el boton la usa
+
         if (!outlineModeFieldReference && shadowEnabledFieldReference) {
             g2LocalVariableValue.setColor(new Color(16, 34, 74, 55));
             g2LocalVariableValue.fillRoundRect(
@@ -92,7 +123,7 @@ public class RoundedButton extends JButton {
             );
         }
 
-        // Segun el modo activo se dibuja outline o degradado
+
         if (outlineModeFieldReference) {
             Color fillColorLocalVariableValue = getBackground() != null
                     ? new Color(
@@ -179,7 +210,7 @@ public class RoundedButton extends JButton {
             );
         }
 
-        // El texto se centra manualmente dentro del boton
+
         g2LocalVariableValue.setFont(getFont());
         g2LocalVariableValue.setColor(getForeground());
 
@@ -202,13 +233,25 @@ public class RoundedButton extends JButton {
         g2LocalVariableValue.dispose();
     }
 
-    // No usamos el borde por defecto de Swing
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param graphicsParameterValue dato de entrada de la operacion.
+     */
     @Override
     protected void paintBorder(Graphics graphicsParameterValue) {
-        // Sin borde por defecto
+
     }
 
-    // Ajusta un color sumando intensidad sin superar el maximo
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param baseColorParameterValue dato de entrada de la operacion.
+     * @param amountParameterValue dato de entrada de la operacion.
+     * @return resultado de la operacion.
+     */
     private Color shiftColor(Color baseColorParameterValue, int amountParameterValue) {
         int redLocalVariableValue = Math.min(
                 255,
@@ -231,3 +274,5 @@ public class RoundedButton extends JButton {
         );
     }
 }
+
+

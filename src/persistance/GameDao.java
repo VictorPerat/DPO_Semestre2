@@ -1,18 +1,26 @@
 package persistance;
 
 import bussines.objects.Game;
+import shared.DaoErrorHandler;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
 
+
 /**
- * Esta clase se encarga de acceder a los datos de los partidos en la base de datos.
+ * Gestiona el acceso a datos del partido.
  */
 public class GameDao {
 
-    // Devuelve todos los partidos de una liga
+
+    /**
+     * Devuelve el partidos liga.
+     *
+     * @param leagueReferenceIdentifierParameterValue liga identificador.
+     * @return el partidos liga.
+     */
     public ArrayList<Game> getGamesByLeague(int leagueReferenceIdentifierParameterValue) {
         ArrayList<Game> gamesLocalVariableValue = new ArrayList<>();
 
@@ -38,13 +46,18 @@ public class GameDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("GameDao", eventArgumentExceptionParameter);
         }
 
         return gamesLocalVariableValue;
     }
 
-    // Borra todos los partidos en los que participa un equipo
+
+    /**
+     * Elimina el partidos equipo.
+     *
+     * @param displayNameParameterValue nombre que se muestra.
+     */
     public void deleteGamesByTeam(String displayNameParameterValue) {
         String queryLocalVariableValue =
                 "DELETE g FROM games g JOIN teams t ON (g.home_team_id = t.id OR g.away_team_id = t.id) WHERE t.name = ?";
@@ -58,10 +71,16 @@ public class GameDao {
             preparedStatementLocalVariableValue.executeUpdate();
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("GameDao", eventArgumentExceptionParameter);
         }
     }
 
+
+    /**
+     * Devuelve los directo partidos.
+     *
+     * @return los directo partidos.
+     */
     public List<String[]> getLiveGames() {
         List<String[]> liveGamesLocalVariableValue = new ArrayList<>();
 
@@ -85,12 +104,19 @@ public class GameDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("GameDao", eventArgumentExceptionParameter);
         }
 
         return liveGamesLocalVariableValue;
     }
 
+
+    /**
+     * Devuelve el directo partidos liga.
+     *
+     * @param leagueIdsParameterValue liga que usa la operacion.
+     * @return el directo partidos liga.
+     */
     public List<String[]> getLiveGamesByLeagueIds(Collection<Integer> leagueIdsParameterValue) {
         List<String[]> liveGamesLocalVariableValue = new ArrayList<>();
 
@@ -143,12 +169,19 @@ public class GameDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("GameDao", eventArgumentExceptionParameter);
         }
 
         return liveGamesLocalVariableValue;
     }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param resultLocalVariableValue resultado que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private String[] mapLiveGame(ResultSet resultLocalVariableValue) throws SQLException {
         return new String[]{
                 resultLocalVariableValue.getString("home_name"),
@@ -158,7 +191,13 @@ public class GameDao {
         };
     }
 
-    // Actualiza si un partido ha empezado o no
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param gameEntityIdentifierParameterValue partido identificador.
+     * @param startedParameterValue dato de entrada de la operacion.
+     */
     public void actualitzaComençat(int gameEntityIdentifierParameterValue, boolean startedParameterValue) {
         String queryLocalVariableValue = "UPDATE games SET started = ? WHERE id = ?";
 
@@ -172,11 +211,19 @@ public class GameDao {
             preparedStatementLocalVariableValue.executeUpdate();
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("GameDao", eventArgumentExceptionParameter);
         }
     }
 
-    // Devuelve el id de un partido a partir de los equipos y la liga
+
+    /**
+     * Devuelve el partido.
+     *
+     * @param localTeamReferenceParameterValue equipo que usa la operacion.
+     * @param awayTeamReferenceParameterValue equipo que usa la operacion.
+     * @param leagueReferenceIdentifierParameterValue2 liga identificador.
+     * @return el partido.
+     */
     public int getGameId(String localTeamReferenceParameterValue,
                          String awayTeamReferenceParameterValue,
                          int leagueReferenceIdentifierParameterValue2) {
@@ -203,13 +250,18 @@ public class GameDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("GameDao", eventArgumentExceptionParameter);
         }
 
         return -1;
     }
 
-    // Marca un partido como finalizado
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param matchIdentifierParameterValue partido identificador.
+     */
     public void finishGame(int matchIdentifierParameterValue) {
         String queryLocalVariableValue = "UPDATE games SET started = TRUE, finished = TRUE WHERE id = ?";
 
@@ -222,11 +274,17 @@ public class GameDao {
             preparedStatementLocalVariableValue.executeUpdate();
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("GameDao", eventArgumentExceptionParameter);
         }
     }
 
-    // Busca si alguno de los equipos seleccionados está jugando ahora mismo
+
+    /**
+     * Busca los equipos.
+     *
+     * @param selectedTeamsParameterValue equipos que usa la operacion.
+     * @return resultado de la busqueda.
+     */
     public ArrayList<Game> searchPlayingTeams(ArrayList<String> selectedTeamsParameterValue) {
         ArrayList<Game> gamesLocalVariableValue = new ArrayList<>();
 
@@ -279,15 +337,18 @@ public class GameDao {
             }
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("GameDao", eventArgumentExceptionParameter);
         }
 
         return gamesLocalVariableValue;
     }
 
+
     /**
-     * Guarda el ganador de un partido (o "DRAW" si fue empate).
-     * La columna winner_name se añade vía DatabaseConnector.ensureSchema().
+     * Actualiza el partido.
+     *
+     * @param gameIdParameterValue partido que usa la operacion.
+     * @param winnerNameParameterValue nombre que usa la operacion.
      */
     public void setGameWinner(int gameIdParameterValue, String winnerNameParameterValue) {
         String queryLocalVariableValue = "UPDATE games SET winner_name = ? WHERE id = ?";
@@ -302,11 +363,17 @@ public class GameDao {
             preparedStatementLocalVariableValue.executeUpdate();
 
         } catch (SQLException eventArgumentExceptionParameter) {
-            eventArgumentExceptionParameter.printStackTrace();
+            DaoErrorHandler.log("GameDao", eventArgumentExceptionParameter);
         }
     }
 
-    // Convierte una fila de la base de datos en un objeto Game
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param resultLocalVariableValue resultado que usa la operacion.
+     * @return resultado de la operacion.
+     */
     private Game mapGame(ResultSet resultLocalVariableValue) throws SQLException {
         Game gameLocalVariableValue = new Game(
                 resultLocalVariableValue.getInt("id"),
@@ -319,13 +386,12 @@ public class GameDao {
                 resultLocalVariableValue.getBoolean("finished")
         );
 
-        // Lectura defensiva del ganador: si la columna no existe (BDs
-        // antiguas sin la migración aplicada), se ignora el error.
+
         try {
             String winnerLocalVariableValue = resultLocalVariableValue.getString("winner_name");
             gameLocalVariableValue.setWinnerName(winnerLocalVariableValue);
         } catch (SQLException ignoredExceptionParameterValue) {
-            // Columna ausente; el campo queda en null.
+
         }
 
         return gameLocalVariableValue;

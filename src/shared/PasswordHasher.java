@@ -4,14 +4,26 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-// Utilidad estatica para cifrar contrasenas con SHA-256
+
+/**
+ * Genera el hash del contrasena.
+ */
 public final class PasswordHasher {
 
-    // Evita instancias de una clase de utilidad
+
+    /**
+     * Crea una instancia de el contrasena.
+     */
     private PasswordHasher() {
     }
 
-    // Convierte una contrasena en su hash hexadecimal
+
+    /**
+     * Indica el estado actual.
+     *
+     * @param plainPasswordParameterValue contrasena que usa la operacion.
+     * @return resultado de la operacion.
+     */
     public static String hashPassword(String plainPasswordParameterValue) {
         try {
             MessageDigest digestLocalVariableValue = MessageDigest.getInstance("SHA-256");
@@ -22,7 +34,7 @@ public final class PasswordHasher {
 
             StringBuilder hashedPasswordLocalVariableValue = new StringBuilder();
 
-            // Transformamos cada byte en texto para poder almacenarlo
+
             for (byte byteValueLocalVariableValue : hashedBytesLocalVariableValue) {
                 hashedPasswordLocalVariableValue.append(
                         String.format("%02x", byteValueLocalVariableValue)
@@ -38,3 +50,5 @@ public final class PasswordHasher {
         }
     }
 }
+
+

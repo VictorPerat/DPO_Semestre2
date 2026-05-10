@@ -9,13 +9,25 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-/** Controlador para borrar jugadores desde CardLayout. */
+
+/**
+ * Coordina la pantalla del jugador.
+ */
 public class DeletePlayerController implements ActionListener {
     private final DeletePlayerView viewInterfaceFieldReference;
     private final DeletePlayerListener listenerFieldReference;
     private final PlayerManager playerProfileManagerServiceFieldReference;
     private final AppNavigator navigatorFieldReference;
 
+
+    /**
+     * Crea una instancia de el jugador.
+     *
+     * @param viewInterfaceParameterValue vista que usa la operacion.
+     * @param listenerParameterValue listener que se registra.
+     * @param playerProfileManagerServiceParameterValue jugador perfil.
+     * @param navigatorParameterValue navegacion que usa la operacion.
+     */
     public DeletePlayerController(DeletePlayerView viewInterfaceParameterValue,
                                   DeletePlayerListener listenerParameterValue,
                                   PlayerManager playerProfileManagerServiceParameterValue,
@@ -27,12 +39,18 @@ public class DeletePlayerController implements ActionListener {
         this.viewInterfaceFieldReference.setController(this);
     }
 
-    public DeletePlayerController(DeletePlayerView viewInterfaceParameterValue, DeletePlayerListener listenerParameterValue) {
-        this(viewInterfaceParameterValue, listenerParameterValue, new PlayerManager(), AppNavigator.getInstance());
-    }
 
+    /**
+     * Gestiona esta operacion.
+     */
     public void refreshPlayers() { viewInterfaceFieldReference.refreshPlayersList(); }
 
+
+    /**
+     * Gestiona esta operacion.
+     *
+     * @param eventArgumentParameterValue dato de entrada de la operacion.
+     */
     @Override
     public void actionPerformed(ActionEvent eventArgumentParameterValue) {
         String commandLocalVariableValue = eventArgumentParameterValue.getActionCommand();
@@ -41,11 +59,13 @@ public class DeletePlayerController implements ActionListener {
         } else if ("BACK".equals(commandLocalVariableValue)) {
             if (listenerFieldReference != null) { listenerFieldReference.returnToMenu(); }
             else { navigatorFieldReference.show(AppNavigator.ADMIN_MENU); }
-        } else if ("CONFIG".equals(commandLocalVariableValue)) {
-            showConfigDialog();
         }
     }
 
+
+    /**
+     * Elimina los jugadores.
+     */
     private void deleteSelectedPlayers() {
         ArrayList<Player> selectedPlayersLocalVariableValue = viewInterfaceFieldReference.getSelectedPlayers();
         if (selectedPlayersLocalVariableValue.isEmpty()) {
@@ -59,20 +79,6 @@ public class DeletePlayerController implements ActionListener {
             if (listenerFieldReference != null) { listenerFieldReference.onPlayersDeleted(); }
         }
     }
-
-    private void showConfigDialog() {
-        Rounded.ConfigDialog configDialogLocalVariableValue = Rounded.ConfigDialog.getInstance(navigatorFieldReference.getMainView());
-        configDialogLocalVariableValue.registerController(eventArgumentParameterValue -> {
-            configDialogLocalVariableValue.dispose();
-            if (Rounded.ConfigDialog.LOGOUT.equals(eventArgumentParameterValue.getActionCommand())) {
-                if (listenerFieldReference != null) { listenerFieldReference.handleLogout(); }
-                else { navigatorFieldReference.show(AppNavigator.LOGIN); }
-            } else if (Rounded.ConfigDialog.CHANGE_PASSWORD.equals(eventArgumentParameterValue.getActionCommand())) {
-                navigatorFieldReference.setChangePasswordReturnAction(() -> navigatorFieldReference.show(AppNavigator.DELETE_PLAYER));
-                navigatorFieldReference.show(AppNavigator.CHANGE_PASSWORD);
-            }
-        });
-        configDialogLocalVariableValue.setBackButtonListener(eventArgumentParameterValue -> configDialogLocalVariableValue.dispose());
-        configDialogLocalVariableValue.setVisible(true);
-    }
 }
+
+
