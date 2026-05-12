@@ -5,7 +5,9 @@ import bussines.LiveMatchesScoreboard;
 import bussines.managers.GameManager;
 import bussines.managers.TeamInfoManager;
 import bussines.objects.Game;
+import presentation.AppNavigator;
 import presentation.Views.LiveMatchView;
+import presentation.Views.MainView;
 
 
 /**
@@ -25,6 +27,9 @@ public class LiveMatchController implements LiveMatchesRegistry.AbortableMatch {
 
     private int gameEntityIdentifierFieldReference;
     private int leagueReferenceIdentifierFieldReference;
+
+    // Identificador único de pantalla en el CardLayout (uno por partido)
+    private String screenIdFieldReference;
 
 
     /**
@@ -61,8 +66,33 @@ public class LiveMatchController implements LiveMatchesRegistry.AbortableMatch {
                 gameEntityFieldReference.getNomVisitant(),
                 gameEntityIdentifierFieldReference
         );
-        simulateViewInterfaceFieldReference.setVisible(false);
         simulateViewInterfaceFieldReference.setLiveMatchViewController(this);
+
+        // Identificador único de pantalla para este partido
+        this.screenIdFieldReference =
+                AppNavigator.LIVE_MATCH + "_" + gameEntityIdentifierFieldReference;
+
+        // Registra la pantalla como tarjeta en el CardLayout principal.
+        // De esta forma showMatchWindow() puede navegar a ella en lugar
+        // de abrir una ventana JFrame nueva.
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
+            if (navigatorLocalVariableValue != null) {
+                MainView mainViewLocalVariableValue =
+                        navigatorLocalVariableValue.getMainView();
+                if (mainViewLocalVariableValue != null) {
+                    mainViewLocalVariableValue.addScreen(
+                            screenIdFieldReference,
+                            simulateViewInterfaceFieldReference
+                    );
+                }
+                // BACK del partido vuelve a la pantalla de Live Matches
+                simulateViewInterfaceFieldReference.setBackButtonListener(
+                        eventArgumentParameterValue ->
+                                navigatorLocalVariableValue.show(AppNavigator.LIVE_MATCHES)
+                );
+            }
+        });
 
         LiveMatchesScoreboard.getInstance().updateScore(
                 gameEntityIdentifierFieldReference,
@@ -213,24 +243,30 @@ public class LiveMatchController implements LiveMatchesRegistry.AbortableMatch {
 
 
     /**
-     * Muestra el partido ventana.
+     * Muestra el partido como una tarjeta del CardLayout principal
+     * (ya no abre ventana nueva). Navega vía AppNavigator usando el
+     * identificador único de esta partida.
      */
     @Override
     public void showMatchWindow() {
-        if (simulateViewInterfaceFieldReference == null) {
+        if (simulateViewInterfaceFieldReference == null
+                || screenIdFieldReference == null) {
             return;
         }
 
         javax.swing.SwingUtilities.invokeLater(() -> {
-            simulateViewInterfaceFieldReference.setVisible(true);
-            simulateViewInterfaceFieldReference.toFront();
-            simulateViewInterfaceFieldReference.requestFocus();
+            AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
+            if (navigatorLocalVariableValue == null) {
+                return;
+            }
+            navigatorLocalVariableValue.show(screenIdFieldReference);
         });
     }
 
 
     /**
-     * Gestiona esta operacion.
+     * Aborta el partido: detiene la simulación, marca como acabado en BD
+     * y elimina la tarjeta del CardLayout (ya no hay JFrame que cerrar).
      */
     @Override
     public void abortMatch() {
@@ -253,11 +289,18 @@ public class LiveMatchController implements LiveMatchesRegistry.AbortableMatch {
                 gameEntityIdentifierFieldReference
         );
 
-
-        if (simulateViewInterfaceFieldReference != null) {
-            javax.swing.SwingUtilities.invokeLater(
-                    simulateViewInterfaceFieldReference::dispose
-            );
+        // Si la pantalla actual del navegador es esta partida, volvemos
+        // al listado de partidos en directo para no dejar al usuario
+        // mirando un panel sin contenido.
+        if (screenIdFieldReference != null) {
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                AppNavigator navigatorLocalVariableValue = AppNavigator.getInstance();
+                if (navigatorLocalVariableValue != null
+                        && screenIdFieldReference.equals(
+                                navigatorLocalVariableValue.getCurrentScreenIdentifier())) {
+                    navigatorLocalVariableValue.show(AppNavigator.LIVE_MATCHES);
+                }
+            });
         }
     }
 }

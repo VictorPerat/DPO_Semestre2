@@ -1,0 +1,126 @@
+Criteris de qualificació
+Rúbrica
+Management of unexpected problems
+The program stops unexpectedly due to an error or exception in a normal execution scenario
+-30 punts
+The program throws an error or exception that does not cause the program to stop, but prevents further work.
+-20 punts
+The program throws an uncontrolled error or exception, but it does not prevent you from continuing to work.
+-10 punts
+The program works correctly and there are no uncontrolled errors during the execution.
+0 punts
+Configuration JSON
+The program can NOT load the information inside the config.json file. The configuration values are hardcoded.
+0 punts
+Some configuration values are hardcoded even if the program can load the information inside the config.json file.
+1 punts
+The program can load the information inside the config.json file. Other classes in the project can access the information loaded.
+2 punts
+User Login
+The user cannot log in the platform.
+-25 punts
+* A graphic interface which allows a user to log in through a form. * A user can ONLY use the email OR username to log in.
+0 punts
+* A graphic interface which allows a user to log in through a form. * The password is kept hidden at all times. * A user can ONLY use the email OR username to log in. * Given a non-existing username or email, the program displays a message with the error. * Given an incorrect password for an existing user, the program displays a message with the error.
+1 punts
+* A graphic interface which allows a user to log in through a form. * The password is kept hidden at all times. * Given a username which exists in the database and the corresponding password, the program logs the user in. * Given an email which exists in the database and the corresponding password, the program logs the user in. * Given a non-existing username or email, the program displays a message with the error. * Given an incorrect password for an existing user, the program displays a message with the error.
+3 punts
+Logout & Delete Account
+The program does not allow to log out AND/OR delete account.
+0 punts
+* There is a visual component to logout. * There is a visual component to delete the account. * When the visual component is used the program goes back to the login / sign-up view.
+1 punts
+* There is a visual component to logout. * There is a visual component to delete the account. * When the visual component is used the program goes back to the login / sign-up view. * No information can be found in the database from the user who deleted the account.
+2 punts
+* There is a visual component to logout. * There is a visual component to delete the account. * The visual components to logout are always visible on every single view, except the login and sign-up views. * When the visual component is used the program goes back to the login / sign-up view. * No information can be found in RAM memory from the user who logged out/deleted the account. * No information can be found in the database from the user who deleted the account. * No information can be found in the hard drive from the user who deleted the account.
+4 punts
+Create Team
+Teams cannot be created.
+0 punts
+A file can be selected. Teams have a unique name. New player accounts can be checked.
+1 punts
+Only the administrator can create new teams. A JSON file can be selected. Teams have a unique name. When the team is created, a list of new player accounts is displayed, showing DNI and password.
+2 punts
+Only the administrator can create new teams. A JSON file can be selected with a JFileChooser. Information is validated: (1) unique team names, (2) emails have correct format, (3) squad numbers must be 0+, (4) DNIs have correct format. When the team is created, a list of new player accounts is displayed, showing DNI and password.
+3 punts
+Create new player account
+Player accounts cannot be created.
+0 punts
+Player accounts are always created. Passwords are generated for the player.
+1 punts
+New accounts are only created when the player didn't exist (unique DNI). Passwords are generated for the player.
+2 punts
+New accounts are only created when the player didn't exist (unique DNI). Passwords are generated for the player. Passwords must be at least 8 characters long, contain a lower and uppercase letters and numbers.
+3 punts
+Create League
+Leagues cannot be created.
+0 punts
+League information can be entered: Name, starting date and time. Available teams can be picked for the league.
+1 punts
+Only the administrator can create new teams. Admin can enter the league information: Name, starting date and time. Available teams can be picked for the league. On league creation, matches are scheduled.
+2 punts
+Only the administrator can create new teams. Admin can enter the league information: Name, starting date and time. Data must be correct: Name is unique, start date/time is not in the past. Available teams can be picked for the league and properly managed (add/remove). Teams can't be added twice. On league creation, matches are scheduled.
+3 punts
+Scheduling matches
+Matches can't be scheduled.
+0 punts
+Once a league is created, matches are scheduled. Teams are facing other teams. No team is facing itself.
+1 punts
+Once a league is created, all matches are scheduled. All teams are facing every other team twice. No team is facing itself. All matches are scheduled to be played in parallel. All matches are scheduled to take as many minutes as specified by the configuration file.
+2 punts
+Once a league is created, all matches are scheduled. All teams are facing every other team twice. No team is facing itself. For league with an odd number of teams, each match day there is a team left out. The first match day is configured to start 1 minute after the starting date. Every other day is scheduled to start 1 minute after the previous match day finished. All matches are scheduled to be played in parallel. All matches are scheduled to take as many minutes as specified by the configuration file.
+3 punts
+League status
+League status can't be displayed.
+0 punts
+Any user can check league status.
+1 punts
+Any user can check league status. Administrators will be able to see all leagues in the system. Users will be able to see all leagues where they (their team) are playing. Any league can be clicked to display detailed league information.
+2 punts
+Any user can check league status. Administrators will be able to see all leagues in the system. Users will be able to see all leagues where they (their team) are playing. For each league, the league's name, number of teams, and status must be displayed. League status (not started/match day playing/ended) must be updated in real time. Any league can be clicked to display detailed league information.
+3 punts
+League details
+League details can't be displayed.
+-25 punts
+The view displays information on the league. The table is implemented with a JTable.
+1 punts
+The view displays the name of the league and a table with each team's name, number of players, games won/tied/lost and the score (points). The table is implemented with a JTable. When clicking on a team, the view must change to display the players in the team.
+3 punts
+The view displays the name of the league and a table with each team's name, number of players, games won/tied/lost and the score (points). The table is implemented with a JTable. The information is sorted by points in a descending order. When clicking on a team, the view must change to display the players in the team. For each player in the team, it must display: name, email, squad number, DNI and phone number.
+5 punts
+Match simulation
+The program doesn't display matches being played.
+-25 punts
+The program displays the matches that are being played at the moment.
+3 punts
+The program displays the matches that are being played at the moment. Matches are updated on real-time. The information on matches being played is always visible in all views (after logging in). Admins will be able to watch all matches being played. User will be able to watch all matches being played in leagues they are participating.
+7 punts
+The program displays the matches that are being played at the moment. Matches are updated on real-time. The information on matches being played is always visible in all views (after logging in). Admins will be able to watch all matches being played. User will be able to watch all matches being played in leagues they are participating. At the set time, matches will automatically start. Results are consistently represented with the sport being played.
+10 punts
+Delete League
+Leagues cannot be deleted.
+0 punts
+Leagues can be deleted.
+1 punts
+Only admins can delete leagues. Leagues can be deleted.
+2 punts
+Only admins can delete leagues. Leagues can be deleted. When a league is deleted, all matches, including pending, ongoing and finished matches are removed from the system. Any match being played is removed from the match visualization.
+3 punts
+Delete Team
+Teams cannot be deleted.
+0 punts
+Teams can be deleted.
+1 punts
+Only admins can delete teams. Teams can be deleted.
+2 punts
+Only admins can delete teams. Teams can be deleted. When a team is deleted, it is removed from all leagues it was part of. Matches involving the team must also be removed. Matches being simulated must be interrupted and removed.
+3 punts
+Statistics
+There is no chart or has been implemented using external libraries.
+-25 punts
+The program is able to show a line chart. The chart is implemented with AWT/Swing.
+1 punts
+The program is able to show a line chart displaying for each match day (X axis) the amount of points each team had (Y axis). The chart is implemented with AWT/Swing.
+3 punts
+The program is able to show a line chart displaying for each match day (X axis) the amount of points each team had (Y axis). The chart is implemented with AWT/Swing. The numerical values are displayed. Axes scale based on the data.
+5 punts

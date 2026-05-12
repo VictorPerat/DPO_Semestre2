@@ -360,7 +360,7 @@ public class LeagueDetailView extends JPanel {
                 new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 0));
         actionsPanelLocalVariableValue.setOpaque(false);
 
-        statsButtonFieldReference = new Rounded.RoundedButton("📊  SHOW STATS", 16);
+        statsButtonFieldReference = new Rounded.RoundedButton("SHOW STATS", 16);
         statsButtonFieldReference.setActionCommand(SHOW_STATS);
         statsButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 14));
         statsButtonFieldReference.setForeground(Color.WHITE);
@@ -368,7 +368,7 @@ public class LeagueDetailView extends JPanel {
         statsButtonFieldReference.setShadowEnabled(true);
         statsButtonFieldReference.setPreferredSize(new Dimension(200, 42));
 
-        calendarButtonFieldReference = new Rounded.RoundedButton("📅  SHOW CALENDAR", 16);
+        calendarButtonFieldReference = new Rounded.RoundedButton("SHOW CALENDAR", 16);
         calendarButtonFieldReference.setActionCommand(SHOW_CALENDAR);
         calendarButtonFieldReference.setFont(new Font("Arial", Font.BOLD, 14));
         calendarButtonFieldReference.setForeground(ACCENT_COLOR);
