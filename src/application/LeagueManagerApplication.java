@@ -110,7 +110,6 @@ public final class LeagueManagerApplication {
 
         LoginView loginViewInterfaceLocalVariableValue = new LoginView();
         SignUpView signUpViewInterfaceLocalVariableValue = new SignUpView();
-        UserProfileView userProfileViewInterfaceLocalVariableValue = new UserProfileView();
         ChangePasswordView changePasswordViewInterfaceLocalVariableValue = new ChangePasswordView();
         AdminMenuView adminMenuViewInterfaceLocalVariableValue = new AdminMenuView();
         PlayerMenuView playerMenuViewInterfaceLocalVariableValue = new PlayerMenuView();
@@ -130,7 +129,6 @@ public final class LeagueManagerApplication {
 
         new LoginController(loginViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
         new SignUpController(signUpViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
-        UserProfileController userProfileControllerHandlerLocalVariableValue = new UserProfileController(userProfileViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
         new ChangePasswordController(changePasswordViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
 
         AdminMenuController adminMenuControllerHandlerLocalVariableValue = new AdminMenuController(adminMenuViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
@@ -164,7 +162,6 @@ public final class LeagueManagerApplication {
         LiveMatchesController liveMatchesControllerHandlerLocalVariableValue = new LiveMatchesController(liveMatchesViewInterfaceLocalVariableValue, playerProfileManagerServiceLocalVariableValue, navigatorLocalVariableValue);
 
 
-        navigatorLocalVariableValue.registerOnShowHook(AppNavigator.PROFILE, userProfileControllerHandlerLocalVariableValue::refreshCurrentPlayer);
         navigatorLocalVariableValue.registerOnShowHook(AppNavigator.LOGIN, () -> {
             LiveMatchesWidgetService.hide();
             AccountSettingsWidgetService.hide();
@@ -183,7 +180,6 @@ public final class LeagueManagerApplication {
 
         mainViewInterfaceLocalVariableValue.addScreen(AppNavigator.LOGIN, loginViewInterfaceLocalVariableValue);
         mainViewInterfaceLocalVariableValue.addScreen(AppNavigator.SIGNUP, signUpViewInterfaceLocalVariableValue);
-        mainViewInterfaceLocalVariableValue.addScreen(AppNavigator.PROFILE, userProfileViewInterfaceLocalVariableValue);
         mainViewInterfaceLocalVariableValue.addScreen(AppNavigator.CHANGE_PASSWORD, changePasswordViewInterfaceLocalVariableValue);
         mainViewInterfaceLocalVariableValue.addScreen(AppNavigator.ADMIN_MENU, adminMenuViewInterfaceLocalVariableValue);
         mainViewInterfaceLocalVariableValue.addScreen(AppNavigator.PLAYER_MENU, playerMenuViewInterfaceLocalVariableValue);

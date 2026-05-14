@@ -4,7 +4,6 @@ import bussines.LiveMatchesRegistry;
 import bussines.objects.Team;
 import persistance.TeamDao;
 import java.util.ArrayList;
-import java.util.Set;
 
 
 /**
@@ -101,30 +100,6 @@ public class TeamManager {
         return teamReferenceDataAccessObjectFieldReference.insertTeam(
                 teamReferenceParameterValue.getName()
         ) > 0;
-    }
-
-
-    /**
-     * Devuelve el equipos liga.
-     *
-     * @param allTeamsParameterValue equipos que usa la operacion.
-     * @return el equipos liga.
-     */
-    public ArrayList<Team> getTeamsNotInLeague(ArrayList<Team> allTeamsParameterValue) {
-        ArrayList<Team> availableTeamsLocalVariableValue = new ArrayList<>();
-        Set<Integer> assignedTeamReferenceIdentifiersLocalVariableValue;
-
-        assignedTeamReferenceIdentifiersLocalVariableValue =
-                teamReferenceDataAccessObjectFieldReference.getAssignedTeamIds();
-
-        for (Team teamReferenceLocalVariableValue : allTeamsParameterValue) {
-            if (!assignedTeamReferenceIdentifiersLocalVariableValue.contains(
-                    teamReferenceLocalVariableValue.getId())) {
-                availableTeamsLocalVariableValue.add(teamReferenceLocalVariableValue);
-            }
-        }
-
-        return availableTeamsLocalVariableValue;
     }
 
 

@@ -49,36 +49,6 @@ public class Player {
 
 
     /**
-     * Devuelve el nombre.
-     *
-     * @return el nombre.
-     */
-    public String getName() {
-        return displayNameFieldReference;
-    }
-
-
-    /**
-     * Devuelve el dni.
-     *
-     * @return el dni.
-     */
-    public String getDni() {
-        return nationalIdentityDocumentFieldReference;
-    }
-
-
-    /**
-     * Devuelve el email.
-     *
-     * @return el email.
-     */
-    public String getEmail() {
-        return emailAddressFieldReference;
-    }
-
-
-    /**
      * Devuelve el equipo.
      *
      * @return el equipo.
@@ -119,32 +89,12 @@ public class Player {
 
 
     /**
-     * Actualiza el contrasena.
-     *
-     * @param userPasswordParameterValue2 contrasena del usuario.
-     */
-    public void setPassword(String userPasswordParameterValue2) {
-        this.userPasswordFieldReference = userPasswordParameterValue2;
-    }
-
-
-    /**
      * Devuelve el contrasena.
      *
      * @return el contrasena.
      */
     public String getPassword() {
         return userPasswordFieldReference;
-    }
-
-
-    /**
-     * Actualiza el equipo.
-     *
-     * @param teamReferenceIdentifierParameterValue2 equipo identificador.
-     */
-    public void setTeamId(String teamReferenceIdentifierParameterValue2) {
-        this.teamReferenceFieldReference = teamReferenceIdentifierParameterValue2;
     }
 
 
@@ -159,33 +109,12 @@ public class Player {
 
 
     /**
-     * Actualiza el dni jugador.
-     *
-     * @param nationalIdentityDocumentPlayerProfileParameterValue2 jugador perfil.
-     */
-    public void setDniPlayer(String nationalIdentityDocumentPlayerProfileParameterValue2) {
-        this.nationalIdentityDocumentFieldReference =
-                nationalIdentityDocumentPlayerProfileParameterValue2;
-    }
-
-
-    /**
      * Devuelve el contenido.
      *
      * @return el contenido.
      */
     public String getMail() {
         return emailAddressFieldReference;
-    }
-
-
-    /**
-     * Actualiza el contenido.
-     *
-     * @param emailAddressParameterValue2 email que usa la operacion.
-     */
-    public void setMail(String emailAddressParameterValue2) {
-        this.emailAddressFieldReference = emailAddressParameterValue2;
     }
 
 
@@ -200,16 +129,6 @@ public class Player {
 
 
     /**
-     * Actualiza el nombre jugador.
-     *
-     * @param displayNamePlayerProfileParameterValue2 nombre jugador perfil.
-     */
-    public void setNamePlayer(String displayNamePlayerProfileParameterValue2) {
-        this.displayNameFieldReference = displayNamePlayerProfileParameterValue2;
-    }
-
-
-    /**
      * Devuelve el contenido.
      *
      * @return el contenido.
@@ -219,25 +138,6 @@ public class Player {
     }
 
 
-    /**
-     * Actualiza el contenido.
-     *
-     * @param jerseyNumberParameterValue2 numero que usa la operacion.
-     */
-    public void setDorsal(int jerseyNumberParameterValue2) {
-        this.jerseyNumberFieldReference = jerseyNumberParameterValue2;
-    }
-
-
-    /**
-     * Actualiza el telefono numero.
-     *
-     * @param phoneNumberNumericValueParameterValue2 telefono numero.
-     */
-    public void setPhoneNumber(int phoneNumberNumericValueParameterValue2) {
-        this.phoneNumberNumericValueFieldReference =
-                phoneNumberNumericValueParameterValue2;
-    }
 }
 
 

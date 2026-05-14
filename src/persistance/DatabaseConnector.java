@@ -5,7 +5,6 @@ import shared.DaoErrorHandler;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -20,9 +19,6 @@ public class DatabaseConnector {
 
 
     private Connection connFieldReference;
-
-
-    private static boolean firstConnectionLoggedFieldReference = false;
 
 
     private final ConfigManager configManagerServiceFieldReference;
@@ -92,11 +88,6 @@ public class DatabaseConnector {
                     userPasswordLocalVariableValue
             );
 
-
-            if (!firstConnectionLoggedFieldReference) {
-                System.out.println("Conexión exitosa a la base de datos.");
-                firstConnectionLoggedFieldReference = true;
-            }
 
         } catch (SQLException eventArgumentExceptionParameter) {
             connFieldReference = null;
@@ -183,82 +174,4 @@ public class DatabaseConnector {
     }
 
 
-    /**
-     * Gestiona esta operacion.
-     *
-     * @param queryParameterValue consulta que se ejecuta.
-     */
-    public void insertQuery(String queryParameterValue) {
-        try (Statement statementLocalVariableValue = getConnection().createStatement()) {
-            statementLocalVariableValue.executeUpdate(queryParameterValue);
-        } catch (SQLException eventArgumentExceptionParameter4) {
-            System.err.println("Error al ejecutar la consulta: " + queryParameterValue);
-            System.err.println(eventArgumentExceptionParameter4.getMessage());
-        }
-    }
-
-
-    /**
-     * Elimina el consulta.
-     *
-     * @param queryParameterValue2 consulta que usa la operacion.
-     */
-    public void deleteQuery(String queryParameterValue2) {
-        try (Statement statementLocalVariableValue = getConnection().createStatement()) {
-            statementLocalVariableValue.executeUpdate(queryParameterValue2);
-        } catch (SQLException eventArgumentExceptionParameter5) {
-            System.err.println("Error al ejecutar la consulta: " + queryParameterValue2);
-            System.err.println(eventArgumentExceptionParameter5.getMessage());
-        }
-    }
-
-
-    /**
-     * Actualiza el consulta.
-     *
-     * @param queryParameterValue3 consulta que usa la operacion.
-     */
-    public void updateQuery(String queryParameterValue3) {
-        try (Statement statementLocalVariableValue = getConnection().createStatement()) {
-            statementLocalVariableValue.executeUpdate(queryParameterValue3);
-        } catch (SQLException eventArgumentExceptionParameter6) {
-            System.err.println(queryParameterValue3);
-            System.err.println("Problema when updating --> " +
-                    eventArgumentExceptionParameter6.getSQLState() +
-                    " (" + eventArgumentExceptionParameter6.getMessage() + ")");
-        }
-    }
-
-
-    /**
-     * Gestiona esta operacion.
-     *
-     * @param queryParameterValue4 consulta que usa la operacion.
-     * @return resultado de la operacion.
-     */
-    public ResultSet selectQuery(String queryParameterValue4) {
-        try {
-            Statement statementLocalVariableValue = getConnection().createStatement();
-            return statementLocalVariableValue.executeQuery(queryParameterValue4);
-        } catch (SQLException eventArgumentExceptionParameter7) {
-            System.err.println("Error al ejecutar la consulta: " + queryParameterValue4);
-            System.err.println(eventArgumentExceptionParameter7.getMessage());
-            return null;
-        }
-    }
-
-
-    /**
-     * Gestiona esta operacion.
-     */
-    public void disconnect() {
-        try {
-            if (connFieldReference != null && !connFieldReference.isClosed()) {
-                connFieldReference.close();
-                System.out.println("Conexion cerrada.");
-            }
-        } catch (SQLException eventArgumentExceptionParameter8) {
-            System.out.println("Problem disconnecting: " + eventArgumentExceptionParameter8.getMessage());
-        }
-    }
 }

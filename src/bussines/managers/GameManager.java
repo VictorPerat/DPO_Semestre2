@@ -113,16 +113,4 @@ public class GameManager {
     }
 
 
-    /**
-     * Gestiona esta operacion.
-     *
-     * @param selectedTeamsParameterValue equipos que usa la operacion.
-     * @return {@code true} si la operacion se completa correctamente; en caso contrario, {@code false}.
-     */
-    public boolean teamIsPlaying(ArrayList<String> selectedTeamsParameterValue) {
-        ArrayList<Game> gamesLocalVariableValue =
-                gameEntityDataAccessObjectFieldReference.searchPlayingTeams(selectedTeamsParameterValue);
-
-        return gamesLocalVariableValue.size() > 0;
-    }
 }

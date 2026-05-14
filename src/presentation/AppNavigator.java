@@ -21,10 +21,6 @@ public class AppNavigator {
      */
     public static final String SIGNUP = "SIGNUP";
     /**
-     * Identificador de la pantalla del perfil.
-     */
-    public static final String PROFILE = "PROFILE";
-    /**
      * Identificador de la pantalla del cambio de contrasena.
      */
     public static final String CHANGE_PASSWORD = "CHANGE_PASSWORD";
@@ -201,14 +197,6 @@ public class AppNavigator {
 
 
     /**
-     * Oculta el principal ventana.
-     */
-    public void hideMainWindow() {
-        mainViewInterfaceFieldReference.setVisible(false);
-    }
-
-
-    /**
      * Devuelve el actual pantalla identificador.
      *
      * @return el actual pantalla identificador.
@@ -240,7 +228,7 @@ public class AppNavigator {
         if (pendingActionLocalVariableValue != null) {
             SwingUtilities.invokeLater(pendingActionLocalVariableValue);
         } else {
-            show(PROFILE);
+            show(LOGIN);
         }
     }
 

@@ -241,40 +241,6 @@ public class LeagueDao {
 
 
     /**
-     * Devuelve el liga equipo.
-     *
-     * @param teamReferenceDisplayNameParameterValue2 nombre del equipo.
-     * @return el liga equipo.
-     */
-    public int getLeagueIdByTeam(String teamReferenceDisplayNameParameterValue2) {
-        String queryLocalVariableValue =
-                "SELECT l.id FROM leagues l " +
-                        "JOIN league_teams lt ON lt.league_id = l.id " +
-                        "JOIN teams t ON t.id = lt.team_id " +
-                        "WHERE t.name = ? LIMIT 1";
-
-        try (Connection connectionLocalVariableValue =
-                     DatabaseConnector.getInstance().createConnection();
-             PreparedStatement preparedStatementLocalVariableValue =
-                     connectionLocalVariableValue.prepareStatement(queryLocalVariableValue)) {
-
-            preparedStatementLocalVariableValue.setString(1, teamReferenceDisplayNameParameterValue2);
-
-            try (ResultSet resultLocalVariableValue = preparedStatementLocalVariableValue.executeQuery()) {
-                if (resultLocalVariableValue.next()) {
-                    return resultLocalVariableValue.getInt("id");
-                }
-            }
-
-        } catch (SQLException eventArgumentExceptionParameter) {
-            DaoErrorHandler.log("LeagueDao", eventArgumentExceptionParameter);
-        }
-
-        return -1;
-    }
-
-
-    /**
      * Devuelve el liga nombre.
      *
      * @param leagueReferenceDisplayName2ParameterValue nombre de la liga.

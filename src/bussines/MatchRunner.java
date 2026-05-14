@@ -132,12 +132,6 @@ public class MatchRunner implements Runnable {
                         true
                 );
 
-                System.out.println(
-                        "¡Partido iniciado! "
-                                + partidoLocalVariableValue.getNomLocal()
-                                + " vs "
-                                + partidoLocalVariableValue.getNomVisitant()
-                );
                 createLiveMatchController(
                         partidoLocalVariableValue,
                         identifierPartidoLocalVariableValue

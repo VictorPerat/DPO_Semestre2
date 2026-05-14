@@ -55,34 +55,12 @@ public class TeamInfo {
 
 
     /**
-     * Actualiza el liga.
-     *
-     * @param leagueReferenceIdentifierParameterValue2 liga identificador.
-     */
-    public void setLeagueId(int leagueReferenceIdentifierParameterValue2) {
-        this.leagueReferenceIdentifierFieldReference =
-                leagueReferenceIdentifierParameterValue2;
-    }
-
-
-    /**
      * Devuelve el equipo.
      *
      * @return el equipo.
      */
     public int getTeamId() {
         return teamReferenceIdentifierFieldReference;
-    }
-
-
-    /**
-     * Actualiza el equipo.
-     *
-     * @param teamReferenceIdentifierParameterValue2 equipo identificador.
-     */
-    public void setTeamId(int teamReferenceIdentifierParameterValue2) {
-        this.teamReferenceIdentifierFieldReference =
-                teamReferenceIdentifierParameterValue2;
     }
 
 
@@ -97,32 +75,12 @@ public class TeamInfo {
 
 
     /**
-     * Actualiza el contenido.
-     *
-     * @param winsParameterValue2 dato de entrada de la operacion.
-     */
-    public void setWins(int winsParameterValue2) {
-        this.winsFieldReference = winsParameterValue2;
-    }
-
-
-    /**
      * Devuelve el contenido.
      *
      * @return el contenido.
      */
     public int getDefeats() {
         return defeatsFieldReference;
-    }
-
-
-    /**
-     * Actualiza el contenido.
-     *
-     * @param defeatsParameterValue2 dato de entrada de la operacion.
-     */
-    public void setDefeats(int defeatsParameterValue2) {
-        this.defeatsFieldReference = defeatsParameterValue2;
     }
 
 
@@ -137,32 +95,12 @@ public class TeamInfo {
 
 
     /**
-     * Actualiza el contenido.
-     *
-     * @param tiesParameterValue2 dato de entrada de la operacion.
-     */
-    public void setTies(int tiesParameterValue2) {
-        this.tiesFieldReference = tiesParameterValue2;
-    }
-
-
-    /**
      * Devuelve el contenido.
      *
      * @return el contenido.
      */
     public int getPoints() {
         return pointsFieldReference;
-    }
-
-
-    /**
-     * Actualiza el contenido.
-     *
-     * @param pointsParameterValue2 dato de entrada de la operacion.
-     */
-    public void setPoints(int pointsParameterValue2) {
-        this.pointsFieldReference = pointsParameterValue2;
     }
 
 

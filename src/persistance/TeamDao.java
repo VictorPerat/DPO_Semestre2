@@ -5,8 +5,6 @@ import shared.DaoErrorHandler;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 
 /**
@@ -42,35 +40,6 @@ public class TeamDao {
         }
 
         return teamsLocalVariableValue;
-    }
-
-
-    /**
-     * Devuelve el equipo.
-     *
-     * @return el equipo.
-     */
-    public Set<Integer> getAssignedTeamIds() {
-        Set<Integer> assignedTeamReferenceIdentifiersLocalVariableValue = new HashSet<>();
-        String queryLocalVariableValue = "SELECT team_id FROM league_teams";
-
-        try (Connection connectionLocalVariableValue =
-                     DatabaseConnector.getInstance().createConnection();
-             PreparedStatement preparedStatementLocalVariableValue =
-                     connectionLocalVariableValue.prepareStatement(queryLocalVariableValue);
-             ResultSet resultLocalVariableValue = preparedStatementLocalVariableValue.executeQuery()) {
-
-            while (resultLocalVariableValue.next()) {
-                assignedTeamReferenceIdentifiersLocalVariableValue.add(
-                        resultLocalVariableValue.getInt("team_id")
-                );
-            }
-
-        } catch (SQLException eventArgumentExceptionParameter) {
-            DaoErrorHandler.log("TeamDao", eventArgumentExceptionParameter);
-        }
-
-        return assignedTeamReferenceIdentifiersLocalVariableValue;
     }
 
 

@@ -433,17 +433,6 @@ public class LeagueManager {
 
 
     /**
-     * Devuelve el liga equipo.
-     *
-     * @param teamReferenceDisplayNameParameterValue2 nombre del equipo.
-     * @return el liga equipo.
-     */
-    public int getLeagueIdByTeam(String teamReferenceDisplayNameParameterValue2) {
-        return leagueReferenceDataAccessObjectFieldReference.getLeagueIdByTeam(teamReferenceDisplayNameParameterValue2);
-    }
-
-
-    /**
      * Gestiona esta operacion.
      *
      * @param teamReferenceNamesParameterValue2 equipo que usa la operacion.

@@ -482,9 +482,9 @@ public class TeamDetailView extends JPanel {
 
         for (Player playerProfileLocalVariableValue : playersLocalVariableValue) {
             tableModelFieldReference.addRow(new Object[] {
-                    playerProfileLocalVariableValue.getName(),
-                    playerProfileLocalVariableValue.getEmail(),
-                    playerProfileLocalVariableValue.getDni(),
+                    playerProfileLocalVariableValue.getNamePlayer(),
+                    playerProfileLocalVariableValue.getMail(),
+                    playerProfileLocalVariableValue.getDniPlayer(),
                     playerProfileLocalVariableValue.getNumber(),
                     playerProfileLocalVariableValue.getPhoneNumber()
             });
