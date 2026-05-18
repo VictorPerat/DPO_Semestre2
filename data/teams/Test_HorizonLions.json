@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_HorizonLions",
+    "players":  [
+                    {
+                        "name":  "Hector Mendez",
+                        "email":  "hector.mendez@test_horizonlions.test",
+                        "number":  1,
+                        "dni":  "70000071H",
+                        "phone":  "+34 610 008 001"
+                    },
+                    {
+                        "name":  "Ivan Suarez",
+                        "email":  "ivan.suarez@test_horizonlions.test",
+                        "number":  4,
+                        "dni":  "70000072I",
+                        "phone":  "+34 610 008 002"
+                    },
+                    {
+                        "name":  "Julian Nadal",
+                        "email":  "julian.nadal@test_horizonlions.test",
+                        "number":  6,
+                        "dni":  "70000073J",
+                        "phone":  "+34 610 008 003"
+                    },
+                    {
+                        "name":  "Kevin Beltran",
+                        "email":  "kevin.beltran@test_horizonlions.test",
+                        "number":  9,
+                        "dni":  "70000074K",
+                        "phone":  "+34 610 008 004"
+                    },
+                    {
+                        "name":  "Leo Vidal",
+                        "email":  "leo.vidal@test_horizonlions.test",
+                        "number":  10,
+                        "dni":  "70000075L",
+                        "phone":  "+34 610 008 005"
+                    }
+                ]
+}

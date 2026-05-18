@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_PhoenixCrew",
+    "players":  [
+                    {
+                        "name":  "Pablo Castro",
+                        "email":  "pablo.castro@test_phoenixcrew.test",
+                        "number":  1,
+                        "dni":  "70000151P",
+                        "phone":  "+34 610 016 001"
+                    },
+                    {
+                        "name":  "Quim Vega",
+                        "email":  "quim.vega@test_phoenixcrew.test",
+                        "number":  4,
+                        "dni":  "70000152Q",
+                        "phone":  "+34 610 016 002"
+                    },
+                    {
+                        "name":  "Raul Campos",
+                        "email":  "raul.campos@test_phoenixcrew.test",
+                        "number":  6,
+                        "dni":  "70000153R",
+                        "phone":  "+34 610 016 003"
+                    },
+                    {
+                        "name":  "Sergio Ruiz",
+                        "email":  "sergio.ruiz@test_phoenixcrew.test",
+                        "number":  9,
+                        "dni":  "70000154S",
+                        "phone":  "+34 610 016 004"
+                    },
+                    {
+                        "name":  "Tomas Lopez",
+                        "email":  "tomas.lopez@test_phoenixcrew.test",
+                        "number":  10,
+                        "dni":  "70000155T",
+                        "phone":  "+34 610 016 005"
+                    }
+                ]
+}

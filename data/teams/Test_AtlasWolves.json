@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_AtlasWolves",
+    "players":  [
+                    {
+                        "name":  "Alex Navarro",
+                        "email":  "alex.navarro@test_atlaswolves.test",
+                        "number":  1,
+                        "dni":  "70000001A",
+                        "phone":  "+34 610 001 001"
+                    },
+                    {
+                        "name":  "Bruno Santos",
+                        "email":  "bruno.santos@test_atlaswolves.test",
+                        "number":  4,
+                        "dni":  "70000002B",
+                        "phone":  "+34 610 001 002"
+                    },
+                    {
+                        "name":  "Cesar Molina",
+                        "email":  "cesar.molina@test_atlaswolves.test",
+                        "number":  6,
+                        "dni":  "70000003C",
+                        "phone":  "+34 610 001 003"
+                    },
+                    {
+                        "name":  "Dario Herrera",
+                        "email":  "dario.herrera@test_atlaswolves.test",
+                        "number":  9,
+                        "dni":  "70000004D",
+                        "phone":  "+34 610 001 004"
+                    },
+                    {
+                        "name":  "Enzo Castro",
+                        "email":  "enzo.castro@test_atlaswolves.test",
+                        "number":  10,
+                        "dni":  "70000005E",
+                        "phone":  "+34 610 001 005"
+                    }
+                ]
+}

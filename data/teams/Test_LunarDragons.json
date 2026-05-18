@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_LunarDragons",
+    "players":  [
+                    {
+                        "name":  "Leo Pastor",
+                        "email":  "leo.pastor@test_lunardragons.test",
+                        "number":  1,
+                        "dni":  "70000111L",
+                        "phone":  "+34 610 012 001"
+                    },
+                    {
+                        "name":  "Mario Gil",
+                        "email":  "mario.gil@test_lunardragons.test",
+                        "number":  4,
+                        "dni":  "70000112M",
+                        "phone":  "+34 610 012 002"
+                    },
+                    {
+                        "name":  "Nico Roca",
+                        "email":  "nico.roca@test_lunardragons.test",
+                        "number":  6,
+                        "dni":  "70000113N",
+                        "phone":  "+34 610 012 003"
+                    },
+                    {
+                        "name":  "Oscar Segura",
+                        "email":  "oscar.segura@test_lunardragons.test",
+                        "number":  9,
+                        "dni":  "70000114O",
+                        "phone":  "+34 610 012 004"
+                    },
+                    {
+                        "name":  "Pablo Navarro",
+                        "email":  "pablo.navarro@test_lunardragons.test",
+                        "number":  10,
+                        "dni":  "70000115P",
+                        "phone":  "+34 610 012 005"
+                    }
+                ]
+}

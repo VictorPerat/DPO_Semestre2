@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_IronTigers",
+    "players":  [
+                    {
+                        "name":  "Ivan Nadal",
+                        "email":  "ivan.nadal@test_irontigers.test",
+                        "number":  1,
+                        "dni":  "70000081I",
+                        "phone":  "+34 610 009 001"
+                    },
+                    {
+                        "name":  "Julian Beltran",
+                        "email":  "julian.beltran@test_irontigers.test",
+                        "number":  4,
+                        "dni":  "70000082J",
+                        "phone":  "+34 610 009 002"
+                    },
+                    {
+                        "name":  "Kevin Vidal",
+                        "email":  "kevin.vidal@test_irontigers.test",
+                        "number":  6,
+                        "dni":  "70000083K",
+                        "phone":  "+34 610 009 003"
+                    },
+                    {
+                        "name":  "Leo Roman",
+                        "email":  "leo.roman@test_irontigers.test",
+                        "number":  9,
+                        "dni":  "70000084L",
+                        "phone":  "+34 610 009 004"
+                    },
+                    {
+                        "name":  "Mario Cortes",
+                        "email":  "mario.cortes@test_irontigers.test",
+                        "number":  10,
+                        "dni":  "70000085M",
+                        "phone":  "+34 610 009 005"
+                    }
+                ]
+}

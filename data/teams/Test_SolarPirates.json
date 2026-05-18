@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_SolarPirates",
+    "players":  [
+                    {
+                        "name":  "Sergio Ortega",
+                        "email":  "sergio.ortega@test_solarpirates.test",
+                        "number":  1,
+                        "dni":  "70000181S",
+                        "phone":  "+34 610 019 001"
+                    },
+                    {
+                        "name":  "Tomas Iglesias",
+                        "email":  "tomas.iglesias@test_solarpirates.test",
+                        "number":  4,
+                        "dni":  "70000182T",
+                        "phone":  "+34 610 019 002"
+                    },
+                    {
+                        "name":  "Ulises Pardo",
+                        "email":  "ulises.pardo@test_solarpirates.test",
+                        "number":  6,
+                        "dni":  "70000183U",
+                        "phone":  "+34 610 019 003"
+                    },
+                    {
+                        "name":  "Victor Soler",
+                        "email":  "victor.soler@test_solarpirates.test",
+                        "number":  9,
+                        "dni":  "70000184V",
+                        "phone":  "+34 610 019 004"
+                    },
+                    {
+                        "name":  "Walter Mendez",
+                        "email":  "walter.mendez@test_solarpirates.test",
+                        "number":  10,
+                        "dni":  "70000185W",
+                        "phone":  "+34 610 019 005"
+                    }
+                ]
+}

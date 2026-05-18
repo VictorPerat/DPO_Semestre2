@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_ThunderOwls",
+    "players":  [
+                    {
+                        "name":  "Tomas Pardo",
+                        "email":  "tomas.pardo@test_thunderowls.test",
+                        "number":  1,
+                        "dni":  "70000191T",
+                        "phone":  "+34 610 020 001"
+                    },
+                    {
+                        "name":  "Ulises Soler",
+                        "email":  "ulises.soler@test_thunderowls.test",
+                        "number":  4,
+                        "dni":  "70000192U",
+                        "phone":  "+34 610 020 002"
+                    },
+                    {
+                        "name":  "Victor Mendez",
+                        "email":  "victor.mendez@test_thunderowls.test",
+                        "number":  6,
+                        "dni":  "70000193V",
+                        "phone":  "+34 610 020 003"
+                    },
+                    {
+                        "name":  "Walter Suarez",
+                        "email":  "walter.suarez@test_thunderowls.test",
+                        "number":  9,
+                        "dni":  "70000194W",
+                        "phone":  "+34 610 020 004"
+                    },
+                    {
+                        "name":  "Xavi Nadal",
+                        "email":  "xavi.nadal@test_thunderowls.test",
+                        "number":  10,
+                        "dni":  "70000195X",
+                        "phone":  "+34 610 020 005"
+                    }
+                ]
+}

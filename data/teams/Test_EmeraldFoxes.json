@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_EmeraldFoxes",
+    "players":  [
+                    {
+                        "name":  "Enzo Lopez",
+                        "email":  "enzo.lopez@test_emeraldfoxes.test",
+                        "number":  1,
+                        "dni":  "70000041E",
+                        "phone":  "+34 610 005 001"
+                    },
+                    {
+                        "name":  "Fabian Ramos",
+                        "email":  "fabian.ramos@test_emeraldfoxes.test",
+                        "number":  4,
+                        "dni":  "70000042F",
+                        "phone":  "+34 610 005 002"
+                    },
+                    {
+                        "name":  "Gorka Ortega",
+                        "email":  "gorka.ortega@test_emeraldfoxes.test",
+                        "number":  6,
+                        "dni":  "70000043G",
+                        "phone":  "+34 610 005 003"
+                    },
+                    {
+                        "name":  "Hector Iglesias",
+                        "email":  "hector.iglesias@test_emeraldfoxes.test",
+                        "number":  9,
+                        "dni":  "70000044H",
+                        "phone":  "+34 610 005 004"
+                    },
+                    {
+                        "name":  "Ivan Pardo",
+                        "email":  "ivan.pardo@test_emeraldfoxes.test",
+                        "number":  10,
+                        "dni":  "70000045I",
+                        "phone":  "+34 610 005 005"
+                    }
+                ]
+}

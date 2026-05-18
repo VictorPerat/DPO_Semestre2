@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_KingfisherFC",
+    "players":  [
+                    {
+                        "name":  "Kevin Cortes",
+                        "email":  "kevin.cortes@test_kingfisherfc.test",
+                        "number":  1,
+                        "dni":  "70000101K",
+                        "phone":  "+34 610 011 001"
+                    },
+                    {
+                        "name":  "Leo Prieto",
+                        "email":  "leo.prieto@test_kingfisherfc.test",
+                        "number":  4,
+                        "dni":  "70000102L",
+                        "phone":  "+34 610 011 002"
+                    },
+                    {
+                        "name":  "Mario Pastor",
+                        "email":  "mario.pastor@test_kingfisherfc.test",
+                        "number":  6,
+                        "dni":  "70000103M",
+                        "phone":  "+34 610 011 003"
+                    },
+                    {
+                        "name":  "Nico Gil",
+                        "email":  "nico.gil@test_kingfisherfc.test",
+                        "number":  9,
+                        "dni":  "70000104N",
+                        "phone":  "+34 610 011 004"
+                    },
+                    {
+                        "name":  "Oscar Roca",
+                        "email":  "oscar.roca@test_kingfisherfc.test",
+                        "number":  10,
+                        "dni":  "70000105O",
+                        "phone":  "+34 610 011 005"
+                    }
+                ]
+}

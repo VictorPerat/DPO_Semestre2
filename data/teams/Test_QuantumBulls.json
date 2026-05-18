@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_QuantumBulls",
+    "players":  [
+                    {
+                        "name":  "Quim Campos",
+                        "email":  "quim.campos@test_quantumbulls.test",
+                        "number":  1,
+                        "dni":  "70000161Q",
+                        "phone":  "+34 610 017 001"
+                    },
+                    {
+                        "name":  "Raul Ruiz",
+                        "email":  "raul.ruiz@test_quantumbulls.test",
+                        "number":  4,
+                        "dni":  "70000162R",
+                        "phone":  "+34 610 017 002"
+                    },
+                    {
+                        "name":  "Sergio Lopez",
+                        "email":  "sergio.lopez@test_quantumbulls.test",
+                        "number":  6,
+                        "dni":  "70000163S",
+                        "phone":  "+34 610 017 003"
+                    },
+                    {
+                        "name":  "Tomas Ramos",
+                        "email":  "tomas.ramos@test_quantumbulls.test",
+                        "number":  9,
+                        "dni":  "70000164T",
+                        "phone":  "+34 610 017 004"
+                    },
+                    {
+                        "name":  "Ulises Ortega",
+                        "email":  "ulises.ortega@test_quantumbulls.test",
+                        "number":  10,
+                        "dni":  "70000165U",
+                        "phone":  "+34 610 017 005"
+                    }
+                ]
+}

@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_OrionUnited",
+    "players":  [
+                    {
+                        "name":  "Oscar Molina",
+                        "email":  "oscar.molina@test_orionunited.test",
+                        "number":  1,
+                        "dni":  "70000141O",
+                        "phone":  "+34 610 015 001"
+                    },
+                    {
+                        "name":  "Pablo Herrera",
+                        "email":  "pablo.herrera@test_orionunited.test",
+                        "number":  4,
+                        "dni":  "70000142P",
+                        "phone":  "+34 610 015 002"
+                    },
+                    {
+                        "name":  "Quim Castro",
+                        "email":  "quim.castro@test_orionunited.test",
+                        "number":  6,
+                        "dni":  "70000143Q",
+                        "phone":  "+34 610 015 003"
+                    },
+                    {
+                        "name":  "Raul Vega",
+                        "email":  "raul.vega@test_orionunited.test",
+                        "number":  9,
+                        "dni":  "70000144R",
+                        "phone":  "+34 610 015 004"
+                    },
+                    {
+                        "name":  "Sergio Campos",
+                        "email":  "sergio.campos@test_orionunited.test",
+                        "number":  10,
+                        "dni":  "70000145S",
+                        "phone":  "+34 610 015 005"
+                    }
+                ]
+}

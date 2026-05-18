@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_JadeStorm",
+    "players":  [
+                    {
+                        "name":  "Julian Vidal",
+                        "email":  "julian.vidal@test_jadestorm.test",
+                        "number":  1,
+                        "dni":  "70000091J",
+                        "phone":  "+34 610 010 001"
+                    },
+                    {
+                        "name":  "Kevin Roman",
+                        "email":  "kevin.roman@test_jadestorm.test",
+                        "number":  4,
+                        "dni":  "70000092K",
+                        "phone":  "+34 610 010 002"
+                    },
+                    {
+                        "name":  "Leo Cortes",
+                        "email":  "leo.cortes@test_jadestorm.test",
+                        "number":  6,
+                        "dni":  "70000093L",
+                        "phone":  "+34 610 010 003"
+                    },
+                    {
+                        "name":  "Mario Prieto",
+                        "email":  "mario.prieto@test_jadestorm.test",
+                        "number":  9,
+                        "dni":  "70000094M",
+                        "phone":  "+34 610 010 004"
+                    },
+                    {
+                        "name":  "Nico Pastor",
+                        "email":  "nico.pastor@test_jadestorm.test",
+                        "number":  10,
+                        "dni":  "70000095N",
+                        "phone":  "+34 610 010 005"
+                    }
+                ]
+}

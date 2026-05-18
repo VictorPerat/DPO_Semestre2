@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_FrostGiants",
+    "players":  [
+                    {
+                        "name":  "Fabian Ortega",
+                        "email":  "fabian.ortega@test_frostgiants.test",
+                        "number":  1,
+                        "dni":  "70000051F",
+                        "phone":  "+34 610 006 001"
+                    },
+                    {
+                        "name":  "Gorka Iglesias",
+                        "email":  "gorka.iglesias@test_frostgiants.test",
+                        "number":  4,
+                        "dni":  "70000052G",
+                        "phone":  "+34 610 006 002"
+                    },
+                    {
+                        "name":  "Hector Pardo",
+                        "email":  "hector.pardo@test_frostgiants.test",
+                        "number":  6,
+                        "dni":  "70000053H",
+                        "phone":  "+34 610 006 003"
+                    },
+                    {
+                        "name":  "Ivan Soler",
+                        "email":  "ivan.soler@test_frostgiants.test",
+                        "number":  9,
+                        "dni":  "70000054I",
+                        "phone":  "+34 610 006 004"
+                    },
+                    {
+                        "name":  "Julian Mendez",
+                        "email":  "julian.mendez@test_frostgiants.test",
+                        "number":  10,
+                        "dni":  "70000055J",
+                        "phone":  "+34 610 006 005"
+                    }
+                ]
+}

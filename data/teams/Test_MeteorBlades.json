@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_MeteorBlades",
+    "players":  [
+                    {
+                        "name":  "Mario Roca",
+                        "email":  "mario.roca@test_meteorblades.test",
+                        "number":  1,
+                        "dni":  "70000121M",
+                        "phone":  "+34 610 013 001"
+                    },
+                    {
+                        "name":  "Nico Segura",
+                        "email":  "nico.segura@test_meteorblades.test",
+                        "number":  4,
+                        "dni":  "70000122N",
+                        "phone":  "+34 610 013 002"
+                    },
+                    {
+                        "name":  "Oscar Navarro",
+                        "email":  "oscar.navarro@test_meteorblades.test",
+                        "number":  6,
+                        "dni":  "70000123O",
+                        "phone":  "+34 610 013 003"
+                    },
+                    {
+                        "name":  "Pablo Santos",
+                        "email":  "pablo.santos@test_meteorblades.test",
+                        "number":  9,
+                        "dni":  "70000124P",
+                        "phone":  "+34 610 013 004"
+                    },
+                    {
+                        "name":  "Quim Molina",
+                        "email":  "quim.molina@test_meteorblades.test",
+                        "number":  10,
+                        "dni":  "70000125Q",
+                        "phone":  "+34 610 013 005"
+                    }
+                ]
+}

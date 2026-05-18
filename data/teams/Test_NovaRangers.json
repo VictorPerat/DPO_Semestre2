@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_NovaRangers",
+    "players":  [
+                    {
+                        "name":  "Nico Navarro",
+                        "email":  "nico.navarro@test_novarangers.test",
+                        "number":  1,
+                        "dni":  "70000131N",
+                        "phone":  "+34 610 014 001"
+                    },
+                    {
+                        "name":  "Oscar Santos",
+                        "email":  "oscar.santos@test_novarangers.test",
+                        "number":  4,
+                        "dni":  "70000132O",
+                        "phone":  "+34 610 014 002"
+                    },
+                    {
+                        "name":  "Pablo Molina",
+                        "email":  "pablo.molina@test_novarangers.test",
+                        "number":  6,
+                        "dni":  "70000133P",
+                        "phone":  "+34 610 014 003"
+                    },
+                    {
+                        "name":  "Quim Herrera",
+                        "email":  "quim.herrera@test_novarangers.test",
+                        "number":  9,
+                        "dni":  "70000134Q",
+                        "phone":  "+34 610 014 004"
+                    },
+                    {
+                        "name":  "Raul Castro",
+                        "email":  "raul.castro@test_novarangers.test",
+                        "number":  10,
+                        "dni":  "70000135R",
+                        "phone":  "+34 610 014 005"
+                    }
+                ]
+}

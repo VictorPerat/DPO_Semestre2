@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_RoyalEagles",
+    "players":  [
+                    {
+                        "name":  "Raul Lopez",
+                        "email":  "raul.lopez@test_royaleagles.test",
+                        "number":  1,
+                        "dni":  "70000171R",
+                        "phone":  "+34 610 018 001"
+                    },
+                    {
+                        "name":  "Sergio Ramos",
+                        "email":  "sergio.ramos@test_royaleagles.test",
+                        "number":  4,
+                        "dni":  "70000172S",
+                        "phone":  "+34 610 018 002"
+                    },
+                    {
+                        "name":  "Tomas Ortega",
+                        "email":  "tomas.ortega@test_royaleagles.test",
+                        "number":  6,
+                        "dni":  "70000173T",
+                        "phone":  "+34 610 018 003"
+                    },
+                    {
+                        "name":  "Ulises Iglesias",
+                        "email":  "ulises.iglesias@test_royaleagles.test",
+                        "number":  9,
+                        "dni":  "70000174U",
+                        "phone":  "+34 610 018 004"
+                    },
+                    {
+                        "name":  "Victor Pardo",
+                        "email":  "victor.pardo@test_royaleagles.test",
+                        "number":  10,
+                        "dni":  "70000175V",
+                        "phone":  "+34 610 018 005"
+                    }
+                ]
+}

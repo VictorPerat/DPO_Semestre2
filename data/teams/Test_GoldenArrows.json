@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_GoldenArrows",
+    "players":  [
+                    {
+                        "name":  "Gorka Pardo",
+                        "email":  "gorka.pardo@test_goldenarrows.test",
+                        "number":  1,
+                        "dni":  "70000061G",
+                        "phone":  "+34 610 007 001"
+                    },
+                    {
+                        "name":  "Hector Soler",
+                        "email":  "hector.soler@test_goldenarrows.test",
+                        "number":  4,
+                        "dni":  "70000062H",
+                        "phone":  "+34 610 007 002"
+                    },
+                    {
+                        "name":  "Ivan Mendez",
+                        "email":  "ivan.mendez@test_goldenarrows.test",
+                        "number":  6,
+                        "dni":  "70000063I",
+                        "phone":  "+34 610 007 003"
+                    },
+                    {
+                        "name":  "Julian Suarez",
+                        "email":  "julian.suarez@test_goldenarrows.test",
+                        "number":  9,
+                        "dni":  "70000064J",
+                        "phone":  "+34 610 007 004"
+                    },
+                    {
+                        "name":  "Kevin Nadal",
+                        "email":  "kevin.nadal@test_goldenarrows.test",
+                        "number":  10,
+                        "dni":  "70000065K",
+                        "phone":  "+34 610 007 005"
+                    }
+                ]
+}

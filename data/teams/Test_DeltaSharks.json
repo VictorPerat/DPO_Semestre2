@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_DeltaSharks",
+    "players":  [
+                    {
+                        "name":  "Dario Campos",
+                        "email":  "dario.campos@test_deltasharks.test",
+                        "number":  1,
+                        "dni":  "70000031D",
+                        "phone":  "+34 610 004 001"
+                    },
+                    {
+                        "name":  "Enzo Ruiz",
+                        "email":  "enzo.ruiz@test_deltasharks.test",
+                        "number":  4,
+                        "dni":  "70000032E",
+                        "phone":  "+34 610 004 002"
+                    },
+                    {
+                        "name":  "Fabian Lopez",
+                        "email":  "fabian.lopez@test_deltasharks.test",
+                        "number":  6,
+                        "dni":  "70000033F",
+                        "phone":  "+34 610 004 003"
+                    },
+                    {
+                        "name":  "Gorka Ramos",
+                        "email":  "gorka.ramos@test_deltasharks.test",
+                        "number":  9,
+                        "dni":  "70000034G",
+                        "phone":  "+34 610 004 004"
+                    },
+                    {
+                        "name":  "Hector Ortega",
+                        "email":  "hector.ortega@test_deltasharks.test",
+                        "number":  10,
+                        "dni":  "70000035H",
+                        "phone":  "+34 610 004 005"
+                    }
+                ]
+}

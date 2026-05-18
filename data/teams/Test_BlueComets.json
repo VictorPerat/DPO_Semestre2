@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_BlueComets",
+    "players":  [
+                    {
+                        "name":  "Bruno Molina",
+                        "email":  "bruno.molina@test_bluecomets.test",
+                        "number":  1,
+                        "dni":  "70000011B",
+                        "phone":  "+34 610 002 001"
+                    },
+                    {
+                        "name":  "Cesar Herrera",
+                        "email":  "cesar.herrera@test_bluecomets.test",
+                        "number":  4,
+                        "dni":  "70000012C",
+                        "phone":  "+34 610 002 002"
+                    },
+                    {
+                        "name":  "Dario Castro",
+                        "email":  "dario.castro@test_bluecomets.test",
+                        "number":  6,
+                        "dni":  "70000013D",
+                        "phone":  "+34 610 002 003"
+                    },
+                    {
+                        "name":  "Enzo Vega",
+                        "email":  "enzo.vega@test_bluecomets.test",
+                        "number":  9,
+                        "dni":  "70000014E",
+                        "phone":  "+34 610 002 004"
+                    },
+                    {
+                        "name":  "Fabian Campos",
+                        "email":  "fabian.campos@test_bluecomets.test",
+                        "number":  10,
+                        "dni":  "70000015F",
+                        "phone":  "+34 610 002 005"
+                    }
+                ]
+}

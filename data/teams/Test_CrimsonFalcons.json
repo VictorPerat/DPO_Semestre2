@@ -1,0 +1,40 @@
+{
+    "team_name":  "Test_CrimsonFalcons",
+    "players":  [
+                    {
+                        "name":  "Cesar Castro",
+                        "email":  "cesar.castro@test_crimsonfalcons.test",
+                        "number":  1,
+                        "dni":  "70000021C",
+                        "phone":  "+34 610 003 001"
+                    },
+                    {
+                        "name":  "Dario Vega",
+                        "email":  "dario.vega@test_crimsonfalcons.test",
+                        "number":  4,
+                        "dni":  "70000022D",
+                        "phone":  "+34 610 003 002"
+                    },
+                    {
+                        "name":  "Enzo Campos",
+                        "email":  "enzo.campos@test_crimsonfalcons.test",
+                        "number":  6,
+                        "dni":  "70000023E",
+                        "phone":  "+34 610 003 003"
+                    },
+                    {
+                        "name":  "Fabian Ruiz",
+                        "email":  "fabian.ruiz@test_crimsonfalcons.test",
+                        "number":  9,
+                        "dni":  "70000024F",
+                        "phone":  "+34 610 003 004"
+                    },
+                    {
+                        "name":  "Gorka Lopez",
+                        "email":  "gorka.lopez@test_crimsonfalcons.test",
+                        "number":  10,
+                        "dni":  "70000025G",
+                        "phone":  "+34 610 003 005"
+                    }
+                ]
+}
